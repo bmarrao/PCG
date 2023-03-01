@@ -51,6 +51,7 @@ void drawCone(float radius, float height, int slices,int stacks	)
 	point act ;	
 	point aux1;
 	point aux2;
+	float radius1;
     for (;i < slices; )
     {
         x = ang * i;
@@ -77,22 +78,23 @@ void drawCone(float radius, float height, int slices,int stacks	)
         glVertex3f(act.x, 0.0f,act.z);
         glVertex3f(0.0f, 0.0f, 0.0f);     
 
-		for (int l = 0; l < stacks-1; l++)
+		for (int l = 1; l < stacks; l++)
 		{
 			//FALTA DESCOBRIR O Q PRECISO APLICAR AQUI
-			aux1.x = radius*sin(x);
-			aux1.y = 0;
-			aux1.z = radius * cos(x);
-			aux2.x = radius*sin(j);
-			aux2.y = 0;
-			aux2.z = radius * cos(j);
+			radius1 = (radius - (l * difr ));
+			aux1.x = radius1 * sin(x);
+			aux1.y = aux1.y + dify;
+			aux1.z = radius1 * cos(x);
+			aux2.x = radius1*sin(j);
+			aux2.y = aux2.y + dify;
+			aux2.z = radius1 * cos(j);
 			glColor3f(1.0, 0.0, 0.0);
 			glVertex3f(act.x, act.y, act.z);
 			glVertex3f(ant.x, ant.y, ant.z);
 			glVertex3f(aux2.x, aux2.y, aux2.z); 
 
 
-			glVertex3f(aux2.x, aux2.y, aux.z);
+			glVertex3f(aux2.x, aux2.y, aux2.z);
 			glVertex3f(aux1.x, aux1.y, aux1.z);
 			glVertex3f(ant.x, ant.y, ant.z); 
 
