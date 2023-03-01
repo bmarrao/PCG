@@ -7,6 +7,11 @@
 
 #define _USE_MATH_DEFINES
 #include <math.h>	
+struct point {
+    float x;
+    float y;
+	float z;
+};
 
 void changeSize(int w, int h) {
 
@@ -40,29 +45,64 @@ void drawCone(float radius, float height, int slices,int stacks	)
     float j;
     float x;
     float ang = 2*M_PI / slices;
-	float x1;
-	float  y1;
-	float x2;
-	float y2;
+	float dify = height /stacks ;
+	float difr = radius / stacks ;
+	point ant ;
+	point act ;	
+	point aux1;
+	point aux2;
     for (;i < slices; )
     {
         x = ang * i;
         i++;
         j = ang * i;
-		x1 = radius*sin(x);
-		y1 = radius * cos(x);
-		x2 = radius*sin(j);
-		y2 = radius * cos(j);
+		//ant.x
+		ant.x = radius*sin(x);
+		//ant.z
+		ant.y = 0;
+		//z1
+		ant.z = radius * cos(x);
+		//act.x
+		act.x = radius*sin(j);
+		//y2
+		act.y = 0;
+		//z2
+		act.z = radius * cos(j);
 		glPolygonMode(GL_FRONT, GL_FILL);
         glBegin(GL_TRIANGLES);
 
 		//Base Baixo
         glColor3f(1.0, 0.0, 0.0);
-        glVertex3f(x1, 0.0f, y1);
-        glVertex3f(x2, 0.0f, y2);
+        glVertex3f(ant.x, 0.0f, ant.z);
+        glVertex3f(act.x, 0.0f,act.z);
         glVertex3f(0.0f, 0.0f, 0.0f);     
 
-    
+		for (int l = 0; l < stacks-1; l++)
+		{
+			//FALTA DESCOBRIR O Q PRECISO APLICAR AQUI
+			aux1.x = radius*sin(x);
+			aux1.y = 0;
+			aux1.z = radius * cos(x);
+			aux2.x = radius*sin(j);
+			aux2.y = 0;
+			aux2.z = radius * cos(j);
+			glColor3f(1.0, 0.0, 0.0);
+			glVertex3f(act.x, act.y, act.z);
+			glVertex3f(ant.x, ant.y, ant.z);
+			glVertex3f(aux2.x, aux2.y, aux2.z); 
+
+
+			glVertex3f(aux2.x, aux2.y, aux.z);
+			glVertex3f(aux1.x, aux1.y, aux1.z);
+			glVertex3f(ant.x, ant.y, ant.z); 
+
+		}
+		
+		//ultimo triang
+        glColor3f(1.0, 0.0, 0.0);
+        glVertex3f(ant.x, 0.0f, ant.z);
+        glVertex3f(act.x, 0.0f, act.z);
+        glVertex3f(0.0f, height, 0.0f); 
         glEnd();
 		
 
