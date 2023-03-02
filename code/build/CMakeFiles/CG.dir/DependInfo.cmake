@@ -8,7 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/breno/Universidade/CG/TP/code/main.cpp" "CMakeFiles/CG.dir/main.cpp.o" "gcc" "CMakeFiles/CG.dir/main.cpp.o.d"
+  "/home/tales/Desktop/PCG/code/main.cpp" "CMakeFiles/CG.dir/main.cpp.o" "gcc" "CMakeFiles/CG.dir/main.cpp.o.d"
   )
 
 # Targets to which this target links.

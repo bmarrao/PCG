@@ -13,6 +13,8 @@ struct point {
 	float z;
 };
 
+float alpha = M_PI/4, beta = M_PI/4,raio= sqrt(50);
+
 void changeSize(int w, int h) {
 
 	// Prevent a divide by zero, when window is too short
@@ -41,6 +43,7 @@ void changeSize(int w, int h) {
 
 void drawCone(float radius, float height, int slices,int stacks	) 
 {
+	/*
     int i = 0;
     float j;
     float x;
@@ -69,50 +72,91 @@ void drawCone(float radius, float height, int slices,int stacks	)
 		act.y = 0;
 		//z2
 		act.z = radius * cos(j);
-		glPolygonMode(GL_FRONT, GL_FILL);
         glBegin(GL_TRIANGLES);
 
 		//Base Baixo
         glColor3f(1.0, 0.0, 0.0);
         glVertex3f(ant.x, 0.0f, ant.z);
+		glVertex3f(0.0f, 0.0f, 0.0f);
         glVertex3f(act.x, 0.0f,act.z);
-        glVertex3f(0.0f, 0.0f, 0.0f);     
 
-		for (int l = 1; l < stacks; l++)
+
+		radius1 = (radius -  difr );
+		aux1.y = 0;
+		aux2.y = 0;
+
+		for (int l = 0; l < stacks; l++)
 		{
 			//FALTA DESCOBRIR O Q PRECISO APLICAR AQUI
-			radius1 = (radius - (l * difr ));
-			aux1.x = radius1 * sin(x);
-			aux1.y = aux1.y + dify;
-			aux1.z = radius1 * cos(x);
-			aux2.x = radius1*sin(j);
-			aux2.y = aux2.y + dify;
-			aux2.z = radius1 * cos(j);
-			glColor3f(1.0, 0.0, 0.0);
-			glVertex3f(act.x, act.y, act.z);
+			
+			
+			
+			glColor3f(0.5, 1.0, 0.0);
+
 			glVertex3f(ant.x, ant.y, ant.z);
+			glVertex3f(act.x, act.y, act.z);
 			glVertex3f(aux2.x, aux2.y, aux2.z); 
+
+			glColor3f(0.0, 1.0, 0.5);
 
 
 			glVertex3f(aux2.x, aux2.y, aux2.z);
 			glVertex3f(aux1.x, aux1.y, aux1.z);
 			glVertex3f(ant.x, ant.y, ant.z); 
 
+			//ACT E ANT VIRAM AUX1 e AUX2
+			ant = aux1;
+			act = aux2;
+			
+	
+		}
+
+		
+		glEnd();
+		*/
+		//Base Baixo
+		
+		float ang = 0;
+		float draio = radius/stacks;
+		float alt = 0;
+		float r = radius;
+		glBegin(GL_TRIANGLES);
+		for(int i = 0;i!= slices;i++){
+		
+        	glColor3f(0.0f,1.0f,0.0f);
+			glVertex3f(0.0f, 0, 0.0f);
+			glVertex3f(sin(ang)*r, 0, cos(ang)*r);
+			glVertex3f(sin(ang+(M_PI*2/slices))*r, 0, cos(ang+(M_PI*2/slices))*r);
+			
+			for (int j = 0;j != stacks;j++){
+				
+				glVertex3f(sin(ang)*r,alt, cos(ang)*r);
+				glVertex3f(sin(ang+(M_PI*2/slices))*r, alt, cos(ang+(M_PI*2/slices))*r);
+				glVertex3f(sin(ang)*(r-draio),alt+ height/stacks, cos(ang)*(r-draio));
+
+				
+				glVertex3f(sin(ang+(M_PI*2/slices))*r, alt, cos(ang+(M_PI*2/slices))*r);
+				glVertex3f(sin(ang+(M_PI*2/slices))*(r-draio), alt+ height/stacks, cos(ang+(M_PI*2/slices))*(r-draio));
+				glVertex3f(sin(ang)*(r-draio), alt + height/stacks, cos(ang)*(r-draio));
+				
+				r -= draio;
+				alt += height/stacks;
+
+				
+			}
+			alt = 0;
+			r = radius;
+			ang += 2*M_PI/slices;
+
 		}
 		
-		//ultimo triang
-        glColor3f(1.0, 0.0, 0.0);
-        glVertex3f(ant.x, 0.0f, ant.z);
-        glVertex3f(act.x, 0.0f, act.z);
-        glVertex3f(0.0f, height, 0.0f); 
-        glEnd();
-		
-
-        
-    }
+		glEnd();
+	
+	
+}
 // put code to draw cylinder in here
 
-}
+
 
 void drawSphere(float radius, int slices,int stacks) {
 	float al = 0;
@@ -150,7 +194,7 @@ void renderScene(void) {
 
 	// set the camera
 	glLoadIdentity();
-	gluLookAt(5.0,5.0,5.0, 
+	gluLookAt(sin(alpha)*cos(beta)*raio,sin(beta)*raio,cos(alpha)*cos(beta)*raio, 
 		      0.0,0.0,0.0,
 			  0.0f,1.0f,0.0f);
 
@@ -169,19 +213,41 @@ void renderScene(void) {
 	glVertex3f(0.0f, 0.0f, 100.0f);
 
 	glEnd();
-	drawCone(1,2,10,0);
-
+	drawCone(1,2,4,4);
 	// End of frame
 	glutSwapBuffers();
 }
 
 
-void processKeys(unsigned char c, int xx, int yy) {
-
-// put code to process regular keys in here
-
+void processKeys(unsigned char key, int xx, int yy) {
+	
+	switch(key){
+		case 'a':
+			alpha -= M_PI/16;
+			break;
+		case 'd':
+			alpha += M_PI/16;
+			break;
+		case 'w':
+			if(!(beta+M_PI/16>M_PI/2)){
+				beta += M_PI/16;
+			}
+			break;
+		case 's':
+			if(!(beta-M_PI/16<-M_PI/2)){
+				beta -= M_PI/16;
+			}
+			break;
+		case 'z':
+			raio += 1;
+			break;
+		case 'x':
+			raio -= 1;
+			break;
+	}
+	glutPostRedisplay();
+	
 }
-
 
 void processSpecialKeys(int key, int xx, int yy) {
 
@@ -211,6 +277,7 @@ int main(int argc, char **argv)
 //  OpenGL settings
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	
 // enter GLUT's main cycle
 	glutMainLoop();
