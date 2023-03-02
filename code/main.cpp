@@ -114,6 +114,33 @@ void drawCone(float radius, float height, int slices,int stacks	)
 
 }
 
+void drawSphere(float radius, int slices,int stacks) {
+	float al = 0;
+	float be = -M_PI/2;
+	
+
+	for(int j = 0;j!= stacks;j++){
+		for(int i = 0;i!= slices;i++){
+			glBegin(GL_TRIANGLES);
+			glColor3f(0.0,1.0,0.0);
+			glVertex3f(radius*cos(be)*sin(al), radius*sin(be), radius*cos(be)*cos(al));
+			glVertex3f(radius*cos(be)*sin(al+2*M_PI/stacks), radius*sin(be), radius*cos(be)*cos(al+2*M_PI/stacks));
+			glVertex3f(radius*cos(be+M_PI/slices)*sin(al), radius*sin(be+M_PI/slices), radius*cos(be+M_PI/slices)*cos(al));
+			glEnd();
+
+			glBegin(GL_TRIANGLES);
+			glColor3f(0.0f,1.0f,0.0f);
+			glVertex3f(radius*cos(be)*sin(al+2*M_PI/stacks), radius*sin(be), radius*cos(be)*cos(al+2*M_PI/stacks));
+			glVertex3f(radius*cos(be+M_PI/slices)*sin(al+2*M_PI/stacks), radius*sin(be+M_PI/slices), radius*cos(be+M_PI/slices)*cos(al+2*M_PI/stacks));
+			glVertex3f(radius*cos(be+M_PI/slices)*sin(al), radius*sin(be+M_PI/slices), radius*cos(be+M_PI/slices)*cos(al));
+			glEnd();
+			al += 2*M_PI/stacks;
+			
+		}
+		be += M_PI/slices;
+	}
+
+}
 
 
 void renderScene(void) {
