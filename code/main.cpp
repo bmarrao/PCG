@@ -186,6 +186,94 @@ void drawSphere(float radius, int slices,int stacks) {
 
 }
 
+void drawPlane(int comp, int slices) {
+	glColor3f(0.0f, 1.0f, 0.0f);
+	int aresta = comp / slices; // comprimento do triangulo
+	int posicao = comp / 2;	 // posicionar corretamente no centro do eixo
+	for (int i = 0; i < slices; i++) {
+		for (int j = 0; j < slices; j++) {
+			glBegin(GL_TRIANGLES);
+
+			glVertex3f(i * aresta - posicao, 0, j * aresta - posicao);
+			glVertex3f((i + 1) * aresta - posicao, 0, (j + 1) * aresta - posicao);
+			glVertex3f((i + 1) * aresta - posicao, 0, j * aresta - posicao);
+
+			glVertex3f(i * aresta - posicao, 0, j * aresta - posicao);
+			glVertex3f(i * aresta - posicao, 0, (j + 1) * aresta - posicao);
+			glVertex3f((i + 1) * aresta - posicao, 0, (j + 1) * aresta - posicao);
+			glEnd();
+		}
+	}
+}
+
+void drawCube(int comp, int slices) {
+	glColor3f(0.0f, 1.0f, 0.0f);
+	int aresta = comp / slices; // comprimento do triangulo
+	int posicao = comp / 2;	 // posicionar corretamente no centro do eixo
+	for (int i = 0; i < slices; i++) {
+		for (int j = 0; j < slices; j++) {
+			glBegin(GL_TRIANGLES);
+
+			// Face de cima
+			glVertex3f(i * aresta - posicao, comp / 2, j * aresta - posicao);
+			glVertex3f((i + 1) * aresta - posicao, comp / 2, (j + 1) * aresta - posicao);
+			glVertex3f((i + 1) * aresta - posicao, comp / 2, j * aresta - posicao);
+
+			glVertex3f(i * aresta - posicao, comp / 2, j * aresta - posicao);
+			glVertex3f(i * aresta - posicao, comp / 2, (j + 1) * aresta - posicao);
+			glVertex3f((i + 1) * aresta - posicao, comp / 2, (j + 1) * aresta - posicao);
+
+			// Face de baixo
+			glVertex3f(i * aresta - posicao, -comp / 2, j * aresta - posicao);
+			glVertex3f((i + 1) * aresta - posicao, -comp / 2, (j + 1) * aresta - posicao);
+			glVertex3f((i + 1) * aresta - posicao, -comp / 2, j * aresta - posicao);
+
+			glVertex3f(i * aresta - posicao, -comp / 2, j * aresta - posicao);
+			glVertex3f(i * aresta - posicao, -comp / 2, (j + 1) * aresta - posicao);
+			glVertex3f((i + 1) * aresta - posicao, -comp / 2, (j + 1) * aresta - posicao);
+
+
+			// Face de X constante negativo
+			glVertex3f(-comp / 2, i * aresta - posicao, j * aresta - posicao);
+			glVertex3f(-comp / 2, (i + 1) * aresta - posicao, (j + 1) * aresta - posicao);
+			glVertex3f(-comp / 2, (i + 1) * aresta - posicao, j * aresta - posicao);
+
+			glVertex3f(-comp / 2, i * aresta - posicao, j * aresta - posicao);
+			glVertex3f(-comp / 2, i * aresta - posicao, (j + 1) * aresta - posicao);
+			glVertex3f(-comp / 2, (i + 1) * aresta - posicao, (j + 1) * aresta - posicao);
+
+			// Face de X constante positivo
+			glVertex3f(comp / 2, i * aresta - posicao, j * aresta - posicao);
+			glVertex3f(comp / 2, (i + 1) * aresta - posicao, (j + 1) * aresta - posicao);
+			glVertex3f(comp / 2, (i + 1) * aresta - posicao, j * aresta - posicao);
+
+			glVertex3f(comp / 2, i * aresta - posicao, j * aresta - posicao);
+			glVertex3f(comp / 2, i * aresta - posicao, (j + 1) * aresta - posicao);
+			glVertex3f(comp / 2, (i + 1) * aresta - posicao, (j + 1) * aresta - posicao);
+
+			// Face de Z constante negativo
+			glVertex3f(i * aresta - posicao, j * aresta - posicao, -comp / 2);
+			glVertex3f((i + 1) * aresta - posicao, (j + 1) * aresta - posicao, -comp / 2);
+			glVertex3f((i + 1) * aresta - posicao, j * aresta - posicao, -comp / 2);
+
+			glVertex3f(i * aresta - posicao, j * aresta - posicao, -comp / 2);
+			glVertex3f(i * aresta - posicao, (j + 1) * aresta - posicao, -comp / 2);
+			glVertex3f((i + 1) * aresta - posicao, (j + 1) * aresta - posicao, -comp / 2);
+
+			// Face de Z constante positivo
+			glVertex3f(i * aresta - posicao, j * aresta - posicao, comp / 2);
+			glVertex3f((i + 1) * aresta - posicao, (j + 1) * aresta - posicao, comp / 2);
+			glVertex3f((i + 1) * aresta - posicao, j * aresta - posicao, comp / 2);
+
+			glVertex3f(i * aresta - posicao, j * aresta - posicao, comp / 2);
+			glVertex3f(i * aresta - posicao, (j + 1) * aresta - posicao, comp / 2);
+			glVertex3f((i + 1) * aresta - posicao, (j + 1) * aresta - posicao, comp / 2);
+
+			glEnd();
+		}
+	}
+}
+
 
 void renderScene(void) {
 
@@ -213,7 +301,7 @@ void renderScene(void) {
 	glVertex3f(0.0f, 0.0f, 100.0f);
 
 	glEnd();
-	drawCone(1,2,4,4);
+	drawCube(4, 4);
 	// End of frame
 	glutSwapBuffers();
 }
