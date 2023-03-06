@@ -132,22 +132,27 @@ int main (int argc, char const *argv[])
           std::cout << "Invalid input";
 
     }
-    else if (strcmp(argv[1],"sphere") && argc == 5 )
+    else if (!(strcmp(argv[1],"sphere")) && argc == 5 )
     {
         drawSphere(atof(argv[2]), atoi(argv[3]),atoi(argv[4]),argv[5]);
     }
     else if (!(strcmp(argv[1],"box")) && argc == 5 )
     {
-        cout << "oi";
         drawBox(atoi(argv[2]), atoi(argv[3]),argv[4]);
     }
     else if (!(strcmp(argv[1],"cone")) && argc == 7 )
     {
+        cout << "coneeeeeeeeee";
         drawCone(atof(argv[2]), atof(argv[3]),atoi(argv[4]),atoi(argv[5]),argv[6]);
     }
-    else if (!(strcmp(argv[1],"plane")) && argc == 4 )
+    else if (!(strcmp(argv[1],"plane")) && argc == 5 )
     {
+        cout << "testeeeeeee";
         drawPlane(atoi(argv[2]), atoi(argv[3]),argv[4]);
+    }
+    else
+    {
+        cout << "Não entra";
     }
     
 
