@@ -18,8 +18,8 @@ struct point {
     float y;
 	float z;
 };
-char * file = "box.3d";
-float alpha = M_PI/4, beta = M_PI/4,raio= sqrt(50);
+//string file = "box.3d";
+float alpha = M_PI/4, betah = M_PI/4,raio= sqrt(50);
 
 std::vector<std::string> split(std::string s, std::string delimiter) {
     size_t pos_start = 0, pos_end, delim_len = delimiter.length();
@@ -37,50 +37,22 @@ std::vector<std::string> split(std::string s, std::string delimiter) {
 }
 
 
-void render3D(char * file)
+void render3D(string file)
 {
     string line;
     //glBegin(GL_TRIANGLES);
     ifstream indata;
     indata.open(file);
     glBegin(GL_TRIANGLES);
-    glColor3f(0.5f, 0.5f, 0.0f);
 
-    glColor3f(1.0, 0.0, 0.0);
-	glVertex3f(1.0f, 0.0f, -1.0f);
-	glVertex3f(-1.0f, 0.0f, -1.0f);
-	glVertex3f(-1.0f, 0.0f, 1.0f);	
-
-	
-	glColor3f(1.0, 0.0, 0.0);
-	glVertex3f(-1.0f, 0.0f, 1.0f);
-	glVertex3f(1.0f, 0.0f, 1.0f);
-	glVertex3f(1.0f, 0.0f, -1.0f);
-
-
-	glColor3f(0, 1, 0);
-	glVertex3f(-1.0f, 0.0f, 1.0f);
-	glVertex3f(1.0f, 0.0f, 1.0f);
-	glVertex3f(0.0f, 2.0f, 0.0f);
-
-	glColor3f(0.5, 0.5, 0.5);
-	glVertex3f(1.0f, 0.0f, 1.0f);
-	glVertex3f(1.0f, 0.0f, -1.0f);
-	glVertex3f(0.0f, 2.0f, 0.0f);
-
-
-	glColor3f(1, 0.5, 0.5);
-	glVertex3f(1.0f, 0.0f, -1.0f);
-	glVertex3f(-1.0f, 0.0f, -1.0f);
-	glVertex3f(0.0f, 2.0f, 0.0f);
-
-	glColor3f(0.5, 1, 0.5);
-	glVertex3f(-1.0f, 0.0f, -1.0f);
-	glVertex3f(-1.0f, 0.0f, 1.0f);
-	glVertex3f(0.0f, 2.0f, 0.0f);
+    if (!indata)
+    {
+       
+    }
 
     while ( getline (indata,line) )
     {
+
         std::string delimiter = ",";
         std::vector<std::string> v = split (line, delimiter);
 		float point [3];
@@ -134,14 +106,11 @@ void renderScene(void) {
 
 	// set the camera
 	glLoadIdentity();
-    /*
-	gluLookAt(sin(alpha)*cos(beta)*raio,sin(beta)*raio,cos(alpha)*cos(beta)*raio, 
+
+	gluLookAt(sin(alpha)*cos(betah)*raio,sin(betah)*raio,cos(alpha)*cos(betah)*raio, 
 		      0.0,0.0,0.0,
 			  0.0f,1.0f,0.0f);
-    */
-    gluLookAt(5.0,5.0,5.0,
-              0.0,0.0,0.0,
-              0.0f,1.0f,0.0f);
+
 	glBegin(GL_LINES);
 	// X axis in red
 	glVertex3f(-100.0f, 0.0f, 0.0f);
@@ -157,14 +126,13 @@ void renderScene(void) {
 	glVertex3f(0.0f, 0.0f, 100.0f);
     glEnd();
 
-    render3D(file);
+    render3D("../plane.3d");
 	// End of frame
 	glutSwapBuffers();
 }
 
 
 void processKeys(unsigned char key, int xx, int yy) {
-    /*
     switch(key){
         case 'a':
             alpha -= M_PI/16;
@@ -173,13 +141,13 @@ void processKeys(unsigned char key, int xx, int yy) {
             alpha += M_PI/16;
             break;
         case 'w':
-            if(!(beta+M_PI/16>M_PI/2)){
-                beta += M_PI/16;
+            if(!(betah+M_PI/16>M_PI/2)){
+                betah += M_PI/16;
             }
             break;
         case 's':
-            if(!(beta-M_PI/16<-M_PI/2)){
-                beta -= M_PI/16;
+            if(!(betah-M_PI/16<-M_PI/2)){
+                betah -= M_PI/16;
             }
             break;
         case 'z':
@@ -190,7 +158,6 @@ void processKeys(unsigned char key, int xx, int yy) {
             break;
     }
     glutPostRedisplay();
-    */
 }
 
 void processSpecialKeys(int key, int xx, int yy) {
@@ -202,7 +169,6 @@ void processSpecialKeys(int key, int xx, int yy) {
 
 int main(int argc, char **argv) 
 {
-
 // init GLUT and the window
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH|GLUT_DOUBLE|GLUT_RGBA);
