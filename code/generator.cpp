@@ -87,13 +87,13 @@ void drawCone(float radius, float height, int slices,int stacks, char const* fil
 
 }
 
-void drawPlane(int comp, int slices, char const* file)
+void drawPlane(float comp, int slices, char const* file)
 {
     ofstream MyFile;
     MyFile.open(file);
 
-    int aresta = comp / slices; 
-    int posicao = comp / 2;
+    float aresta = comp / slices; 
+    float posicao = comp / 2;
 
     for (int i = 0; i < slices; i++) {
         for (int j = 0; j < slices; j++) {
@@ -119,13 +119,13 @@ void drawPlane(int comp, int slices, char const* file)
     }
 }
 
-void drawBox(int comp, int slices, char const* file)
+void drawBox(float comp, int slices, char const* file)
 {
     ofstream MyFile;
     MyFile.open(file);
 
-    int aresta = comp / slices;
-    int posicao = comp / 2;
+    float aresta = comp / slices;
+    float posicao = comp / 2;
 
     for (int i = 0; i < slices; i++) {
         for (int j = 0; j < slices; j++) {
