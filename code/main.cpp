@@ -37,6 +37,8 @@ std::vector<std::string> split(std::string s, std::string delimiter) {
 }
 
 
+
+
 void render3D(string file)
 {
     string line;
@@ -67,7 +69,6 @@ void render3D(string file)
     glEnd();
     indata.close();
 }
-
 
 void changeSize(int w, int h) {
 
