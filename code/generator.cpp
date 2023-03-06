@@ -121,7 +121,71 @@ void drawPlane(int comp, int slices, char const* file)
 
 void drawBox(int comp, int slices, char const* file)
 {
+    ofstream MyFile;
+    MyFile.open(file);
 
+    int aresta = comp / slices;
+    int posicao = comp / 2;
+
+    for (int i = 0; i < slices; i++) {
+        for (int j = 0; j < slices; j++) {
+            point ponto1;
+            point ponto2;
+
+            ponto1.x = i * aresta - posicao;
+            ponto1.y = posicao;
+            ponto1.z = j * aresta - posicao;
+
+            ponto2.x = (i + 1) * aresta - posicao;
+            ponto2.y = -posicao;
+            ponto2.z = (j + 1) * aresta - posicao;
+
+            // Face de cima
+            MyFile << ponto1.x << ", " << ponto1.y << ", " << ponto1.z << "\n";
+            MyFile << ponto2.x << ", " << ponto1.y << ", " << ponto2.z << "\n";
+            MyFile << ponto2.x << ", " << ponto1.y << ", " << ponto1.z << "\n";
+
+            MyFile << ponto1.x << ", " << ponto1.y << ", " << ponto1.z << "\n";
+            MyFile << ponto1.x << ", " << ponto1.y << ", " << ponto2.z << "\n";
+            MyFile << ponto2.x << ", " << ponto1.y << ", " << ponto2.z << "\n";
+
+            // Face de baixo
+            MyFile << ponto1.x << ", " << ponto2.y << ", " << ponto1.z << "\n";
+            MyFile << ponto2.x << ", " << ponto2.y << ", " << ponto2.z << "\n";
+            MyFile << ponto2.x << ", " << ponto2.y << ", " << ponto1.z << "\n";
+
+            MyFile << ponto1.x << ", " << ponto2.y << ", " << ponto1.z << "\n";
+            MyFile << ponto1.x << ", " << ponto2.y << ", " << ponto2.z << "\n";
+            MyFile << ponto2.x << ", " << ponto2.y << ", " << ponto2.z << "\n";
+
+            // Face de X constante negativo
+            MyFile << ponto2.y << ", " << ponto1.x << ", " << ponto1.z << "\n";
+            MyFile << ponto2.y << ", " << ponto2.x << ", " << ponto2.z << "\n";
+            MyFile << ponto2.y << ", " << ponto2.x << ", " << ponto1.z << "\n";
+
+            MyFile << ponto2.y << ", " << ponto1.x << ", " << ponto1.z << "\n";
+            MyFile << ponto2.y << ", " << ponto1.x << ", " << ponto2.z << "\n";
+            MyFile << ponto2.y << ", " << ponto2.x << ", " << ponto2.z << "\n";
+
+            // Face de X constante positivo
+            MyFile << ponto1.y << ", " << ponto1.x << ", " << ponto1.z << "\n";
+            MyFile << ponto1.y << ", " << ponto2.x << ", " << ponto2.z << "\n";
+            MyFile << ponto1.y << ", " << ponto2.x << ", " << ponto1.z << "\n";
+
+            MyFile << ponto1.y << ", " << ponto1.x << ", " << ponto1.z << "\n";
+            MyFile << ponto1.y << ", " << ponto1.x << ", " << ponto2.z << "\n";
+            MyFile << ponto1.y << ", " << ponto2.x << ", " << ponto2.z << "\n";
+
+            // Face de Z constante negativo
+            MyFile << ponto1.x << ", " << ponto1.z << ", " << ponto2.y << "\n";
+            MyFile << ponto2.x << ", " << ponto2.z << ", " << ponto2.y << "\n";
+            MyFile << ponto2.x << ", " << ponto1.z << ", " << ponto2.y << "\n";
+
+            MyFile << ponto1.x << ", " << ponto2.y << ", " << ponto1.z << "\n";
+            MyFile << ponto1.x << ", " << ponto2.y << ", " << ponto2.z << "\n";
+            MyFile << ponto2.x << ", " << ponto2.y << ", " << ponto2.z << "\n";
+        }
+    }
 }
 
 int main (int argc, char const *argv[])
