@@ -89,7 +89,30 @@ void drawCone(float radius, float height, int slices,int stacks, char const* fil
 
 void drawPlane(int comp, int slices, char const* file)
 {
+    ofstream MyFile;
+    MyFile.open(file);
 
+    int aresta = comp / slices; 
+    int posicao = comp / 2;
+
+    for (int i = 0; i < slices; i++) {
+        for (int j = 0; j < slices; j++) {
+            point ponto1;
+            point ponto2;
+
+            ponto1.x = i * aresta - posicao;
+            ponto1.y = 0;
+            ponto1.z = j * aresta - posicao;
+
+            ponto2.x = (i + 1) * aresta - posicao;
+            ponto2.y = 0;
+            ponto2.z = (j + 1) * aresta - posicao;
+
+            MyFile << ponto1.x << ", " << ponto1.y << ", " << ponto1.z << "\n";
+            MyFile << ponto2.x << ", " << ponto1.y << ", " << ponto2.z << "\n";
+            MyFile << ponto2.x << ", " << ponto1.y << ", " << ponto1.z << "\n";
+        }
+    }
 }
 
 void drawBox(int comp, int slices, char const* file)
