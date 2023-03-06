@@ -181,9 +181,18 @@ void drawBox(int comp, int slices, char const* file)
             MyFile << ponto2.x << ", " << ponto2.z << ", " << ponto2.y << "\n";
             MyFile << ponto2.x << ", " << ponto1.z << ", " << ponto2.y << "\n";
 
-            MyFile << ponto1.x << ", " << ponto2.y << ", " << ponto1.z << "\n";
-            MyFile << ponto1.x << ", " << ponto2.y << ", " << ponto2.z << "\n";
-            MyFile << ponto2.x << ", " << ponto2.y << ", " << ponto2.z << "\n";
+            MyFile << ponto1.x << ", " << ponto1.z << ", " << ponto2.y << "\n";
+            MyFile << ponto1.x << ", " << ponto2.z << ", " << ponto2.y << "\n";
+            MyFile << ponto2.x << ", " << ponto2.z << ", " << ponto2.y << "\n";
+
+            // Face de Z constante negativo
+            MyFile << ponto1.x << ", " << ponto1.z << ", " << ponto1.y << "\n";
+            MyFile << ponto2.x << ", " << ponto2.z << ", " << ponto1.y << "\n";
+            MyFile << ponto2.x << ", " << ponto1.z << ", " << ponto1.y << "\n";
+
+            MyFile << ponto1.x << ", " << ponto1.z << ", " << ponto1.y << "\n";
+            MyFile << ponto1.x << ", " << ponto2.z << ", " << ponto1.y << "\n";
+            MyFile << ponto2.x << ", " << ponto2.z << ", " << ponto1.y << "\n";
         }
     }
 }
