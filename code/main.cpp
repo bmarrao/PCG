@@ -18,7 +18,7 @@ struct point {
     float y;
 	float z;
 };
-char * file = "cone.3d";
+char * file = "box.3d";
 float alpha = M_PI/4, beta = M_PI/4,raio= sqrt(50);
 
 std::vector<std::string> split(std::string s, std::string delimiter) {
@@ -43,6 +43,42 @@ void render3D(char * file)
     //glBegin(GL_TRIANGLES);
     ifstream indata;
     indata.open(file);
+    glBegin(GL_TRIANGLES);
+    glColor3f(0.5f, 0.5f, 0.0f);
+
+    glColor3f(1.0, 0.0, 0.0);
+	glVertex3f(1.0f, 0.0f, -1.0f);
+	glVertex3f(-1.0f, 0.0f, -1.0f);
+	glVertex3f(-1.0f, 0.0f, 1.0f);	
+
+	
+	glColor3f(1.0, 0.0, 0.0);
+	glVertex3f(-1.0f, 0.0f, 1.0f);
+	glVertex3f(1.0f, 0.0f, 1.0f);
+	glVertex3f(1.0f, 0.0f, -1.0f);
+
+
+	glColor3f(0, 1, 0);
+	glVertex3f(-1.0f, 0.0f, 1.0f);
+	glVertex3f(1.0f, 0.0f, 1.0f);
+	glVertex3f(0.0f, 2.0f, 0.0f);
+
+	glColor3f(0.5, 0.5, 0.5);
+	glVertex3f(1.0f, 0.0f, 1.0f);
+	glVertex3f(1.0f, 0.0f, -1.0f);
+	glVertex3f(0.0f, 2.0f, 0.0f);
+
+
+	glColor3f(1, 0.5, 0.5);
+	glVertex3f(1.0f, 0.0f, -1.0f);
+	glVertex3f(-1.0f, 0.0f, -1.0f);
+	glVertex3f(0.0f, 2.0f, 0.0f);
+
+	glColor3f(0.5, 1, 0.5);
+	glVertex3f(-1.0f, 0.0f, -1.0f);
+	glVertex3f(-1.0f, 0.0f, 1.0f);
+	glVertex3f(0.0f, 2.0f, 0.0f);
+
     while ( getline (indata,line) )
     {
         std::string delimiter = ",";
@@ -54,10 +90,9 @@ void render3D(char * file)
 			point[j] = atof(i.c_str());
 			j = j + 1;
         }
-		glBegin(GL_TRIANGLES);
 		glVertex3f(point[0], point[1], point[2]);
-        //cout << x << y << z;
     }
+    glEnd();
     indata.close();
 }
 
@@ -120,9 +155,9 @@ void renderScene(void) {
 	glColor3f(0.0f, 0.0f, 1.0f);
 	glVertex3f(0.0f, 0.0f, -100.0f);
 	glVertex3f(0.0f, 0.0f, 100.0f);
+    glEnd();
 
     render3D(file);
-	glEnd();
 	// End of frame
 	glutSwapBuffers();
 }

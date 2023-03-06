@@ -42,15 +42,25 @@ void render3D(char * file)
         std::string delimiter = ",";
         std::vector<std::string> v = split (line, delimiter);
 
+        float point [3];
+		int j = 0;
         for (auto i : v)
         {
-            cout << atof(i.c_str());
-            cout << " | ";
+			point[j] = atof(i.c_str());
+			j = j + 1;
         }
-
+		//glVertex3f(point[0], point[1], point[2]);
+        cout << point[0] << " " << point[1] << " " <<  point[2];
         cout << "\n";
         //cout << x << y << z;
     }
     indata.close();
 }
 
+
+
+int main ()
+{
+    render3D("box.3d");
+    return 1;
+}
