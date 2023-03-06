@@ -6,14 +6,61 @@
 #endif
 
 #define _USE_MATH_DEFINES
-#include <math.h>	
+#include <math.h>
+#include <fstream>
+
+#include <iostream>
+#include <sstream>
+#include <vector>
+using namespace std;
 struct point {
     float x;
     float y;
 	float z;
 };
-
+char * file = "cone.3d";
 float alpha = M_PI/4, beta = M_PI/4,raio= sqrt(50);
+
+std::vector<std::string> split(std::string s, std::string delimiter) {
+    size_t pos_start = 0, pos_end, delim_len = delimiter.length();
+    std::string token;
+    std::vector<std::string> res;
+
+    while ((pos_end = s.find(delimiter, pos_start)) != std::string::npos) {
+        token = s.substr (pos_start, pos_end - pos_start);
+        pos_start = pos_end + delim_len;
+        res.push_back (token);
+    }
+
+    res.push_back (s.substr (pos_start));
+    return res;
+}
+
+
+void render3D(char * file)
+{
+    string line;
+    //glBegin(GL_TRIANGLES);
+    ifstream indata;
+    indata.open(file);
+    while ( getline (indata,line) )
+    {
+        std::string delimiter = ",";
+        std::vector<std::string> v = split (line, delimiter);
+		float point [3];
+		int j = 0;
+        for (auto i : v)
+        {
+			point[j] = atof(i.c_str());
+			j = j + 1;
+        }
+		glBegin(GL_TRIANGLES);
+		glVertex3f(point[0], point[1], point[2]);
+        //cout << x << y << z;
+    }
+    indata.close();
+}
+
 
 void changeSize(int w, int h) {
 
@@ -41,238 +88,8 @@ void changeSize(int w, int h) {
 }
 
 
-void drawCone(float radius, float height, int slices,int stacks	) 
-{
-	/*
-    int i = 0;
-    float j;
-    float x;
-    float ang = 2*M_PI / slices;
-	float dify = height /stacks ;
-	float difr = radius / stacks ;
-	point ant ;
-	point act ;	
-	point aux1;
-	point aux2;
-	float radius1;
-    for (;i < slices; )
-    {
-        x = ang * i;
-        i++;
-        j = ang * i;
-		//ant.x
-		ant.x = radius*sin(x);
-		//ant.z
-		ant.y = 0;
-		//z1
-		ant.z = radius * cos(x);
-		//act.x
-		act.x = radius*sin(j);
-		//y2
-		act.y = 0;
-		//z2
-		act.z = radius * cos(j);
-        glBegin(GL_TRIANGLES);
-
-		//Base Baixo
-        glColor3f(1.0, 0.0, 0.0);
-        glVertex3f(ant.x, 0.0f, ant.z);
-		glVertex3f(0.0f, 0.0f, 0.0f);
-        glVertex3f(act.x, 0.0f,act.z);
 
 
-		radius1 = (radius -  difr );
-		aux1.y = 0;
-		aux2.y = 0;
-
-		for (int l = 0; l < stacks; l++)
-		{
-			//FALTA DESCOBRIR O Q PRECISO APLICAR AQUI
-			
-			
-			
-			glColor3f(0.5, 1.0, 0.0);
-
-			glVertex3f(ant.x, ant.y, ant.z);
-			glVertex3f(act.x, act.y, act.z);
-			glVertex3f(aux2.x, aux2.y, aux2.z); 
-
-			glColor3f(0.0, 1.0, 0.5);
-
-
-			glVertex3f(aux2.x, aux2.y, aux2.z);
-			glVertex3f(aux1.x, aux1.y, aux1.z);
-			glVertex3f(ant.x, ant.y, ant.z); 
-
-			//ACT E ANT VIRAM AUX1 e AUX2
-			ant = aux1;
-			act = aux2;
-			
-	
-		}
-
-		
-		glEnd();
-		*/
-		//Base Baixo
-		
-		float ang = 0;
-		float draio = radius/stacks;
-		float alt = 0;
-		float r = radius;
-		glBegin(GL_TRIANGLES);
-		for(int i = 0;i!= slices;i++){
-		
-        	glColor3f(0.0f,1.0f,0.0f);
-			glVertex3f(0.0f, 0, 0.0f);
-			glVertex3f(sin(ang)*r, 0, cos(ang)*r);
-			glVertex3f(sin(ang+(M_PI*2/slices))*r, 0, cos(ang+(M_PI*2/slices))*r);
-			
-			for (int j = 0;j != stacks;j++){
-				
-				glVertex3f(sin(ang)*r,alt, cos(ang)*r);
-				glVertex3f(sin(ang+(M_PI*2/slices))*r, alt, cos(ang+(M_PI*2/slices))*r);
-				glVertex3f(sin(ang)*(r-draio),alt+ height/stacks, cos(ang)*(r-draio));
-
-				
-				glVertex3f(sin(ang+(M_PI*2/slices))*r, alt, cos(ang+(M_PI*2/slices))*r);
-				glVertex3f(sin(ang+(M_PI*2/slices))*(r-draio), alt+ height/stacks, cos(ang+(M_PI*2/slices))*(r-draio));
-				glVertex3f(sin(ang)*(r-draio), alt + height/stacks, cos(ang)*(r-draio));
-				
-				r -= draio;
-				alt += height/stacks;
-
-				
-			}
-			alt = 0;
-			r = radius;
-			ang += 2*M_PI/slices;
-
-		}
-		
-		glEnd();
-	
-	
-}
-// put code to draw cylinder in here
-
-
-
-void drawSphere(float radius, int slices,int stacks) {
-	float al = 0;
-	float be = -M_PI/2;
-	
-
-	for(int j = 0;j!= stacks;j++){
-		for(int i = 0;i!= slices;i++){
-			glBegin(GL_TRIANGLES);
-			glColor3f(0.0,1.0,0.0);
-			glVertex3f(radius*cos(be)*sin(al), radius*sin(be), radius*cos(be)*cos(al));
-			glVertex3f(radius*cos(be)*sin(al+2*M_PI/stacks), radius*sin(be), radius*cos(be)*cos(al+2*M_PI/stacks));
-			glVertex3f(radius*cos(be+M_PI/slices)*sin(al), radius*sin(be+M_PI/slices), radius*cos(be+M_PI/slices)*cos(al));
-			glEnd();
-
-			glBegin(GL_TRIANGLES);
-			glColor3f(0.0f,1.0f,0.0f);
-			glVertex3f(radius*cos(be)*sin(al+2*M_PI/stacks), radius*sin(be), radius*cos(be)*cos(al+2*M_PI/stacks));
-			glVertex3f(radius*cos(be+M_PI/slices)*sin(al+2*M_PI/stacks), radius*sin(be+M_PI/slices), radius*cos(be+M_PI/slices)*cos(al+2*M_PI/stacks));
-			glVertex3f(radius*cos(be+M_PI/slices)*sin(al), radius*sin(be+M_PI/slices), radius*cos(be+M_PI/slices)*cos(al));
-			glEnd();
-			al += 2*M_PI/stacks;
-			
-		}
-		be += M_PI/slices;
-	}
-
-}
-
-void drawPlane(int comp, int slices) {
-	glColor3f(0.0f, 1.0f, 0.0f);
-	int aresta = comp / slices; // comprimento do triangulo
-	int posicao = comp / 2;	 // posicionar corretamente no centro do eixo
-	for (int i = 0; i < slices; i++) {
-		for (int j = 0; j < slices; j++) {
-			glBegin(GL_TRIANGLES);
-
-			glVertex3f(i * aresta - posicao, 0, j * aresta - posicao);
-			glVertex3f((i + 1) * aresta - posicao, 0, (j + 1) * aresta - posicao);
-			glVertex3f((i + 1) * aresta - posicao, 0, j * aresta - posicao);
-
-			glVertex3f(i * aresta - posicao, 0, j * aresta - posicao);
-			glVertex3f(i * aresta - posicao, 0, (j + 1) * aresta - posicao);
-			glVertex3f((i + 1) * aresta - posicao, 0, (j + 1) * aresta - posicao);
-			glEnd();
-		}
-	}
-}
-
-void drawCube(int comp, int slices) {
-	glColor3f(0.0f, 1.0f, 0.0f);
-	int aresta = comp / slices; // comprimento do triangulo
-	int posicao = comp / 2;	 // posicionar corretamente no centro do eixo
-	for (int i = 0; i < slices; i++) {
-		for (int j = 0; j < slices; j++) {
-			glBegin(GL_TRIANGLES);
-
-			// Face de cima
-			glVertex3f(i * aresta - posicao, comp / 2, j * aresta - posicao);
-			glVertex3f((i + 1) * aresta - posicao, comp / 2, (j + 1) * aresta - posicao);
-			glVertex3f((i + 1) * aresta - posicao, comp / 2, j * aresta - posicao);
-
-			glVertex3f(i * aresta - posicao, comp / 2, j * aresta - posicao);
-			glVertex3f(i * aresta - posicao, comp / 2, (j + 1) * aresta - posicao);
-			glVertex3f((i + 1) * aresta - posicao, comp / 2, (j + 1) * aresta - posicao);
-
-			// Face de baixo
-			glVertex3f(i * aresta - posicao, -comp / 2, j * aresta - posicao);
-			glVertex3f((i + 1) * aresta - posicao, -comp / 2, (j + 1) * aresta - posicao);
-			glVertex3f((i + 1) * aresta - posicao, -comp / 2, j * aresta - posicao);
-
-			glVertex3f(i * aresta - posicao, -comp / 2, j * aresta - posicao);
-			glVertex3f(i * aresta - posicao, -comp / 2, (j + 1) * aresta - posicao);
-			glVertex3f((i + 1) * aresta - posicao, -comp / 2, (j + 1) * aresta - posicao);
-
-
-			// Face de X constante negativo
-			glVertex3f(-comp / 2, i * aresta - posicao, j * aresta - posicao);
-			glVertex3f(-comp / 2, (i + 1) * aresta - posicao, (j + 1) * aresta - posicao);
-			glVertex3f(-comp / 2, (i + 1) * aresta - posicao, j * aresta - posicao);
-
-			glVertex3f(-comp / 2, i * aresta - posicao, j * aresta - posicao);
-			glVertex3f(-comp / 2, i * aresta - posicao, (j + 1) * aresta - posicao);
-			glVertex3f(-comp / 2, (i + 1) * aresta - posicao, (j + 1) * aresta - posicao);
-
-			// Face de X constante positivo
-			glVertex3f(comp / 2, i * aresta - posicao, j * aresta - posicao);
-			glVertex3f(comp / 2, (i + 1) * aresta - posicao, (j + 1) * aresta - posicao);
-			glVertex3f(comp / 2, (i + 1) * aresta - posicao, j * aresta - posicao);
-
-			glVertex3f(comp / 2, i * aresta - posicao, j * aresta - posicao);
-			glVertex3f(comp / 2, i * aresta - posicao, (j + 1) * aresta - posicao);
-			glVertex3f(comp / 2, (i + 1) * aresta - posicao, (j + 1) * aresta - posicao);
-
-			// Face de Z constante negativo
-			glVertex3f(i * aresta - posicao, j * aresta - posicao, -comp / 2);
-			glVertex3f((i + 1) * aresta - posicao, (j + 1) * aresta - posicao, -comp / 2);
-			glVertex3f((i + 1) * aresta - posicao, j * aresta - posicao, -comp / 2);
-
-			glVertex3f(i * aresta - posicao, j * aresta - posicao, -comp / 2);
-			glVertex3f(i * aresta - posicao, (j + 1) * aresta - posicao, -comp / 2);
-			glVertex3f((i + 1) * aresta - posicao, (j + 1) * aresta - posicao, -comp / 2);
-
-			// Face de Z constante positivo
-			glVertex3f(i * aresta - posicao, j * aresta - posicao, comp / 2);
-			glVertex3f((i + 1) * aresta - posicao, (j + 1) * aresta - posicao, comp / 2);
-			glVertex3f((i + 1) * aresta - posicao, j * aresta - posicao, comp / 2);
-
-			glVertex3f(i * aresta - posicao, j * aresta - posicao, comp / 2);
-			glVertex3f(i * aresta - posicao, (j + 1) * aresta - posicao, comp / 2);
-			glVertex3f((i + 1) * aresta - posicao, (j + 1) * aresta - posicao, comp / 2);
-
-			glEnd();
-		}
-	}
-}
 
 
 void renderScene(void) {
@@ -282,10 +99,14 @@ void renderScene(void) {
 
 	// set the camera
 	glLoadIdentity();
+    /*
 	gluLookAt(sin(alpha)*cos(beta)*raio,sin(beta)*raio,cos(alpha)*cos(beta)*raio, 
 		      0.0,0.0,0.0,
 			  0.0f,1.0f,0.0f);
-
+    */
+    gluLookAt(5.0,5.0,5.0,
+              0.0,0.0,0.0,
+              0.0f,1.0f,0.0f);
 	glBegin(GL_LINES);
 	// X axis in red
 	glVertex3f(-100.0f, 0.0f, 0.0f);
@@ -300,41 +121,41 @@ void renderScene(void) {
 	glVertex3f(0.0f, 0.0f, -100.0f);
 	glVertex3f(0.0f, 0.0f, 100.0f);
 
+    render3D(file);
 	glEnd();
-	drawCube(4, 4);
 	// End of frame
 	glutSwapBuffers();
 }
 
 
 void processKeys(unsigned char key, int xx, int yy) {
-	
-	switch(key){
-		case 'a':
-			alpha -= M_PI/16;
-			break;
-		case 'd':
-			alpha += M_PI/16;
-			break;
-		case 'w':
-			if(!(beta+M_PI/16>M_PI/2)){
-				beta += M_PI/16;
-			}
-			break;
-		case 's':
-			if(!(beta-M_PI/16<-M_PI/2)){
-				beta -= M_PI/16;
-			}
-			break;
-		case 'z':
-			raio += 1;
-			break;
-		case 'x':
-			raio -= 1;
-			break;
-	}
-	glutPostRedisplay();
-	
+    /*
+    switch(key){
+        case 'a':
+            alpha -= M_PI/16;
+            break;
+        case 'd':
+            alpha += M_PI/16;
+            break;
+        case 'w':
+            if(!(beta+M_PI/16>M_PI/2)){
+                beta += M_PI/16;
+            }
+            break;
+        case 's':
+            if(!(beta-M_PI/16<-M_PI/2)){
+                beta -= M_PI/16;
+            }
+            break;
+        case 'z':
+            raio += 1;
+            break;
+        case 'x':
+            raio -= 1;
+            break;
+    }
+    glutPostRedisplay();
+    */
 }
 
 void processSpecialKeys(int key, int xx, int yy) {
