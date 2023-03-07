@@ -108,6 +108,7 @@ void drawPlane(float comp, int slices, char const* file)
             ponto2.y = 0;
             ponto2.z = (j + 1) * aresta - posicao;
 
+            // Vista de Cima
             MyFile << ponto1.x << ", " << ponto1.y << ", " << ponto1.z << "\n";
             MyFile << ponto2.x << ", " << ponto1.y << ", " << ponto2.z << "\n";
             MyFile << ponto2.x << ", " << ponto1.y << ", " << ponto1.z << "\n";
@@ -116,6 +117,7 @@ void drawPlane(float comp, int slices, char const* file)
             MyFile << ponto1.x << ", " << ponto1.y << ", " << ponto2.z << "\n";
             MyFile << ponto2.x << ", " << ponto1.y << ", " << ponto2.z << "\n";
 
+            // Vista de baixo
             MyFile << ponto1.x << ", " << ponto1.y << ", " << ponto1.z << "\n";
             MyFile << ponto2.x << ", " << ponto1.y << ", " << ponto1.z << "\n";
             MyFile << ponto2.x << ", " << ponto1.y << ", " << ponto2.z << "\n";
