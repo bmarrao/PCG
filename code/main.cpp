@@ -12,6 +12,9 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include "tinyxml2.h"
+
+
 using namespace std;
 struct point {
     float x;
@@ -20,6 +23,13 @@ struct point {
 };
 //string file = "box.3d";
 float alpha = M_PI/4, betah = M_PI/4,raio= sqrt(50);
+
+int camW,camL;
+float alpha,betah,raio;
+float lookAX, lookAY, lookAZ;
+float camVX, camVY, camVZ;
+float fov,near,far;
+
 
 std::vector<std::string> split(std::string s, std::string delimiter) {
     size_t pos_start = 0, pos_end, delim_len = delimiter.length();
@@ -37,7 +47,53 @@ std::vector<std::string> split(std::string s, std::string delimiter) {
 }
 
 
+void readXML(std::string source){
+    using namespace tinyxml2;
 
+    XMLDocument xml;
+    xml.LoadFile(source.data());
+
+    XMLElement *window = xml.FirstChildElement("world")->FirstChildElement("window");
+
+    camW = atoi(window->Attribute("width"));
+    canL = atoi(window->Attribute("height"));
+
+    XMLElement *camera = xml.FirstChildElement("world")->FirstChildElement("camera");
+
+    XMLElement *position = camera->FirstChildElement("position");
+    posx = atof(position->Attribute("x"));
+    posy = atof(position->Attribute("y"));
+    posz = atof(position->Attribute("z"));
+
+    raio = sqrt(posx**2 + posy**2 + posz**2);
+    betah = asin(posy / raio);
+    alpha = asin(posx / (raio * cos(betah)));
+
+
+    XMLElement *lookAt = camera->FirstChildElement("lookAt");
+    lookAX = atof(lookAt->Attribute("x"));
+    lookAY = atof(lookAt->Attribute("y"));
+    lookAZ = atof(lookAt->Attribute("z"));
+
+    XMLElement *up = camera->FirstChildElement("up");
+    camVX = atof(up->Attribute("x"));
+    camVY = atof(up->Attribute("y"));
+    camVZ = atof(up->Attribute("z"));
+
+    XMLElement *projection = camera->FirstChildElement("projection");
+    fov = atof(projection->Attribute("fov"));
+    near = atof(projection->Attribute("near"));
+    far = atof(projection->Attribute("far"));
+
+    XMLElement *MODELS = xml.FirstChildElement("world")->FirstChildElement("group")->FirstChildElement("models");
+    XMLElement *model = MODELS->FirstChildElement("model");
+    while (model) {
+        std::string model_path = model->Attribute("file");
+        getModel(path_3d + model_path);
+
+        model = model->NextSiblingElement("model");
+    }
+}
 
 void render3D(string file)
 {
@@ -111,6 +167,8 @@ void renderScene(void) {
 	gluLookAt(sin(alpha)*cos(betah)*raio,sin(betah)*raio,cos(alpha)*cos(betah)*raio, 
 		      0.0,0.0,0.0,
 			  0.0f,1.0f,0.0f);
+    
+    gluPerspective()
 
 	glBegin(GL_LINES);
 	// X axis in red
