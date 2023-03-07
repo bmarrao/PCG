@@ -151,12 +151,12 @@ void drawBox(float comp, int slices, char const* file)
 
             // Face de baixo
             MyFile << ponto1.x << ", " << ponto2.y << ", " << ponto1.z << "\n";
-            MyFile << ponto2.x << ", " << ponto2.y << ", " << ponto2.z << "\n";
             MyFile << ponto2.x << ", " << ponto2.y << ", " << ponto1.z << "\n";
+            MyFile << ponto2.x << ", " << ponto2.y << ", " << ponto2.z << "\n";
 
             MyFile << ponto1.x << ", " << ponto2.y << ", " << ponto1.z << "\n";
-            MyFile << ponto1.x << ", " << ponto2.y << ", " << ponto2.z << "\n";
             MyFile << ponto2.x << ", " << ponto2.y << ", " << ponto2.z << "\n";
+            MyFile << ponto1.x << ", " << ponto2.y << ", " << ponto2.z << "\n";
 
             // Face de X constante negativo
             MyFile << ponto2.y << ", " << ponto1.x << ", " << ponto1.z << "\n";
@@ -169,12 +169,12 @@ void drawBox(float comp, int slices, char const* file)
 
             // Face de X constante positivo
             MyFile << ponto1.y << ", " << ponto1.x << ", " << ponto1.z << "\n";
-            MyFile << ponto1.y << ", " << ponto2.x << ", " << ponto2.z << "\n";
             MyFile << ponto1.y << ", " << ponto2.x << ", " << ponto1.z << "\n";
+            MyFile << ponto1.y << ", " << ponto2.x << ", " << ponto2.z << "\n";
 
             MyFile << ponto1.y << ", " << ponto1.x << ", " << ponto1.z << "\n";
-            MyFile << ponto1.y << ", " << ponto1.x << ", " << ponto2.z << "\n";
             MyFile << ponto1.y << ", " << ponto2.x << ", " << ponto2.z << "\n";
+            MyFile << ponto1.y << ", " << ponto1.x << ", " << ponto2.z << "\n";
 
             // Face de Z constante negativo
             MyFile << ponto1.x << ", " << ponto1.z << ", " << ponto2.y << "\n";
@@ -185,14 +185,14 @@ void drawBox(float comp, int slices, char const* file)
             MyFile << ponto1.x << ", " << ponto2.z << ", " << ponto2.y << "\n";
             MyFile << ponto2.x << ", " << ponto2.z << ", " << ponto2.y << "\n";
 
-            // Face de Z constante negativo
+            // Face de Z constante positivo
             MyFile << ponto1.x << ", " << ponto1.z << ", " << ponto1.y << "\n";
-            MyFile << ponto2.x << ", " << ponto2.z << ", " << ponto1.y << "\n";
             MyFile << ponto2.x << ", " << ponto1.z << ", " << ponto1.y << "\n";
+            MyFile << ponto2.x << ", " << ponto2.z << ", " << ponto1.y << "\n";
 
             MyFile << ponto1.x << ", " << ponto1.z << ", " << ponto1.y << "\n";
-            MyFile << ponto1.x << ", " << ponto2.z << ", " << ponto1.y << "\n";
             MyFile << ponto2.x << ", " << ponto2.z << ", " << ponto1.y << "\n";
+            MyFile << ponto1.x << ", " << ponto2.z << ", " << ponto1.y << "\n";
         }
     }
 }
