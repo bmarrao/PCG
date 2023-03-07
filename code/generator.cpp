@@ -15,7 +15,7 @@ struct point
 };
 void drawSphere(float radius,int slices, int stacks,char const* file)
 {
-
+    
 }
 
 void drawCone(float radius, float height, int slices,int stacks, char const* file	) 
@@ -40,8 +40,8 @@ void drawCone(float radius, float height, int slices,int stacks, char const* fil
         ponto2.y = 0;
         ponto2.z = cos(ang+(M_PI*2/slices))*r;
         MyFile << 0.0 << ", " << 0.0 << ", "<< 0.0 << "\n";
-        MyFile << ponto1.x << ", " << ponto1.y << ", "<< ponto1.z << "\n";
         MyFile << ponto2.x << ", " << ponto2.y << ", "<< ponto2.z<< "\n";
+        MyFile << ponto1.x << ", " << ponto1.y << ", "<< ponto1.z << "\n";
 
         
         for (int j = 0;j != stacks;j++)
@@ -115,6 +115,14 @@ void drawPlane(float comp, int slices, char const* file)
             MyFile << ponto1.x << ", " << ponto1.y << ", " << ponto1.z << "\n";
             MyFile << ponto1.x << ", " << ponto1.y << ", " << ponto2.z << "\n";
             MyFile << ponto2.x << ", " << ponto1.y << ", " << ponto2.z << "\n";
+
+            MyFile << ponto1.x << ", " << ponto1.y << ", " << ponto1.z << "\n";
+            MyFile << ponto2.x << ", " << ponto1.y << ", " << ponto1.z << "\n";
+            MyFile << ponto2.x << ", " << ponto1.y << ", " << ponto2.z << "\n";
+
+            MyFile << ponto1.x << ", " << ponto1.y << ", " << ponto1.z << "\n";
+            MyFile << ponto2.x << ", " << ponto1.y << ", " << ponto2.z << "\n";
+            MyFile << ponto1.x << ", " << ponto1.y << ", " << ponto2.z << "\n";
         }
     }
 }
@@ -205,7 +213,7 @@ int main (int argc, char const *argv[])
           std::cout << "Invalid input";
 
     }
-    else if (!(strcmp(argv[1],"sphere")) && argc == 5 )
+    else if (!(strcmp(argv[1],"sphere")) && argc == 6 )
     {
         drawSphere(atof(argv[2]), atoi(argv[3]),atoi(argv[4]),argv[5]);
     }
