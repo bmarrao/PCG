@@ -15,7 +15,30 @@ struct point
 };
 void drawSphere(float radius,int slices, int stacks,char const* file)
 {
-    
+	float al = 0;
+	float be = -M_PI/2;
+	
+    ofstream MyFile;
+    MyFile.open(file);
+	for(int j = 0;j!= stacks;j++)
+    {
+		for(int i = 0;i!= slices;i++)
+        {
+			MyFile << radius*cos(be)*sin(al) << ", "  << radius*sin(be) << ", "<< radius*cos(be)*cos(al) << '\n';
+            MyFile << radius*cos(be)*sin(al+2*M_PI/stacks) << ", " << radius*sin(be) << ", "<< radius*cos(be)*cos(al+2*M_PI/stacks) << '\n';
+            MyFile << radius*cos(be+M_PI/slices)*sin(al) << ", "<< radius*sin(be+M_PI/slices) << ", "<< radius*cos(be+M_PI/slices)*cos(al) << '\n';
+
+            MyFile << radius*cos(be)*sin(al+2*M_PI/stacks) << ", " << radius*sin(be) << ", "<< radius*cos(be)*cos(al+2*M_PI/stacks) << '\n';
+            MyFile << radius*cos(be+M_PI/slices)*sin(al+2*M_PI/stacks) << ", " << radius*sin(be+M_PI/slices) << ", "<<  radius*cos(be+M_PI/slices)*cos(al+2*M_PI/stacks) << '\n';
+            MyFile << radius*cos(be+M_PI/slices)*sin(al) << ", "<< radius*sin(be+M_PI/slices) << ", "<< radius*cos(be+M_PI/slices)*cos(al) << '\n';
+
+			al += 2*M_PI/stacks;
+			
+		}
+		be += M_PI/slices;
+	}
+    MyFile.close();
+
 }
 
 void drawCone(float radius, float height, int slices,int stacks, char const* file	) 
