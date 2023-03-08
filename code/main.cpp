@@ -22,13 +22,13 @@ struct point {
 	float z;
 };
 //string file = "box.3d";
-float alpha = M_PI/4, betah = M_PI/4,raio= sqrt(50);
+
 
 int camW,camL;
 float alpha,betah,raio;
 float lookAX, lookAY, lookAZ;
 float camVX, camVY, camVZ;
-float fov,near,far;
+float fov,near,far,pers;
 
 
 std::vector<std::string> split(std::string s, std::string delimiter) {
@@ -56,14 +56,14 @@ void readXML(std::string source){
     XMLElement *window = xml.FirstChildElement("world")->FirstChildElement("window");
 
     camW = atoi(window->Attribute("width"));
-    canL = atoi(window->Attribute("height"));
+    camL = atoi(window->Attribute("height"));
 
     XMLElement *camera = xml.FirstChildElement("world")->FirstChildElement("camera");
 
     XMLElement *position = camera->FirstChildElement("position");
-    posx = atof(position->Attribute("x"));
-    posy = atof(position->Attribute("y"));
-    posz = atof(position->Attribute("z"));
+    float posx = atof(position->Attribute("x"));
+    float posy = atof(position->Attribute("y"));
+    float posz = atof(position->Attribute("z"));
 
     raio = sqrt(posx**2 + posy**2 + posz**2);
     betah = asin(posy / raio);
@@ -84,19 +84,19 @@ void readXML(std::string source){
     fov = atof(projection->Attribute("fov"));
     near = atof(projection->Attribute("near"));
     far = atof(projection->Attribute("far"));
+    pers = camW/camL;
 
     XMLElement *MODELS = xml.FirstChildElement("world")->FirstChildElement("group")->FirstChildElement("models");
     XMLElement *model = MODELS->FirstChildElement("model");
     while (model) {
         std::string model_path = model->Attribute("file");
-        getModel(path_3d + model_path);
+        render3D(path_3d + model_path);
 
         model = model->NextSiblingElement("model");
     }
 }
 
-void render3D(string file)
-{
+void render3D(string file){
     string line;
     //glBegin(GL_TRIANGLES);
     ifstream indata;
@@ -145,7 +145,7 @@ void changeSize(int w, int h) {
     glViewport(0, 0, w, h);
 
 	// Set perspective
-	gluPerspective(45.0f ,ratio, 1.0f ,1000.0f);
+	gluPerspective(fov ,pers, near ,far);
 
 	// return to the model view matrix mode
 	glMatrixMode(GL_MODELVIEW);
@@ -165,8 +165,8 @@ void renderScene(void) {
 	glLoadIdentity();
 
 	gluLookAt(sin(alpha)*cos(betah)*raio,sin(betah)*raio,cos(alpha)*cos(betah)*raio, 
-		      0.0,0.0,0.0,
-			  0.0f,1.0f,0.0f);
+		      lookAX,lookAY,lookAZ,
+			  camVX,camVY,camVZ);
     
     gluPerspective()
 
@@ -226,13 +226,16 @@ void processSpecialKeys(int key, int xx, int yy) {
 }
 
 
-int main(int argc, char **argv) 
-{
+int main(int argc, char **argv) {
+
+    if (argc > 1)
+    readXML(argv[1]);
+
 // init GLUT and the window
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH|GLUT_DOUBLE|GLUT_RGBA);
 	glutInitWindowPosition(100,100);
-	glutInitWindowSize(800,800);
+	glutInitWindowSize(camW,camL);
 	glutCreateWindow("CG@DI-UM");
 		
 // Required callback registry 
