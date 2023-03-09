@@ -121,7 +121,7 @@ void readXML(std::string source)
     while (model) 
     {
         std::string model_path = model->Attribute("file");
-        models.push_back ("../" + model_path);
+        models.push_back ("../../test_files/" + model_path);
         //render3D( model_path);
         model = model->NextSiblingElement("model");
     }
