@@ -7,20 +7,20 @@
 using std::ofstream;
 using namespace std;
 
-string path = "../generados/"
+string path = "../3d/";
 struct point 
 {
     float x;
     float y;
 	float z;
 };
-void drawSphere(float radius,int slices, int stacks,char const* file)
+void drawSphere(float radius,int slices, int stacks,string file)
 {
 	float al = 0;
 	float be = -M_PI/2;
 	
     ofstream MyFile;
-    MyFile.open(file);
+    MyFile.open(path + file);
 	for(int j = 0;j!= stacks;j++)
     {
 		for(int i = 0;i!= slices;i++)
@@ -42,10 +42,10 @@ void drawSphere(float radius,int slices, int stacks,char const* file)
 
 }
 
-void drawCone(float radius, float height, int slices,int stacks, char const* file	) 
+void drawCone(float radius, float height, int slices,int stacks, string file	) 
 {
     ofstream MyFile;
-    MyFile.open(file);
+    MyFile.open(path + file);
 
     float ang = 0;
     float draio = radius/stacks;
@@ -111,10 +111,10 @@ void drawCone(float radius, float height, int slices,int stacks, char const* fil
 
 }
 
-void drawPlane(float comp, int slices, char const* file)
+void drawPlane(float comp, int slices, string file)
 {
     ofstream MyFile;
-    MyFile.open(file);
+    MyFile.open(path + file);
 
     float aresta = comp / slices; 
     float posicao = comp / 2;
@@ -153,10 +153,10 @@ void drawPlane(float comp, int slices, char const* file)
     }
 }
 
-void drawBox(float comp, int slices, char const* file)
+void drawBox(float comp, int slices, string file)
 {
     ofstream MyFile;
-    MyFile.open(file);
+    MyFile.open(path + file);
 
     float aresta = comp / slices;
     float posicao = comp / 2;
@@ -233,8 +233,7 @@ void drawBox(float comp, int slices, char const* file)
 
 int main (int argc, char const *argv[])
 {
-    cout << argc << argv[1];
-
+    
     if (argc <=  1)
     {
           std::cout << "Invalid input";
@@ -251,13 +250,11 @@ int main (int argc, char const *argv[])
             drawBox(atoi(argv[2]), atoi(argv[3]),argv[4]);
         }
         else if (!(strcmp(argv[1],"cone")) && argc == 7 )
-        {
-            cout << "coneeeeeeeeee";
+        { 
             drawCone(atof(argv[2]), atof(argv[3]),atoi(argv[4]),atoi(argv[5]),argv[6]);
         }
         else if (!(strcmp(argv[1],"plane")) && argc == 5 )
         {
-            cout << "testeeeeeee";
             drawPlane(atoi(argv[2]), atoi(argv[3]),argv[4]);
         }
       
