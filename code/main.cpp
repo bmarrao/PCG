@@ -14,7 +14,6 @@
 #include <vector>
 #include "tinyxml2.h"
 
-
 using namespace std;
 struct point {
     float x;
@@ -23,6 +22,8 @@ struct point {
 };
 //string file = "box.3d";
 
+std::vector<std::string> models ;
+
 
 int camW,camL;
 float alpha,betah,raio;
@@ -30,8 +31,8 @@ float lookAX, lookAY, lookAZ;
 float camVX, camVY, camVZ;
 float fov,near,far,pers;
 
-
-std::vector<std::string> split(std::string s, std::string delimiter) {
+std::vector<std::string> split(std::string s, std::string delimiter) 
+{
     size_t pos_start = 0, pos_end, delim_len = delimiter.length();
     std::string token;
     std::vector<std::string> res;
@@ -47,9 +48,39 @@ std::vector<std::string> split(std::string s, std::string delimiter) {
 }
 
 
-void readXML(std::string source){
-    using namespace tinyxml2;
 
+
+void render3D(string file)
+{
+    string line;
+    //glBegin(GL_TRIANGLES);
+    ifstream indata;
+    indata.open(file);
+    glBegin(GL_TRIANGLES);
+	glColor3f(1.0f, 1.0f, 1.0f);
+
+    while ( getline (indata,line) )
+    {
+
+        std::string delimiter = ",";
+        std::vector<std::string> v = split (line, delimiter);
+		float point [3];
+		int j = 0;
+        for (auto i : v)
+        {
+			point[j] = atof(i.c_str());
+			j = j + 1;
+        }
+		glVertex3f(point[0], point[1], point[2]);
+    }
+    glEnd();
+    indata.close();
+}
+
+void readXML(std::string source)
+{
+    using namespace tinyxml2;
+    
     XMLDocument xml;
     xml.LoadFile(source.data());
 
@@ -65,7 +96,7 @@ void readXML(std::string source){
     float posy = atof(position->Attribute("y"));
     float posz = atof(position->Attribute("z"));
 
-    raio = sqrt(posx**2 + posy**2 + posz**2);
+    raio = sqrt(posx*posx + posy*posy + posz*posz);
     betah = asin(posy / raio);
     alpha = asin(posx / (raio * cos(betah)));
 
@@ -85,46 +116,19 @@ void readXML(std::string source){
     near = atof(projection->Attribute("near"));
     far = atof(projection->Attribute("far"));
     pers = camW/camL;
-
     XMLElement *MODELS = xml.FirstChildElement("world")->FirstChildElement("group")->FirstChildElement("models");
     XMLElement *model = MODELS->FirstChildElement("model");
-    while (model) {
+    while (model) 
+    {
         std::string model_path = model->Attribute("file");
-        render3D(path_3d + model_path);
-
+        models.push_back ("../" + model_path);
+        //render3D( model_path);
         model = model->NextSiblingElement("model");
     }
 }
 
-void render3D(string file){
-    string line;
-    //glBegin(GL_TRIANGLES);
-    ifstream indata;
-    indata.open(file);
-    glBegin(GL_TRIANGLES);
 
-    if (!indata)
-    {
-       
-    }
 
-    while ( getline (indata,line) )
-    {
-
-        std::string delimiter = ",";
-        std::vector<std::string> v = split (line, delimiter);
-		float point [3];
-		int j = 0;
-        for (auto i : v)
-        {
-			point[j] = atof(i.c_str());
-			j = j + 1;
-        }
-		glVertex3f(point[0], point[1], point[2]);
-    }
-    glEnd();
-    indata.close();
-}
 
 void changeSize(int w, int h) {
 
@@ -145,7 +149,8 @@ void changeSize(int w, int h) {
     glViewport(0, 0, w, h);
 
 	// Set perspective
-	gluPerspective(fov ,pers, near ,far);
+	gluPerspective(fov,pers,near,far);
+
 
 	// return to the model view matrix mode
 	glMatrixMode(GL_MODELVIEW);
@@ -165,10 +170,8 @@ void renderScene(void) {
 	glLoadIdentity();
 
 	gluLookAt(sin(alpha)*cos(betah)*raio,sin(betah)*raio,cos(alpha)*cos(betah)*raio, 
-		      lookAX,lookAY,lookAZ,
-			  camVX,camVY,camVZ);
-    
-    gluPerspective()
+		      lookAX, lookAY, lookAZ,
+			  camVX, camVY, camVZ);
 
 	glBegin(GL_LINES);
 	// X axis in red
@@ -185,7 +188,12 @@ void renderScene(void) {
 	glVertex3f(0.0f, 0.0f, 100.0f);
     glEnd();
 
-    render3D("../plane.3d");
+    for (auto i : models)
+    {
+        //printf("%s\n",i);
+		render3D(i);
+    }
+    //render3D("../plane.3d");
 	// End of frame
 	glutSwapBuffers();
 }
@@ -226,10 +234,14 @@ void processSpecialKeys(int key, int xx, int yy) {
 }
 
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv) 
+{
 
     if (argc > 1)
-    readXML(argv[1]);
+    {
+        readXML(argv[1]);
+    }
+    
 
 // init GLUT and the window
 	glutInit(&argc, argv);
@@ -250,10 +262,10 @@ int main(int argc, char **argv) {
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
 	
 // enter GLUT's main cycle
 	glutMainLoop();
 	
 	return 1;
 }
-
