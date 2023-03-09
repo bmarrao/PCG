@@ -7,6 +7,7 @@
 using std::ofstream;
 using namespace std;
 
+string path = "../generados/"
 struct point 
 {
     float x;
@@ -233,33 +234,35 @@ void drawBox(float comp, int slices, char const* file)
 int main (int argc, char const *argv[])
 {
     cout << argc << argv[1];
+
     if (argc <=  1)
     {
           std::cout << "Invalid input";
 
     }
-    else if (!(strcmp(argv[1],"sphere")) && argc == 6 )
-    {
-        drawSphere(atof(argv[2]), atoi(argv[3]),atoi(argv[4]),argv[5]);
-    }
-    else if (!(strcmp(argv[1],"box")) && argc == 5 )
-    {
-        drawBox(atoi(argv[2]), atoi(argv[3]),argv[4]);
-    }
-    else if (!(strcmp(argv[1],"cone")) && argc == 7 )
-    {
-        cout << "coneeeeeeeeee";
-        drawCone(atof(argv[2]), atof(argv[3]),atoi(argv[4]),atoi(argv[5]),argv[6]);
-    }
-    else if (!(strcmp(argv[1],"plane")) && argc == 5 )
-    {
-        cout << "testeeeeeee";
-        drawPlane(atoi(argv[2]), atoi(argv[3]),argv[4]);
-    }
     else
     {
-        cout << "Não entra";
+        if (!(strcmp(argv[1],"sphere")) && argc == 6 )
+        {
+            drawSphere(atof(argv[2]), atoi(argv[3]),atoi(argv[4]),argv[5]);
+        }
+        else if (!(strcmp(argv[1],"box")) && argc == 5 )
+        {
+            drawBox(atoi(argv[2]), atoi(argv[3]),argv[4]);
+        }
+        else if (!(strcmp(argv[1],"cone")) && argc == 7 )
+        {
+            cout << "coneeeeeeeeee";
+            drawCone(atof(argv[2]), atof(argv[3]),atoi(argv[4]),atoi(argv[5]),argv[6]);
+        }
+        else if (!(strcmp(argv[1],"plane")) && argc == 5 )
+        {
+            cout << "testeeeeeee";
+            drawPlane(atoi(argv[2]), atoi(argv[3]),argv[4]);
+        }
+      
     }
+   
     
 
 }
