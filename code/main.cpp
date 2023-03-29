@@ -46,27 +46,18 @@ struct scale{
 };
 
 class Model{    
-    TODO fazer metodo de matrix e terminar a classe
     public:
-        //string models;
+        string models;
         rotate r;
         translate t;
         scale s;
-        bool f;
-
-        Model(/*std::string mod = {}*/ rotate rot, translate tran, scale sca, bool tf){
-            //models mod;
-            r = rot;
-            t = tran;
-            s = sca;
-            f = tf;
-        }
+        int i;
 
 };
 
 //string file = "box.3d";
 
-//std::vector<model> models;
+std::vector<Model> models;
 
 
 
@@ -168,8 +159,11 @@ void readXML(std::string source)
     pers = camW/camL;
     XMLElement *GROUP = xml.FirstChildElement("world")->FirstChildElement("group");
     XMLElement *group = GROUP;
-    while(group){
-
+    int i = 0;
+    int j = 0;
+    while(group)
+    {
+        
         XMLElement *trans = group-> FirstChildElement("transform");
         XMLElement *translate = trans-> FirstChildElement("translate");
         XMLElement *rotate = trans-> FirstChildElement("rotate");
@@ -196,17 +190,31 @@ void readXML(std::string source)
         
         XMLElement *MODELS = group->FirstChildElement("models");
         XMLElement *model = MODELS->FirstChildElement("model");
-        while (model) {
+        while (model) 
+        {
+            i++;
             std::string model_path = model->Attribute("file");
-            Model mod(t,r,s);
+            Model mod ;
+            mod.models = model_path;
+            mod.t = t;
+            mod.r = r;
+            mod.s = s;
+            mod.i = 0;
+            models.push_back(mod);
             //models.push_back ("../../3d/" + model_path);
             //render3D( model_path);
             model = model->NextSiblingElement("model");
         }
         group = group->FirstChildElement("group");
-        if (!(group)){
+        if (!(group))
+        {
             group = GROUP-> NextSiblingElement("group");
+            for (;j < i ; j++)
+            {
+                models[j].i = 1;
+            }
         }
+
     }
 }
 
@@ -271,6 +279,7 @@ void renderScene(void) {
 	glVertex3f(0.0f, 0.0f, 100.0f);
     glEnd();
 
+    /*
     for (auto i : models)
     {
         //printf("%s\n",i);
@@ -279,6 +288,7 @@ void renderScene(void) {
         
 
     }
+    */
     //render3D("../plane.3d");
 	// End of frame
 	glutSwapBuffers();
