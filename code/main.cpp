@@ -20,9 +20,55 @@ struct point {
     float y;
 	float z;
 };
+
+struct rotate{
+
+    float rotx;
+    float roty;
+    float rotz;
+    float ang;
+    
+};
+
+struct translate{
+
+    float transx;
+    float transy;
+    float transz;
+    
+};
+
+struct scale{
+
+    float scax;
+    float scay;
+    float scaz;
+};
+
+class Model{    
+    TODO fazer metodo de matrix e terminar a classe
+    public:
+        //string models;
+        rotate r;
+        translate t;
+        scale s;
+        bool f;
+
+        Model(/*std::string mod = {}*/ rotate rot, translate tran, scale sca, bool tf){
+            //models mod;
+            r = rot;
+            t = tran;
+            s = sca;
+            f = tf;
+        }
+
+};
+
 //string file = "box.3d";
 
-std::vector<std::string> models ;
+//std::vector<model> models;
+
+
 
 
 int camW,camL;
@@ -30,6 +76,10 @@ float alpha,betah,raio;
 float lookAX, lookAY, lookAZ;
 float camVX, camVY, camVZ;
 float fov,near,far,pers;
+
+float transx ,transy,transz;
+float rotx,roty,rotz;
+float scax,scay,scaz;
 
 std::vector<std::string> split(std::string s, std::string delimiter) 
 {
@@ -116,14 +166,47 @@ void readXML(std::string source)
     near = atof(projection->Attribute("near"));
     far = atof(projection->Attribute("far"));
     pers = camW/camL;
-    XMLElement *MODELS = xml.FirstChildElement("world")->FirstChildElement("group")->FirstChildElement("models");
-    XMLElement *model = MODELS->FirstChildElement("model");
-    while (model) 
-    {
-        std::string model_path = model->Attribute("file");
-        models.push_back ("../../3d/" + model_path);
-        //render3D( model_path);
-        model = model->NextSiblingElement("model");
+    XMLElement *GROUP = xml.FirstChildElement("world")->FirstChildElement("group");
+    XMLElement *group = GROUP;
+    while(group){
+
+        XMLElement *trans = group-> FirstChildElement("transform");
+        XMLElement *translate = trans-> FirstChildElement("translate");
+        XMLElement *rotate = trans-> FirstChildElement("rotate");
+        XMLElement *scale = trans-> FirstChildElement("scale");
+        struct translate t;
+        struct rotate r;
+        struct scale s;
+        if (translate){
+            t.transx = atof(translate->Attribute("x"));
+            t.transy = atof(translate->Attribute("y"));
+            t.transz = atof(translate->Attribute("z"));
+        }
+        if (rotate){
+            r.rotx = atof(rotate->Attribute("x"));
+            r.roty = atof(rotate->Attribute("y"));
+            r.rotz = atof(rotate->Attribute("z"));
+            r.ang = atof(rotate->Attribute("angle"));
+        }
+        if (scale){
+            s.scax = atof(scale->Attribute("x"));
+            s.scay = atof(scale->Attribute("y"));
+            s.scaz = atof(scale->Attribute("z"));
+        }
+        
+        XMLElement *MODELS = group->FirstChildElement("models");
+        XMLElement *model = MODELS->FirstChildElement("model");
+        while (model) {
+            std::string model_path = model->Attribute("file");
+            Model mod(t,r,s);
+            //models.push_back ("../../3d/" + model_path);
+            //render3D( model_path);
+            model = model->NextSiblingElement("model");
+        }
+        group = group->FirstChildElement("group");
+        if (!(group)){
+            group = GROUP-> NextSiblingElement("group");
+        }
     }
 }
 
@@ -191,7 +274,10 @@ void renderScene(void) {
     for (auto i : models)
     {
         //printf("%s\n",i);
+        
 		render3D(i);
+        
+
     }
     //render3D("../plane.3d");
 	// End of frame
