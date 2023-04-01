@@ -52,7 +52,13 @@ class Model{
         translate t;
         scale s;
         int i;
+        void transacoes() 
+        {  
+            glTranslated(t.transx,t.transy,t.transz);
+            glRotated(r.ang,r.rotx,r.roty,r.rotz);
+            glScaled(s.scax,s.scay,s.scaz);
 
+        }
 };
 
 //string file = "box.3d";
@@ -279,18 +285,23 @@ void renderScene(void) {
 	glVertex3f(0.0f, 0.0f, 100.0f);
     glEnd();
 
-    /*
+    int last = 0;
     for (auto i : models)
     {
         //printf("%s\n",i);
-        
-		render3D(i);
-        
+        if (last == 0)
+        {
+            glPushMatrix();
+        }  
+        i.transacoes();
+		render3D(i.models);
+        if (!i.i)
+        {
+            glPopMatrix();
+        }
+        last = i.i ;
 
     }
-    */
-    //render3D("../plane.3d");
-	// End of frame
 	glutSwapBuffers();
 }
 
