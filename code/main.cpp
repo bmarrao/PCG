@@ -66,7 +66,7 @@ class Model{
 std::vector<Model> models;
 
 
-
+int once = 0;
 
 int camW,camL;
 float alpha,betah,raio;
@@ -181,17 +181,22 @@ void readXML(std::string source)
             t.transx = atof(translate->Attribute("x"));
             t.transy = atof(translate->Attribute("y"));
             t.transz = atof(translate->Attribute("z"));
+            printf("%f %f %f\n", t.transx,t.transy,t.transz);
         }
         if (rotate){
             r.rotx = atof(rotate->Attribute("x"));
             r.roty = atof(rotate->Attribute("y"));
             r.rotz = atof(rotate->Attribute("z"));
             r.ang = atof(rotate->Attribute("angle"));
+            printf("%f %f %f %f\n", r.ang,r.rotx,r.roty,r.rotz);
+
         }
         if (scale){
             s.scax = atof(scale->Attribute("x"));
             s.scay = atof(scale->Attribute("y"));
             s.scaz = atof(scale->Attribute("z"));
+            printf("%f %f %f\n", s.scax,s.scay,s.scaz);
+
         }
         
         XMLElement *MODELS = group->FirstChildElement("models");
@@ -286,21 +291,32 @@ void renderScene(void) {
     glEnd();
 
     int last = 0;
-    for (auto i : models)
+    int j = 0;
+    if (once == 0)
     {
-        //printf("%s\n",i);
-        if (last == 0)
+        for (auto i : models)
         {
-            glPushMatrix();
-        }  
-        i.transacoes();
-		render3D(i.models);
-        if (!i.i)
-        {
-            glPopMatrix();
+            printf("%d\n",j);
+            printf("%f %f %f\n", i.t.transx,i.t.transy,i.t.transz);
+            printf("%f %f %f %f\n", i.r.ang,i.r.rotx,i.r.roty,i.r.rotz);
+            printf("%f %f %f\n", i.s.scax,i.s.scay,i.s.scaz);
+            /*
+            //printf("%s\n",i);
+            if (last == 0)
+            {
+                glPushMatrix();
+            }  
+            i.transacoes();
+            render3D(i.models);
+            if (!i.i)
+            {
+                glPopMatrix();
+            }
+            last = i.i ;
+            */
+        j++;
+        once++;
         }
-        last = i.i ;
-
     }
 	glutSwapBuffers();
 }
