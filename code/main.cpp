@@ -14,6 +14,17 @@
 #include <vector>
 #include "tinyxml2.h"
 
+
+struct group 
+{
+    translate ;
+    rotate;
+    scale;
+    std::vector<group> grupos;
+    std::vector<string> models;
+
+
+}
 using namespace std;
 struct point {
     float x;
@@ -317,7 +328,11 @@ void renderScene(void) {
         }
 	glutSwapBuffers();
 }
+void recursiva(translate , rotate, scale , model)
+{
 
+    recursiva(translate,rotate,scale,model);
+}
 
 void processKeys(unsigned char key, int xx, int yy) {
     switch(key){
