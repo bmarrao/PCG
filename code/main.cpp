@@ -15,16 +15,6 @@
 #include "tinyxml2.h"
 
 
-struct group 
-{
-    translate ;
-    rotate;
-    scale;
-    std::vector<group> grupos;
-    std::vector<string> models;
-
-
-}
 using namespace std;
 struct point {
     float x;
@@ -54,6 +44,16 @@ struct scale{
     float scax;
     float scay;
     float scaz;
+};
+
+struct Group {
+    translate t;
+    rotate r;
+    scale s;
+    std::vector<Group> grupos;
+    std::vector<string> models;
+
+
 };
 
 class Model{    
@@ -203,29 +203,29 @@ void readXML(std::string source)
         struct rotate r;
         struct scale s;
         Model mod ;
+        if (trans){
+            if (translate){
+                t.transx = atof(translate->Attribute("x"));
+                t.transy = atof(translate->Attribute("y"));
+                t.transz = atof(translate->Attribute("z"));
+                mod.t = t;
+            }
+            if (rotate){
+                r.rotx = atof(rotate->Attribute("x"));
+                r.roty = atof(rotate->Attribute("y"));
+                r.rotz = atof(rotate->Attribute("z"));
+                r.ang = atof(rotate->Attribute("angle"));
+                mod.r = r;
 
-        if (translate){
-            t.transx = atof(translate->Attribute("x"));
-            t.transy = atof(translate->Attribute("y"));
-            t.transz = atof(translate->Attribute("z"));
-            mod.trans = 1;
-        }
-        if (rotate){
-            r.rotx = atof(rotate->Attribute("x"));
-            r.roty = atof(rotate->Attribute("y"));
-            r.rotz = atof(rotate->Attribute("z"));
-            r.ang = atof(rotate->Attribute("angle"));
-            mod.rota = 1;
+            }
+            if (scale){
+                s.scax = atof(scale->Attribute("x"));
+                s.scay = atof(scale->Attribute("y"));
+                s.scaz = atof(scale->Attribute("z"));
+                mod.s = s;
 
+            }
         }
-        if (scale){
-            s.scax = atof(scale->Attribute("x"));
-            s.scay = atof(scale->Attribute("y"));
-            s.scaz = atof(scale->Attribute("z"));
-            mod.sca = 1;
-
-        }
-        
         XMLElement *MODELS = group->FirstChildElement("models");
         XMLElement *model = MODELS->FirstChildElement("model");
         while (model) 
@@ -241,7 +241,7 @@ void readXML(std::string source)
             //models.push_back ("../../3d/" + model_path);
             //render3D( model_path);
             model = model->NextSiblingElement("model");
-            Model mod ;
+            Model mod2 ;
 
         }
         group = group->FirstChildElement("group");
@@ -328,12 +328,13 @@ void renderScene(void) {
         }
 	glutSwapBuffers();
 }
+/*
 void recursiva(translate , rotate, scale , model)
 {
 
     recursiva(translate,rotate,scale,model);
 }
-
+*/
 void processKeys(unsigned char key, int xx, int yy) {
     switch(key){
         case 'a':
