@@ -232,6 +232,7 @@ void readXML(std::string source)
         {
             i++;
             std::string model_path = model->Attribute("file");
+            
             mod.models = "../../3d/" + model_path;
             mod.t = t;
             mod.r = r;
@@ -239,7 +240,7 @@ void readXML(std::string source)
             mod.temFilhos = 0;
             models.push_back(mod);
             //models.push_back ("../../3d/" + model_path);
-            //render3D( model_path);
+            //render3D(aux);
             model = model->NextSiblingElement("model");
             Model mod2 ;
 
@@ -315,17 +316,15 @@ void renderScene(void) {
     glEnd();
 
     int last = 0;
-        for (auto i : models)
-        {
+    for (auto i : models){
 
-            glPushMatrix();
-            i.transacoes();
-            render3D(i.models);
-            if (i.temFilhos != 1)
-            {
-                glPopMatrix();
-            }
+        glPushMatrix();
+        i.transacoes();
+        render3D(i.models);
+        if (i.temFilhos != 1){
+            glPopMatrix();
         }
+    }
 	glutSwapBuffers();
 }
 /*
