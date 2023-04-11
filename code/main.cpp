@@ -51,12 +51,25 @@ class Model{
         rotate r;
         translate t;
         scale s;
-        int i;
+        int trans = 0;
+        int rota = 0;
+        int sca = 0;
+        int temFilhos;
+        int temModels;
         void transacoes() 
         {  
-            glTranslated(t.transx,t.transy,t.transz);
-            glRotated(r.ang,r.rotx,r.roty,r.rotz);
-            glScaled(s.scax,s.scay,s.scaz);
+            if (trans == 1)
+            {
+                glTranslated(t.transx,t.transy,t.transz);
+            }
+            if (rota == 1)
+            {
+                glRotated(r.ang,r.rotx,r.roty,r.rotz);
+            }
+            if (sca == 1)
+            {
+                glScaled(s.scax,s.scay,s.scaz);
+            }
 
         }
 };
@@ -124,6 +137,7 @@ void render3D(string file)
     indata.close();
 }
 
+
 void readXML(std::string source)
 {
     using namespace tinyxml2;
@@ -177,25 +191,27 @@ void readXML(std::string source)
         struct translate t;
         struct rotate r;
         struct scale s;
+        Model mod ;
+
         if (translate){
             t.transx = atof(translate->Attribute("x"));
             t.transy = atof(translate->Attribute("y"));
             t.transz = atof(translate->Attribute("z"));
-            printf("%f %f %f\n", t.transx,t.transy,t.transz);
+            mod.trans = 1;
         }
         if (rotate){
             r.rotx = atof(rotate->Attribute("x"));
             r.roty = atof(rotate->Attribute("y"));
             r.rotz = atof(rotate->Attribute("z"));
             r.ang = atof(rotate->Attribute("angle"));
-            printf("%f %f %f %f\n", r.ang,r.rotx,r.roty,r.rotz);
+            mod.rota = 1;
 
         }
         if (scale){
             s.scax = atof(scale->Attribute("x"));
             s.scay = atof(scale->Attribute("y"));
             s.scaz = atof(scale->Attribute("z"));
-            printf("%f %f %f\n", s.scax,s.scay,s.scaz);
+            mod.sca = 1;
 
         }
         
@@ -205,25 +221,22 @@ void readXML(std::string source)
         {
             i++;
             std::string model_path = model->Attribute("file");
-            Model mod ;
-            mod.models = model_path;
+            mod.models = "../../3d/" + model_path;
             mod.t = t;
             mod.r = r;
             mod.s = s;
-            mod.i = 0;
+            mod.temFilhos = 0;
             models.push_back(mod);
             //models.push_back ("../../3d/" + model_path);
             //render3D( model_path);
             model = model->NextSiblingElement("model");
+            Model mod ;
+
         }
         group = group->FirstChildElement("group");
-        if (!(group))
+        if (group)
         {
-            group = GROUP-> NextSiblingElement("group");
-            for (;j < i ; j++)
-            {
-                models[j].i = 1;
-            }
+            mod.temFilhos = 1;
         }
 
     }
@@ -291,33 +304,17 @@ void renderScene(void) {
     glEnd();
 
     int last = 0;
-    int j = 0;
-    if (once == 0)
-    {
         for (auto i : models)
         {
-            printf("%d\n",j);
-            printf("%f %f %f\n", i.t.transx,i.t.transy,i.t.transz);
-            printf("%f %f %f %f\n", i.r.ang,i.r.rotx,i.r.roty,i.r.rotz);
-            printf("%f %f %f\n", i.s.scax,i.s.scay,i.s.scaz);
-            /*
-            //printf("%s\n",i);
-            if (last == 0)
-            {
-                glPushMatrix();
-            }  
+
+            glPushMatrix();
             i.transacoes();
             render3D(i.models);
-            if (!i.i)
+            if (i.temFilhos != 1)
             {
                 glPopMatrix();
             }
-            last = i.i ;
-            */
-        j++;
-        once++;
         }
-    }
 	glutSwapBuffers();
 }
 
