@@ -57,9 +57,6 @@ struct Transformations
 struct Group 
 {
     std::vector<struct Transformations> transformacoes;
-    int trans = 0;
-    int rota = 0;
-    int sca = 0;
     std::vector<Group> grupos;
     std::vector<string> models;
 };

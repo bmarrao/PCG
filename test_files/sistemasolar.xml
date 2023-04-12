@@ -1,0 +1,36 @@
+<world>
+    <window width="1024" height="1024" />
+    <camera> 
+	    <position x="400" y="100" z="400" />
+	    <lookAt x="0" y="0" z="0" />
+	    <up x="0" y="1" z="0" /> <!-- optional, use these values as default-->
+        <projection fov="60" near="1" far="10000" /> <!-- optional, use these values as default-->
+    </camera>
+
+    <group>
+        <transform> 
+            <scale x="100" y="100" z="100" />
+        </transform>
+        <models>
+            <model file="sphere_1_100_100.3d" />
+        </models>
+            <group>
+                <transform> 
+                    <translate x="10" y ="0" z="10" />
+                    <scale x="1/1000" y="1/1000" z="1/1000" />
+                </transform>
+                <models>
+                    <model file="sphere_1_100_100.3d" />
+                </models>
+
+            
+            </group>
+    </group>
+
+    
+        
+
+
+
+    
+</world>
