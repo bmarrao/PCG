@@ -46,18 +46,25 @@ struct scale{
     float scaz;
 };
 
-struct Group {
+struct Transformations 
+{
     translate t;
     rotates r;
     scale s;
+    int escolha ;
+
+};
+struct Group 
+{
+    std::vector<struct Transformations> transformacoes;
     int trans = 0;
     int rota = 0;
     int sca = 0;
     std::vector<Group> grupos;
     std::vector<string> models;
-
-
 };
+
+
 /*
 class Group{    
     public:
@@ -139,7 +146,7 @@ void render3D(string file)
     glEnd();
     indata.close();
 }
-
+/*
 void printgroup(struct Group g){
     for(auto i :g.grupos){
         printgroup(i);
@@ -151,7 +158,7 @@ void printgroup(struct Group g){
     printf("%f %f %f %f\n", g.r.ang,g.r.rotx,g.r.roty,g.r.rotz);
     printf("%f %f %f\n", g.s.scax,g.s.scay,g.s.scaz);
 }
-
+*/
 
 struct Group readGroup(XMLElement *group){
 
@@ -170,23 +177,31 @@ struct Group readGroup(XMLElement *group){
             t.transx = atof(translate->Attribute("x"));
             t.transy = atof(translate->Attribute("y"));
             t.transz = atof(translate->Attribute("z"));
-            grupo.t = t;
-            grupo.trans = 1;
+            struct Transformations transformacao ;
+            transformacao.escolha = 0;
+            transformacao.t = t;
+            grupo.transformacoes.push_back(transformacao);
         }
-        if (rotates){
+        if (rotates)
+        {
             r.rotx = atof(rotates->Attribute("x"));
             r.roty = atof(rotates->Attribute("y"));
             r.rotz = atof(rotates->Attribute("z"));
             r.ang = atof(rotates->Attribute("angle"));
-            grupo.r = r;
-            grupo.rota = 1;
+            struct Transformations transformacao ;
+            transformacao.escolha = 1;
+            transformacao.r = r;
+            grupo.transformacoes.push_back(transformacao);
         }
-        if (scale){
+        if (scale)
+        {
             s.scax = atof(scale->Attribute("x"));
             s.scay = atof(scale->Attribute("y"));
             s.scaz = atof(scale->Attribute("z"));
-            grupo.s = s;
-            grupo.sca = 1;
+            struct Transformations transformacao ;
+            transformacao.escolha = 2;
+            transformacao.s = s;
+            grupo.transformacoes.push_back(transformacao);
         }
     }
     
@@ -263,9 +278,11 @@ void readXML(std::string source){
         groups.push_back(readGroup(group));
         group = group->NextSiblingElement("group");
     }
+    /*
     for(auto i: groups){
         printgroup(i);
     }
+    */
 }
 
 
@@ -297,17 +314,21 @@ void changeSize(int w, int h) {
 	glMatrixMode(GL_MODELVIEW);
 }
 
-void transacoes(struct Group g){
+void transacoes(struct Group g)
+{
+    for(auto t : g.transformacoes)
+    {
+        if (t.escolha == 0){
+            glTranslated(t.t.transx,t.t.transy,t.t.transz);
+        }
+        else if (t.escolha == 1){
+            glRotated(t.r.ang,t.r.rotx,t.r.roty,t.r.rotz);
+        }
+        else if (t.escolha == 2){
+            glScaled(t.s.scax,t.s.scay,t.s.scaz);
+        }
+    }
     
-    if (g.rota == 1){
-        glRotated(g.r.ang,g.r.rotx,g.r.roty,g.r.rotz);
-    }
-    if (g.trans == 1){
-        glTranslated(g.t.transx,g.t.transy,g.t.transz);
-    }
-    if (g.sca == 1){
-        glScaled(g.s.scax,g.s.scay,g.s.scaz);
-    }
 }
 
 
