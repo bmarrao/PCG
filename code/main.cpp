@@ -14,7 +14,7 @@
 #include <vector>
 #include "tinyxml2.h"
 
-
+using namespace tinyxml2;
 using namespace std;
 struct point {
     float x;
@@ -50,44 +50,38 @@ struct Group {
     translate t;
     rotate r;
     scale s;
+    int trans = 0;
+    int rota = 0;
+    int sca = 0;
     std::vector<Group> grupos;
     std::vector<string> models;
 
 
 };
-
-class Model{    
+/*
+class Group{    
     public:
-        string models;
-        rotate r;
-        translate t;
-        scale s;
-        int trans = 0;
-        int rota = 0;
-        int sca = 0;
-        int temFilhos;
-        int temModels;
-        void transacoes() 
-        {  
-            if (trans == 1)
-            {
+        
+        std::vector<Group> grupos;
+        std::vector<string> models;
+        
+        void transacoes() {  
+            if (trans == 1){
                 glTranslated(t.transx,t.transy,t.transz);
             }
-            if (rota == 1)
-            {
+            if (rota == 1){
                 glRotated(r.ang,r.rotx,r.roty,r.rotz);
             }
-            if (sca == 1)
-            {
+            if (sca == 1){
                 glScaled(s.scax,s.scay,s.scaz);
             }
 
         }
 };
-
+*/
 //string file = "box.3d";
 
-std::vector<Model> models;
+std::vector<Group> groups;
 
 
 int once = 0;
@@ -102,8 +96,7 @@ float transx ,transy,transz;
 float rotx,roty,rotz;
 float scax,scay,scaz;
 
-std::vector<std::string> split(std::string s, std::string delimiter) 
-{
+std::vector<std::string> split(std::string s, std::string delimiter) {
     size_t pos_start = 0, pos_end, delim_len = delimiter.length();
     std::string token;
     std::vector<std::string> res;
@@ -130,8 +123,7 @@ void render3D(string file)
     glBegin(GL_TRIANGLES);
 	glColor3f(1.0f, 1.0f, 1.0f);
 
-    while ( getline (indata,line) )
-    {
+    while ( getline (indata,line) ){
 
         std::string delimiter = ",";
         std::vector<std::string> v = split (line, delimiter);
@@ -148,10 +140,85 @@ void render3D(string file)
     indata.close();
 }
 
+void printgroup(struct Group g){
+    for(auto i :g.grupos){
+        printgroup(i);
+    }
+    for(auto j: g.models){
+        cout<<j<<"\n";
+    }
+    printf("%f %f %f\n", g.t.transx,g.t.transy,g.t.transz);
+    printf("%f %f %f %f\n", g.r.ang,g.r.rotx,g.r.roty,g.r.rotz);
+    printf("%f %f %f\n", g.s.scax,g.s.scay,g.s.scaz);
+}
 
-void readXML(std::string source)
-{
-    using namespace tinyxml2;
+
+struct Group readGroup(XMLElement *group){
+
+    
+    XMLElement *trans = group-> FirstChildElement("transform");
+    XMLElement *translate = trans-> FirstChildElement("translate");
+    XMLElement *rotate = trans-> FirstChildElement("rotate");
+    XMLElement *scale = trans-> FirstChildElement("scale");
+    struct translate t;
+    struct rotate r;
+    struct scale s;
+    struct Group grupo ;
+    
+    if (trans){
+        if (translate){
+            t.transx = atof(translate->Attribute("x"));
+            t.transy = atof(translate->Attribute("y"));
+            t.transz = atof(translate->Attribute("z"));
+            grupo.t = t;
+            grupo.trans = 1;
+        }
+        if (rotate){
+            r.rotx = atof(rotate->Attribute("x"));
+            r.roty = atof(rotate->Attribute("y"));
+            r.rotz = atof(rotate->Attribute("z"));
+            r.ang = atof(rotate->Attribute("angle"));
+            grupo.r = r;
+            grupo.rota = 1;
+        }
+        if (scale){
+            s.scax = atof(scale->Attribute("x"));
+            s.scay = atof(scale->Attribute("y"));
+            s.scaz = atof(scale->Attribute("z"));
+            grupo.s = s;
+            grupo.sca = 1;
+        }
+    }
+    
+    XMLElement *MODELS = group->FirstChildElement("models");
+    if(MODELS){
+        XMLElement *model = MODELS->FirstChildElement("model");
+    
+        while (model) {
+            
+            std::string model_path = model->Attribute("file");
+            
+            grupo.models.push_back("../../3d/" + model_path);
+            
+            //mod.models.push_back(mod);
+            //models.push_back ("../../3d/" + model_path);
+            //render3D(aux);
+            model = model->NextSiblingElement("model");
+            
+        }
+    }
+    //printgroup(grupo);
+    group = group->FirstChildElement("group");
+    while (group){
+        grupo.grupos.push_back(readGroup(group));
+        group = group->NextSiblingElement("group");
+    }
+   
+    return grupo;
+}
+
+void readXML(std::string source){
+    
     source = "../../test_files/" + source;
     XMLDocument xml;
     xml.LoadFile(source.data());
@@ -190,67 +257,14 @@ void readXML(std::string source)
     pers = camW/camL;
     XMLElement *GROUP = xml.FirstChildElement("world")->FirstChildElement("group");
     XMLElement *group = GROUP;
-    int i = 0;
-    int j = 0;
-    while(group)
-    {
+    
+    while (group){
         
-        XMLElement *trans = group-> FirstChildElement("transform");
-        XMLElement *translate = trans-> FirstChildElement("translate");
-        XMLElement *rotate = trans-> FirstChildElement("rotate");
-        XMLElement *scale = trans-> FirstChildElement("scale");
-        struct translate t;
-        struct rotate r;
-        struct scale s;
-        Model mod ;
-        if (trans){
-            if (translate){
-                t.transx = atof(translate->Attribute("x"));
-                t.transy = atof(translate->Attribute("y"));
-                t.transz = atof(translate->Attribute("z"));
-                mod.t = t;
-            }
-            if (rotate){
-                r.rotx = atof(rotate->Attribute("x"));
-                r.roty = atof(rotate->Attribute("y"));
-                r.rotz = atof(rotate->Attribute("z"));
-                r.ang = atof(rotate->Attribute("angle"));
-                mod.r = r;
-
-            }
-            if (scale){
-                s.scax = atof(scale->Attribute("x"));
-                s.scay = atof(scale->Attribute("y"));
-                s.scaz = atof(scale->Attribute("z"));
-                mod.s = s;
-
-            }
-        }
-        XMLElement *MODELS = group->FirstChildElement("models");
-        XMLElement *model = MODELS->FirstChildElement("model");
-        while (model) 
-        {
-            i++;
-            std::string model_path = model->Attribute("file");
-            
-            mod.models = "../../3d/" + model_path;
-            mod.t = t;
-            mod.r = r;
-            mod.s = s;
-            mod.temFilhos = 0;
-            models.push_back(mod);
-            //models.push_back ("../../3d/" + model_path);
-            //render3D(aux);
-            model = model->NextSiblingElement("model");
-            Model mod2 ;
-
-        }
-        group = group->FirstChildElement("group");
-        if (group)
-        {
-            mod.temFilhos = 1;
-        }
-
+        groups.push_back(readGroup(group));
+        group = group->NextSiblingElement("group");
+    }
+    for(auto i: groups){
+        printgroup(i);
     }
 }
 
@@ -283,10 +297,33 @@ void changeSize(int w, int h) {
 	glMatrixMode(GL_MODELVIEW);
 }
 
+void transacoes(struct Group g){
+    
+    if (g.rota == 1){
+        glRotated(g.r.ang,g.r.rotx,g.r.roty,g.r.rotz);
+    }
+    if (g.trans == 1){
+        glTranslated(g.t.transx,g.t.transy,g.t.transz);
+    }
+    if (g.sca == 1){
+        glScaled(g.s.scax,g.s.scay,g.s.scaz);
+    }
+}
 
 
+void recFilhos(struct Group g){
 
 
+    glPushMatrix();
+    transacoes(g);
+    for (auto j: g.models){
+        render3D(j);
+    }
+        
+    for (auto j : g.grupos) 
+        recFilhos(j);    
+    glPopMatrix();
+}
 
 void renderScene(void) {
 
@@ -316,14 +353,9 @@ void renderScene(void) {
     glEnd();
 
     int last = 0;
-    for (auto i : models){
-
-        glPushMatrix();
-        i.transacoes();
-        render3D(i.models);
-        if (i.temFilhos != 1){
-            glPopMatrix();
-        }
+    for (auto i : groups){
+        recFilhos(i);
+        
     }
 	glutSwapBuffers();
 }
