@@ -22,7 +22,7 @@ struct point {
 	float z;
 };
 
-struct rotate{
+struct rotates{
 
     float rotx;
     float roty;
@@ -48,7 +48,7 @@ struct scale{
 
 struct Group {
     translate t;
-    rotate r;
+    rotates r;
     scale s;
     int trans = 0;
     int rota = 0;
@@ -70,7 +70,7 @@ class Group{
                 glTranslated(t.transx,t.transy,t.transz);
             }
             if (rota == 1){
-                glRotated(r.ang,r.rotx,r.roty,r.rotz);
+                glrotatesd(r.ang,r.rotx,r.roty,r.rotz);
             }
             if (sca == 1){
                 glScaled(s.scax,s.scay,s.scaz);
@@ -158,10 +158,10 @@ struct Group readGroup(XMLElement *group){
     
     XMLElement *trans = group-> FirstChildElement("transform");
     XMLElement *translate = trans-> FirstChildElement("translate");
-    XMLElement *rotate = trans-> FirstChildElement("rotate");
+    XMLElement *rotates = trans-> FirstChildElement("rotate");
     XMLElement *scale = trans-> FirstChildElement("scale");
     struct translate t;
-    struct rotate r;
+    struct rotates r;
     struct scale s;
     struct Group grupo ;
     
@@ -173,11 +173,11 @@ struct Group readGroup(XMLElement *group){
             grupo.t = t;
             grupo.trans = 1;
         }
-        if (rotate){
-            r.rotx = atof(rotate->Attribute("x"));
-            r.roty = atof(rotate->Attribute("y"));
-            r.rotz = atof(rotate->Attribute("z"));
-            r.ang = atof(rotate->Attribute("angle"));
+        if (rotates){
+            r.rotx = atof(rotates->Attribute("x"));
+            r.roty = atof(rotates->Attribute("y"));
+            r.rotz = atof(rotates->Attribute("z"));
+            r.ang = atof(rotates->Attribute("angle"));
             grupo.r = r;
             grupo.rota = 1;
         }
@@ -300,7 +300,7 @@ void changeSize(int w, int h) {
 void transacoes(struct Group g){
     
     if (g.rota == 1){
-        glRotated(g.r.ang,g.r.rotx,g.r.roty,g.r.rotz);
+        glrotated(g.r.ang,g.r.rotx,g.r.roty,g.r.rotz);
     }
     if (g.trans == 1){
         glTranslated(g.t.transx,g.t.transy,g.t.transz);
@@ -360,10 +360,10 @@ void renderScene(void) {
 	glutSwapBuffers();
 }
 /*
-void recursiva(translate , rotate, scale , model)
+void recursiva(translate , rotates, scale , model)
 {
 
-    recursiva(translate,rotate,scale,model);
+    recursiva(translate,rotates,scale,model);
 }
 */
 void processKeys(unsigned char key, int xx, int yy) {
@@ -403,11 +403,13 @@ void processSpecialKeys(int key, int xx, int yy) {
 
 int main(int argc, char **argv) 
 {
-
+    readXML("test_2_4.xml");
+    /*
     if (argc > 1)
     {
         readXML(argv[1]);
     }
+    */
     
 
 // init GLUT and the window
