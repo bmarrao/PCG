@@ -300,7 +300,7 @@ void changeSize(int w, int h) {
 void transacoes(struct Group g){
     
     if (g.rota == 1){
-        glrotated(g.r.ang,g.r.rotx,g.r.roty,g.r.rotz);
+        glRotated(g.r.ang,g.r.rotx,g.r.roty,g.r.rotz);
     }
     if (g.trans == 1){
         glTranslated(g.t.transx,g.t.transy,g.t.transz);
