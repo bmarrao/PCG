@@ -171,9 +171,12 @@ struct Group readGroup(XMLElement *group){
     struct rotates r;
     struct scale s;
     struct Group grupo ;
-    
-    if (trans){
-        if (translate){
+    XMLElement *filho = trans->FirstChildElement();
+    while (filho){
+        string nome;
+        nome = filho->Name();
+        
+        if (nome == "translate"){
             t.transx = atof(translate->Attribute("x"));
             t.transy = atof(translate->Attribute("y"));
             t.transz = atof(translate->Attribute("z"));
@@ -182,8 +185,7 @@ struct Group readGroup(XMLElement *group){
             transformacao.t = t;
             grupo.transformacoes.push_back(transformacao);
         }
-        if (rotates)
-        {
+        else if (nome == "rotate"){
             r.rotx = atof(rotates->Attribute("x"));
             r.roty = atof(rotates->Attribute("y"));
             r.rotz = atof(rotates->Attribute("z"));
@@ -193,8 +195,7 @@ struct Group readGroup(XMLElement *group){
             transformacao.r = r;
             grupo.transformacoes.push_back(transformacao);
         }
-        if (scale)
-        {
+        else{
             s.scax = atof(scale->Attribute("x"));
             s.scay = atof(scale->Attribute("y"));
             s.scaz = atof(scale->Attribute("z"));
@@ -203,6 +204,7 @@ struct Group readGroup(XMLElement *group){
             transformacao.s = s;
             grupo.transformacoes.push_back(transformacao);
         }
+        filho = filho->NextSiblingElement();
     }
     
     XMLElement *MODELS = group->FirstChildElement("models");
@@ -424,13 +426,13 @@ void processSpecialKeys(int key, int xx, int yy) {
 
 int main(int argc, char **argv) 
 {
-    readXML("test_2_4.xml");
-    /*
+    //readXML("test_2_4.xml");
+    
     if (argc > 1)
     {
         readXML(argv[1]);
     }
-    */
+    
     
 
 // init GLUT and the window
