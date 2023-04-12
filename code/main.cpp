@@ -96,6 +96,12 @@ float lookAX, lookAY, lookAZ;
 float camVX, camVY, camVZ;
 float fov,near,far,pers;
 
+float dx,dz;
+float camX, camY,camZ;
+
+int startX, startY, tracking = 0;
+float a = 0;
+
 float transx ,transy,transz;
 float rotx,roty,rotz;
 float scax,scay,scaz;
@@ -253,6 +259,9 @@ void readXML(std::string source){
     betah = asin(posy / raio);
     alpha = asin(posx / (raio * cos(betah)));
 
+    camX = sin(alpha)*cos(betah)*raio;
+    camY = sin(betah)*raio;
+    camZ = cos(alpha)*cos(betah)*raio;
 
     XMLElement *lookAt = camera->FirstChildElement("lookAt");
     lookAX = atof(lookAt->Attribute("x"));
@@ -353,7 +362,7 @@ void renderScene(void) {
 	// set the camera
 	glLoadIdentity();
 
-	gluLookAt(sin(alpha)*cos(betah)*raio,sin(betah)*raio,cos(alpha)*cos(betah)*raio, 
+	gluLookAt(camX,camY,camZ, 
 		      lookAX, lookAY, lookAZ,
 			  camVX, camVY, camVZ);
 
@@ -388,32 +397,179 @@ void recursiva(translate , rotates, scale , model)
 */
 void processKeys(unsigned char key, int xx, int yy) {
     switch(key){
-        case 'a':
+        case 'u':
             alpha -= M_PI/16;
+            camX = sin(alpha)*cos(betah)*raio;
+            camY = sin(betah)*raio;
+            camZ = cos(alpha)*cos(betah)*raio;
             break;
-        case 'd':
+        case 'h':
             alpha += M_PI/16;
+            camX = sin(alpha)*cos(betah)*raio;
+            camY = sin(betah)*raio;
+            camZ = cos(alpha)*cos(betah)*raio;
             break;
-        case 'w':
+        case 'j':
             if(!(betah+M_PI/16>M_PI/2)){
                 betah += M_PI/16;
             }
+            camX = sin(alpha)*cos(betah)*raio;
+            camY = sin(betah)*raio;
+            camZ = cos(alpha)*cos(betah)*raio;
             break;
-        case 's':
+        case 'k':
             if(!(betah-M_PI/16<-M_PI/2)){
                 betah -= M_PI/16;
             }
+            camX = sin(alpha)*cos(betah)*raio;
+            camY = sin(betah)*raio;
+            camZ = cos(alpha)*cos(betah)*raio;
             break;
         case 'z':
             raio += 1;
+            camX = sin(alpha)*cos(betah)*raio;
+            camY = sin(betah)*raio;
+            camZ = cos(alpha)*cos(betah)*raio;
             break;
         case 'x':
             raio -= 1;
+            camX = sin(alpha)*cos(betah)*raio;
+            camY = sin(betah)*raio;
+            camZ = cos(alpha)*cos(betah)*raio;
             break;
+            
+        case 'p':
+			a = 0;
+			camX = 0.0f;
+			camZ = 0.0f;
+			camY = 0.0f;
+			lookAX = camX + sin(a);
+			lookAZ = camZ + cos(a);
+			lookAY = camY;
+			break;
+		case 'i':
+			a += M_PI/16;
+			
+			lookAX = camX + sin(a);
+			lookAZ = camZ + cos(a);
+			lookAY = camY;
+			break;
+		case 'o':
+			a -= M_PI/16;
+			
+			lookAX = camX + sin(a);
+			lookAZ = camZ + cos(a);
+			lookAY = camY;
+			break;
+		case 'w':
+
+			dx = (lookAX-camX)*3;
+			dz = (lookAZ-camZ)*3;
+			camX = camX + dx;
+			camZ = camZ + dz;
+			lookAX = lookAX +  dx;
+			lookAZ = lookAZ +  dz;
+			lookAY = camY;
+			//lookY = camY;
+			break;
+		case 's':
+
+			dx = (lookAX-camX)*3;
+			dz = (lookAZ-camZ)*3;
+			camX = camX - dx;
+			camZ = camZ - dz;
+			lookAX = lookAX -  dx;
+			lookAZ = lookAZ -  dz;
+			lookAY = camY;
+
+			break;
+		case 'a':
+			
+			camX += 1;
+			lookAX = camX + sin(a);
+			lookAZ = camZ + cos(a);
+			lookAY = camY;
+			break;
+		case 'd':
+			
+			camX -= 1;
+			
+			lookAX = camX + sin(a);
+			lookAZ = camZ + cos(a);
+			lookAY = camY;
+			break;
+            
+            
     }
+    
     glutPostRedisplay();
 }
+/*
+void processMouseButtons(int button, int state, int xx, int yy) {
+	
+	if (state == GLUT_DOWN)  {
+		startX = xx;
+		startY = yy;
+		if (button == GLUT_LEFT_BUTTON)
+			tracking = 1;
+		else if (button == GLUT_RIGHT_BUTTON)
+			tracking = 2;
+		else
+			tracking = 0;
+	}
+	else if (state == GLUT_UP) {
+		if (tracking == 1) {
+			alpha += (xx - startX);
+			betah += (yy - startY);
+		}
+		else if (tracking == 2) {
+			
+			raio -= yy - startY;
+			if (raio < 3)
+				raio = 3.0;
+		}
+		tracking = 0;
+	}
+}
 
+void processMouseMotion(int xx, int yy) {
+
+	int deltaX, deltaY;
+	int alphaAux, betaAux;
+	int rAux;
+
+	if (!tracking)
+		return;
+
+	deltaX = xx - startX;
+	deltaY = yy - startY;
+
+	if (tracking == 1) {
+
+
+		alphaAux = alpha + deltaX;
+		betaAux = betah + deltaY;
+
+		if (betaAux > 85.0)
+			betaAux = 85.0;
+		else if (betaAux < -85.0)
+			betaAux = -85.0;
+
+		rAux = raio;
+	}
+	else if (tracking == 2) {
+
+		alphaAux = alpha;
+		betaAux = betah;
+		rAux = raio - deltaY;
+		if (rAux < 3)
+			rAux = 3;
+	}
+	camX = rAux * sin(alphaAux * 3.14 / 180.0) * cos(betaAux * 3.14 / 180.0);
+	camZ = rAux * cos(alphaAux * 3.14 / 180.0) * cos(betaAux * 3.14 / 180.0);
+	camY = rAux * 							     sin(betaAux * 3.14 / 180.0);
+}
+*/
 void processSpecialKeys(int key, int xx, int yy) {
 
 // put code to process special keys in here
