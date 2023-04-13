@@ -167,49 +167,58 @@ struct Group readGroup(XMLElement *group){
 
     
     XMLElement *trans = group-> FirstChildElement("transform");
-    XMLElement *translate = trans-> FirstChildElement("translate");
-    XMLElement *rotates = trans-> FirstChildElement("rotate");
-    XMLElement *scale = trans-> FirstChildElement("scale");
+    XMLElement *translate ;
+    XMLElement *rotates ;
+    XMLElement *scale;
+    if (trans){
+        translate = trans-> FirstChildElement("translate");
+        rotates = trans-> FirstChildElement("rotate");
+        scale = trans-> FirstChildElement("scale");
+    }
+    
+    XMLElement *filho;
     struct translate t;
     struct rotates r;
     struct scale s;
     struct Group grupo ;
-    XMLElement *filho = trans->FirstChildElement();
-    while (filho){
-        string nome;
-        nome = filho->Name();
-        
-        if (nome == "translate"){
-            t.transx = atof(translate->Attribute("x"));
-            t.transy = atof(translate->Attribute("y"));
-            t.transz = atof(translate->Attribute("z"));
-            struct Transformations transformacao ;
-            transformacao.escolha = 0;
-            transformacao.t = t;
-            grupo.transformacoes.push_back(transformacao);
-        }
-        else if (nome == "rotate"){
-            r.rotx = atof(rotates->Attribute("x"));
-            r.roty = atof(rotates->Attribute("y"));
-            r.rotz = atof(rotates->Attribute("z"));
-            r.ang = atof(rotates->Attribute("angle"));
-            struct Transformations transformacao ;
-            transformacao.escolha = 1;
-            transformacao.r = r;
-            grupo.transformacoes.push_back(transformacao);
-        }
-        else{
-            s.scax = atof(scale->Attribute("x"));
-            s.scay = atof(scale->Attribute("y"));
-            s.scaz = atof(scale->Attribute("z"));
-            struct Transformations transformacao ;
-            transformacao.escolha = 2;
-            transformacao.s = s;
-            grupo.transformacoes.push_back(transformacao);
-        }
-        filho = filho->NextSiblingElement();
-    }
+    if (trans){
+        filho = trans->FirstChildElement();
     
+        while (filho){
+            string nome;
+            nome = filho->Name();
+            
+            if (nome == "translate"){
+                t.transx = atof(translate->Attribute("x"));
+                t.transy = atof(translate->Attribute("y"));
+                t.transz = atof(translate->Attribute("z"));
+                struct Transformations transformacao ;
+                transformacao.escolha = 0;
+                transformacao.t = t;
+                grupo.transformacoes.push_back(transformacao);
+            }
+            else if (nome == "rotate"){
+                r.rotx = atof(rotates->Attribute("x"));
+                r.roty = atof(rotates->Attribute("y"));
+                r.rotz = atof(rotates->Attribute("z"));
+                r.ang = atof(rotates->Attribute("angle"));
+                struct Transformations transformacao ;
+                transformacao.escolha = 1;
+                transformacao.r = r;
+                grupo.transformacoes.push_back(transformacao);
+            }
+            else{
+                s.scax = atof(scale->Attribute("x"));
+                s.scay = atof(scale->Attribute("y"));
+                s.scaz = atof(scale->Attribute("z"));
+                struct Transformations transformacao ;
+                transformacao.escolha = 2;
+                transformacao.s = s;
+                grupo.transformacoes.push_back(transformacao);
+            }
+            filho = filho->NextSiblingElement();
+        }
+    }
     XMLElement *MODELS = group->FirstChildElement("models");
     if(MODELS){
         XMLElement *model = MODELS->FirstChildElement("model");
@@ -227,7 +236,7 @@ struct Group readGroup(XMLElement *group){
             
         }
     }
-    //printgroup(grupo);
+    
     group = group->FirstChildElement("group");
     while (group){
         grupo.grupos.push_back(readGroup(group));
@@ -282,7 +291,6 @@ void readXML(std::string source){
     XMLElement *group = GROUP;
     
     while (group){
-        
         groups.push_back(readGroup(group));
         group = group->NextSiblingElement("group");
     }
