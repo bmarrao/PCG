@@ -1,7 +1,7 @@
 <world>
     <window width="1024" height="1024" />
     <camera> 
-	    <position x="400" y="100" z="400" />
+	    <position x="-200" y="10" z="100" />
 	    <lookAt x="0" y="0" z="0" />
 	    <up x="0" y="1" z="0" /> <!-- optional, use these values as default-->
         <projection fov="60" near="1" far="100000" /> <!-- optional, use these values as default-->
@@ -9,7 +9,7 @@
 
     <group>
         <transform> 
-                <scale x="100" y="100" z="100" />
+                <scale x="20" y="20" z="20" />
         </transform>
        
             <models><!-- Sol -->
@@ -18,8 +18,8 @@
         <group><!-- Mercurio -->
             <transform> 
                 
-                <translate x="5" y ="0" z="5" />
-                <scale x="0.0033" y="0.0033" z="0.0033" />
+                <translate x="5" y ="0" z="0" />
+                <scale x="0.033" y="0.033" z="0.033" />
             </transform>
             <models>
                 <model file="sphere_1_100_100.3d" />
@@ -30,8 +30,8 @@
         <group><!-- Venus -->
             <transform> 
                 
-                <translate x="10" y ="0" z="10" />
-                <scale x="0.009" y="0.009" z="0.009" />
+                <translate x="10" y ="0" z="0" />
+                <scale x="0.09" y="0.09" z="0.09" />
             </transform>
             <models>
                 <model file="sphere_1_100_100.3d" />
@@ -43,8 +43,8 @@
         <group><!-- Terra -->
             <transform> 
                 
-                <translate x="15" y ="0" z="15" />
-                <scale x="0.01" y="0.01" z="0.01" />
+                <translate x="15" y ="0" z="0" />
+                <scale x="0.1" y="0.1" z="0.1" />
             </transform>
             <models>
                 <model file="sphere_1_100_100.3d" />
@@ -65,8 +65,8 @@
         <group><!-- Marte -->
             <transform> 
                 
-                <translate x="22" y ="0" z="22" />
-                <scale x="0.005" y="0.005" z="0.005" />
+                <translate x="22" y ="0" z="0" />
+                <scale x="0.05" y="0.05" z="0.05" />
             </transform>
             <models>
                 <model file="sphere_1_100_100.3d" />
@@ -78,8 +78,8 @@
         <group><!-- Jupiter -->
             <transform> 
                 
-                <translate x="78" y ="0" z="78" />
-                <scale x="0.11" y="0.11" z="0.11" />
+                <translate x="78" y ="0" z="0" />
+                <scale x="0.8" y="0.8" z="0.8" />
             </transform>
             <models>
                 <model file="sphere_1_100_100.3d" />
@@ -90,8 +90,8 @@
         <group><!-- Saturno -->
             <transform> 
                 
-                <translate x="143" y ="0" z="143" />
-                <scale x="0.09" y="0.09" z="0.09" />
+                <translate x="143" y ="0" z="0" />
+                <scale x="0.7" y="0.7" z="0.7" />
             </transform>
             <models>
                 <model file="sphere_1_100_100.3d" />
@@ -102,8 +102,8 @@
         <group><!-- Urano -->
             <transform> 
                 
-                <translate x="287" y ="0" z="287" />
-                <scale x="0.04" y="0.04" z="0.04" />
+                <translate x="287" y ="0" z="0" />
+                <scale x="0.4" y="0.4" z="0.4" />
             </transform>
             <models>
                 <model file="sphere_1_100_100.3d" />
@@ -114,8 +114,8 @@
         <group><!-- Netuno -->
             <transform> 
                 
-                <translate x="453" y ="0" z="453" />
-                <scale x="0.04" y="0.04" z="0.04" />
+                <translate x="453" y ="0" z="0" />
+                <scale x="0.4" y="0.4" z="0.4" />
             </transform>
             <models>
                 <model file="sphere_1_100_100.3d" />

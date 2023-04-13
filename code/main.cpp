@@ -408,19 +408,19 @@ void recursiva(translate , rotates, scale , model)
 */
 void processKeys(unsigned char key, int xx, int yy) {
     switch(key){
-        case 'u':
+        case 'h':
             alpha -= M_PI/16;
             camX = sin(alpha)*cos(betah)*raio;
             camY = sin(betah)*raio;
             camZ = cos(alpha)*cos(betah)*raio;
             break;
-        case 'h':
+        case 'k':
             alpha += M_PI/16;
             camX = sin(alpha)*cos(betah)*raio;
             camY = sin(betah)*raio;
             camZ = cos(alpha)*cos(betah)*raio;
             break;
-        case 'j':
+        case 'u':
             if(!(betah+M_PI/16>M_PI/2)){
                 betah += M_PI/16;
             }
@@ -428,7 +428,7 @@ void processKeys(unsigned char key, int xx, int yy) {
             camY = sin(betah)*raio;
             camZ = cos(alpha)*cos(betah)*raio;
             break;
-        case 'k':
+        case 'j':
             if(!(betah-M_PI/16<-M_PI/2)){
                 betah -= M_PI/16;
             }
