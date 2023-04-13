@@ -167,28 +167,27 @@ struct Group readGroup(XMLElement *group){
 
     
     XMLElement *trans = group-> FirstChildElement("transform");
-    XMLElement *translate ;
-    XMLElement *rotates ;
-    XMLElement *scale;
-    if (trans){
+
+    XMLElement *filho;
+    struct Group grupo ;
+    if (trans)
+    {
+        XMLElement *translate ;
+        XMLElement *rotates ;
+        XMLElement *scale;
         translate = trans-> FirstChildElement("translate");
         rotates = trans-> FirstChildElement("rotate");
         scale = trans-> FirstChildElement("scale");
-    }
-    
-    XMLElement *filho;
-    struct translate t;
-    struct rotates r;
-    struct scale s;
-    struct Group grupo ;
-    if (trans){
         filho = trans->FirstChildElement();
     
         while (filho){
             string nome;
             nome = filho->Name();
             
-            if (nome == "translate"){
+            if (nome == "translate")
+            {
+                struct translate t;
+
                 t.transx = atof(translate->Attribute("x"));
                 t.transy = atof(translate->Attribute("y"));
                 t.transz = atof(translate->Attribute("z"));
@@ -197,7 +196,9 @@ struct Group readGroup(XMLElement *group){
                 transformacao.t = t;
                 grupo.transformacoes.push_back(transformacao);
             }
-            else if (nome == "rotate"){
+            else if (nome == "rotate")
+            {
+                struct rotates r;
                 r.rotx = atof(rotates->Attribute("x"));
                 r.roty = atof(rotates->Attribute("y"));
                 r.rotz = atof(rotates->Attribute("z"));
@@ -207,7 +208,9 @@ struct Group readGroup(XMLElement *group){
                 transformacao.r = r;
                 grupo.transformacoes.push_back(transformacao);
             }
-            else{
+            else if (nome == "scale")
+            {
+                struct scale s;
                 s.scax = atof(scale->Attribute("x"));
                 s.scay = atof(scale->Attribute("y"));
                 s.scaz = atof(scale->Attribute("z"));
