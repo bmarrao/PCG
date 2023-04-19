@@ -16,6 +16,7 @@
 
 using namespace tinyxml2;
 using namespace std;
+
 struct point {
     float x;
     float y;
@@ -54,37 +55,28 @@ struct Transformations
     int escolha ;
 
 };
+/*
+struct modelos
+{
+    string modelo;
+    int inicio ;
+    int final;
+};
+struct Group 
+{
+    std::vector<struct Transformations> transformacoes;
+    std::vector<Group> grupos;
+    std::vector<modelos> models;
+};
+
+*/
+
 struct Group 
 {
     std::vector<struct Transformations> transformacoes;
     std::vector<Group> grupos;
     std::vector<string> models;
 };
-
-
-/*
-class Group{    
-    public:
-        
-        std::vector<Group> grupos;
-        std::vector<string> models;
-        
-        void transacoes() {  
-            if (trans == 1){
-                glTranslated(t.transx,t.transy,t.transz);
-            }
-            if (rota == 1){
-                glrotatesd(r.ang,r.rotx,r.roty,r.rotz);
-            }
-            if (sca == 1){
-                glScaled(s.scax,s.scay,s.scaz);
-            }
-
-        }
-};
-*/
-//string file = "box.3d";
-
 std::vector<Group> groups;
 
 
@@ -95,13 +87,13 @@ float alpha,betah,raio;
 float lookAX, lookAY, lookAZ;
 float camVX, camVY, camVZ;
 float fov,near,far,pers;
-
+GLuint buffers[1];
 float dx,dz;
 float camX, camY,camZ;
-
+std::vector<float> p;
 int startX, startY, tracking = 0;
 float a = 0;
-
+int indice = 0;
 float transx ,transy,transz;
 float rotx,roty,rotz;
 float scax,scay,scaz;
@@ -293,10 +285,19 @@ void readXML(std::string source){
     XMLElement *GROUP = xml.FirstChildElement("world")->FirstChildElement("group");
     XMLElement *group = GROUP;
     
+    //glGenBuffers(1, buffers);
     while (group){
         groups.push_back(readGroup(group));
         group = group->NextSiblingElement("group");
     }
+
+    /*
+    glBindBuffer(GL_ARRAY_BUFFER,buffers[0]);
+	glBufferData(
+		GL_ARRAY_BUFFER, // tipo do buffer, só é relevante na altura do desenho
+		sizeof(float) * indice, // tamanho do vector em bytes
+		p.data(), // os dados do array associado ao vector
+		GL_STATIC_DRAW); // indicativo da utilização (estático e para desenho)*/
     /*
     for(auto i: groups){
         printgroup(i);
@@ -349,14 +350,49 @@ void transacoes(struct Group g)
     }
     
 }
+/*
+Função que vai receber um grupo e se tiver um model vai colocar num vbo e guardar também o ponto inicial e o ponto final
+Levar em consideração que provavelmente vamos ter q criar uma estrutura propria para o model 
+para podermos guardar init e final
+void createVBO(g)
+{
+    string line;
+    ifstream indata;
+    indata.open(g.arquivo);
+    g.inicio = indice;
+    while ( getline (indata,line) )
+    {
 
-
-void recFilhos(struct Group g){
+        std::string delimiter = ",";
+        std::vector<std::string> v = split (line, delimiter);
+		float point [3];
+		int j = 0;
+        for (auto i : v)
+        {
+			p.push_back(atof(i.c_str()));
+            indice++;
+			j = j + 1;
+        }
+    }
+    g.final = indice;
+    
+    indata.close();
+}
+*/
+void recFilhos(struct Group g)
+{
 
 
     glPushMatrix();
     transacoes(g);
-    for (auto j: g.models){
+    for (auto j: g.models)
+    {
+        /*
+        rodar o vbo 
+        glBindBuffer(GL_ARRAY_BUFFER, vertices);
+	    glVertexPointer(3, GL_FLOAT, j.inicio, j.final);
+	    glDrawArrays(GL_TRIANGLES, 0, verticeCount);
+        */
         render3D(j);
     }
         
@@ -399,13 +435,6 @@ void renderScene(void) {
     }
 	glutSwapBuffers();
 }
-/*
-void recursiva(translate , rotates, scale , model)
-{
-
-    recursiva(translate,rotates,scale,model);
-}
-*/
 void processKeys(unsigned char key, int xx, int yy) {
     switch(key){
         case 'h':
@@ -515,6 +544,7 @@ void processKeys(unsigned char key, int xx, int yy) {
     
     glutPostRedisplay();
 }
+
 /*
 void processMouseButtons(int button, int state, int xx, int yy) {
 	
