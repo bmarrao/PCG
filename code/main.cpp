@@ -2,6 +2,7 @@
 #ifdef __APPLE__
 #include <GLUT/glut.h>
 #else
+#include <GL/glew.h>
 #include <GL/glut.h>
 #endif
 
@@ -55,13 +56,14 @@ struct Transformations
     int escolha ;
 
 };
-/*
+
 struct modelos
 {
     string modelo;
     int inicio ;
     int final;
 };
+
 struct Group 
 {
     std::vector<struct Transformations> transformacoes;
@@ -69,18 +71,8 @@ struct Group
     std::vector<modelos> models;
 };
 
-*/
-
-struct Group 
-{
-    std::vector<struct Transformations> transformacoes;
-    std::vector<Group> grupos;
-    std::vector<string> models;
-};
 std::vector<Group> groups;
 
-
-int once = 0;
 
 int camW,camL;
 float alpha,betah,raio;
@@ -114,18 +106,27 @@ std::vector<std::string> split(std::string s, std::string delimiter) {
 }
 
 
+void printgroup(struct Group g){
+    for(auto i :g.grupos){
+        printgroup(i);
+    }
+    for(auto j: g.models){
+        cout<<j.modelo<< " " << j.inicio << " " << j.final <<"\n";
+    }
+    //printf("%f %f %f\n", g.t.transx,g.t.transy,g.t.transz);
+    //printf("%f %f %f %f\n", g.r.ang,g.r.rotx,g.r.roty,g.r.rotz);
+    //printf("%f %f %f\n", g.s.scax,g.s.scay,g.s.scaz);
+}
 
-
-void render3D(string file)
+void createVBO(string file)
 {
-    string line;
-    //glBegin(GL_TRIANGLES);
+    printf("%d\n",indice);
+
+    std::string line;
     ifstream indata;
     indata.open(file);
-    glBegin(GL_TRIANGLES);
-	glColor3f(1.0f, 1.0f, 1.0f);
-
-    while ( getline (indata,line) ){
+    while ( getline (indata,line) )
+    {
 
         std::string delimiter = ",";
         std::vector<std::string> v = split (line, delimiter);
@@ -133,29 +134,17 @@ void render3D(string file)
 		int j = 0;
         for (auto i : v)
         {
-			point[j] = atof(i.c_str());
+			p.push_back(atof(i.c_str()));
+            indice++;
 			j = j + 1;
         }
-		glVertex3f(point[0], point[1], point[2]);
     }
-    glEnd();
+    printf("OI\n");
     indata.close();
 }
-/*
-void printgroup(struct Group g){
-    for(auto i :g.grupos){
-        printgroup(i);
-    }
-    for(auto j: g.models){
-        cout<<j<<"\n";
-    }
-    printf("%f %f %f\n", g.t.transx,g.t.transy,g.t.transz);
-    printf("%f %f %f %f\n", g.r.ang,g.r.rotx,g.r.roty,g.r.rotz);
-    printf("%f %f %f\n", g.s.scax,g.s.scay,g.s.scaz);
-}
-*/
 
-struct Group readGroup(XMLElement *group){
+struct Group readGroup(XMLElement *group)
+{
 
     
     XMLElement *trans = group-> FirstChildElement("transform");
@@ -218,12 +207,17 @@ struct Group readGroup(XMLElement *group){
     if(MODELS){
         XMLElement *model = MODELS->FirstChildElement("model");
     
-        while (model) {
+        while (model) 
+        {
             
             std::string model_path = model->Attribute("file");
             
-            grupo.models.push_back("../../3d/" + model_path);
-            
+            modelos g ;
+            g.modelo = "../../3d/" + model_path;
+            g.inicio = indice;
+            createVBO(g.modelo);
+            g.final = indice;
+            grupo.models.push_back(g);
             //mod.models.push_back(mod);
             //models.push_back ("../../3d/" + model_path);
             //render3D(aux);
@@ -232,12 +226,14 @@ struct Group readGroup(XMLElement *group){
         }
     }
     
+
     group = group->FirstChildElement("group");
-    while (group){
+    while (group)
+    {
         grupo.grupos.push_back(readGroup(group));
         group = group->NextSiblingElement("group");
     }
-   
+
     return grupo;
 }
 
@@ -284,25 +280,22 @@ void readXML(std::string source){
     pers = camW/camL;
     XMLElement *GROUP = xml.FirstChildElement("world")->FirstChildElement("group");
     XMLElement *group = GROUP;
-    
+
+
     //glGenBuffers(1, buffers);
     while (group){
         groups.push_back(readGroup(group));
         group = group->NextSiblingElement("group");
     }
 
-    /*
+    
     glBindBuffer(GL_ARRAY_BUFFER,buffers[0]);
 	glBufferData(
 		GL_ARRAY_BUFFER, // tipo do buffer, só é relevante na altura do desenho
-		sizeof(float) * indice, // tamanho do vector em bytes
+		sizeof(float) * p.size(), // tamanho do vector em bytes
 		p.data(), // os dados do array associado ao vector
 		GL_STATIC_DRAW); // indicativo da utilização (estático e para desenho)*/
-    /*
-    for(auto i: groups){
-        printgroup(i);
-    }
-    */
+    printf("banana2\n");
 }
 
 
@@ -362,40 +355,25 @@ void createVBO(g)
     g.inicio = indice;
     while ( getline (indata,line) )
     {
-
-        std::string delimiter = ",";
-        std::vector<std::string> v = split (line, delimiter);
-		float point [3];
-		int j = 0;
-        for (auto i : v)
-        {
-			p.push_back(atof(i.c_str()));
-            indice++;
-			j = j + 1;
-        }
-    }
-    g.final = indice;
-    
-    indata.close();
-}
 */
+
+
 void recFilhos(struct Group g)
 {
 
+    glBegin(GL_TRIANGLES);
 
     glPushMatrix();
     transacoes(g);
     for (auto j: g.models)
     {
-        /*
-        rodar o vbo 
-        glBindBuffer(GL_ARRAY_BUFFER, vertices);
-	    glVertexPointer(3, GL_FLOAT, j.inicio, j.final);
-	    glDrawArrays(GL_TRIANGLES, 0, verticeCount);
-        */
-        render3D(j);
+		glBindBuffer(GL_ARRAY_BUFFER,buffers[0]);
+        glVertexPointer(3, GL_FLOAT,0 , 0);
+	    glDrawArrays(GL_TRIANGLES, j.inicio, j.final);
+
     }
         
+    glEnd();
     for (auto j : g.grupos) 
         recFilhos(j);    
     glPopMatrix();
@@ -621,12 +599,7 @@ void processSpecialKeys(int key, int xx, int yy) {
 int main(int argc, char **argv) 
 {
     //readXML("test_2_4.xml");
-    
-    if (argc > 1)
-    {
-        readXML(argv[1]);
-    }
-    
+
     
 
 // init GLUT and the window
@@ -639,17 +612,25 @@ int main(int argc, char **argv)
 // Required callback registry 
 	glutDisplayFunc(renderScene);
 	glutReshapeFunc(changeSize);
-	
+	glutIdleFunc(renderScene);
+   
 // Callback registration for keyboard processing
 	glutKeyboardFunc(processKeys);
 	glutSpecialFunc(processSpecialKeys);
+
 
 //  OpenGL settings
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
+    glewInit(); // after glutCreateWindow and before calling any OpenGL function
+    glEnableClientState(GL_VERTEX_ARRAY);
 	
+    if (argc > 1)
+    {
+        readXML(argv[1]);
+    }
 // enter GLUT's main cycle
 	glutMainLoop();
 	
