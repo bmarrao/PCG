@@ -120,7 +120,6 @@ void printgroup(struct Group g){
 
 void createVBO(string file)
 {
-    printf("%d\n",indice);
 
     std::string line;
     ifstream indata;
@@ -138,6 +137,7 @@ void createVBO(string file)
             indice++;
 			j = j + 1;
         }
+
     }
     printf("OI\n");
     indata.close();
@@ -233,7 +233,6 @@ struct Group readGroup(XMLElement *group)
         grupo.grupos.push_back(readGroup(group));
         group = group->NextSiblingElement("group");
     }
-
     return grupo;
 }
 
@@ -288,6 +287,7 @@ void readXML(std::string source){
         group = group->NextSiblingElement("group");
     }
 
+    glGenBuffers(1, buffers);
     
     glBindBuffer(GL_ARRAY_BUFFER,buffers[0]);
 	glBufferData(
@@ -296,6 +296,17 @@ void readXML(std::string source){
 		p.data(), // os dados do array associado ao vector
 		GL_STATIC_DRAW); // indicativo da utilização (estático e para desenho)*/
     printf("banana2\n");
+
+    for (auto i : groups)
+    {
+        printgroup(i);
+    }
+
+    for (auto i : p)
+    {
+        cout << i << "\n";
+    }
+
 }
 
 
@@ -343,19 +354,7 @@ void transacoes(struct Group g)
     }
     
 }
-/*
-Função que vai receber um grupo e se tiver um model vai colocar num vbo e guardar também o ponto inicial e o ponto final
-Levar em consideração que provavelmente vamos ter q criar uma estrutura propria para o model 
-para podermos guardar init e final
-void createVBO(g)
-{
-    string line;
-    ifstream indata;
-    indata.open(g.arquivo);
-    g.inicio = indice;
-    while ( getline (indata,line) )
-    {
-*/
+
 
 
 void recFilhos(struct Group g)
@@ -369,7 +368,7 @@ void recFilhos(struct Group g)
     {
 		glBindBuffer(GL_ARRAY_BUFFER,buffers[0]);
         glVertexPointer(3, GL_FLOAT,0 , 0);
-	    glDrawArrays(GL_TRIANGLES, j.inicio, j.final);
+	    glDrawArrays(GL_TRIANGLES, j.final , j.inicio);
 
     }
         
