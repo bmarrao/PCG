@@ -130,16 +130,14 @@ void createVBO(string file)
         std::string delimiter = ",";
         std::vector<std::string> v = split (line, delimiter);
 		float point [3];
-		int j = 0;
         for (auto i : v)
         {
 			p.push_back(atof(i.c_str()));
             indice++;
-			j = j + 1;
+
         }
 
     }
-    printf("OI\n");
     indata.close();
 }
 
@@ -215,8 +213,10 @@ struct Group readGroup(XMLElement *group)
             modelos g ;
             g.modelo = "../../3d/" + model_path;
             g.inicio = indice;
+            cout << indice << " " << p.size()/3 << "\n";
             createVBO(g.modelo);
-            g.final = indice;
+            cout << indice << " " << p.size()/3 << "\n";
+            g.final = (indice - g.inicio) / 3;
             grupo.models.push_back(g);
             //mod.models.push_back(mod);
             //models.push_back ("../../3d/" + model_path);
@@ -280,6 +280,7 @@ void readXML(std::string source){
     XMLElement *GROUP = xml.FirstChildElement("world")->FirstChildElement("group");
     XMLElement *group = GROUP;
 
+    glGenBuffers(1, buffers);
 
     //glGenBuffers(1, buffers);
     while (group){
@@ -287,7 +288,6 @@ void readXML(std::string source){
         group = group->NextSiblingElement("group");
     }
 
-    glGenBuffers(1, buffers);
     
     glBindBuffer(GL_ARRAY_BUFFER,buffers[0]);
 	glBufferData(
@@ -295,16 +295,10 @@ void readXML(std::string source){
 		sizeof(float) * p.size(), // tamanho do vector em bytes
 		p.data(), // os dados do array associado ao vector
 		GL_STATIC_DRAW); // indicativo da utilização (estático e para desenho)*/
-    printf("banana2\n");
 
     for (auto i : groups)
     {
         printgroup(i);
-    }
-
-    for (auto i : p)
-    {
-        cout << i << "\n";
     }
 
 }
@@ -360,15 +354,15 @@ void transacoes(struct Group g)
 void recFilhos(struct Group g)
 {
 
-    glBegin(GL_TRIANGLES);
-
     glPushMatrix();
     transacoes(g);
     for (auto j: g.models)
     {
+        cout << "oiiiii\n" ;
 		glBindBuffer(GL_ARRAY_BUFFER,buffers[0]);
         glVertexPointer(3, GL_FLOAT,0 , 0);
-	    glDrawArrays(GL_TRIANGLES, j.final , j.inicio);
+	    glDrawArrays(GL_TRIANGLES, j.inicio /3, j.final);
+        cout << "oiiiiifechou\n" ;
 
     }
         
@@ -403,13 +397,17 @@ void renderScene(void) {
 	glColor3f(0.0f, 0.0f, 1.0f);
 	glVertex3f(0.0f, 0.0f, -100.0f);
 	glVertex3f(0.0f, 0.0f, 100.0f);
-    glEnd();
 
-    int last = 0;
-    for (auto i : groups){
+    glBegin(GL_TRIANGLES);
+
+    for (auto i : groups)
+    {
         recFilhos(i);
         
     }
+
+    glEnd();
+
 	glutSwapBuffers();
 }
 void processKeys(unsigned char key, int xx, int yy) {
