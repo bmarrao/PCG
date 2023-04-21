@@ -1,4 +1,3 @@
-
 #ifdef __APPLE__
 #include <GLUT/glut.h>
 #else
@@ -21,7 +20,7 @@ using namespace std;
 struct point {
     float x;
     float y;
-	float z;
+    float z;
 };
 
 struct rotates{
@@ -30,7 +29,7 @@ struct rotates{
     float roty;
     float rotz;
     float ang;
-    
+
 };
 
 struct translate{
@@ -38,7 +37,7 @@ struct translate{
     float transx;
     float transy;
     float transz;
-    
+
 };
 
 struct scale{
@@ -48,7 +47,7 @@ struct scale{
     float scaz;
 };
 
-struct Transformations 
+struct Transformations
 {
     translate t;
     rotates r;
@@ -61,10 +60,10 @@ struct modelos
 {
     string modelo;
     int inicio ;
-    int final;
+    GLuint verticeCount;
 };
 
-struct Group 
+struct Group
 {
     std::vector<struct Transformations> transformacoes;
     std::vector<Group> grupos;
@@ -85,7 +84,7 @@ float camX, camY,camZ;
 std::vector<float> p;
 int startX, startY, tracking = 0;
 float a = 0;
-int indice = 0;
+GLuint indice;
 float transx ,transy,transz;
 float rotx,roty,rotz;
 float scax,scay,scaz;
@@ -111,16 +110,23 @@ void printgroup(struct Group g){
         printgroup(i);
     }
     for(auto j: g.models){
-        cout<<j.modelo<< " " << j.inicio << " " << j.final <<"\n";
+        cout<<j.modelo<< " " << j.inicio << " " << j.verticeCount << indice << "\n";
+        for (int i = 0 ; i < (j.verticeCount * 3) - j.inicio; i++)
+        {
+            cout << p[i + j.inicio] << "\n";
+        }
+
     }
-    //printf("%f %f %f\n", g.t.transx,g.t.transy,g.t.transz);
-    //printf("%f %f %f %f\n", g.r.ang,g.r.rotx,g.r.roty,g.r.rotz);
-    //printf("%f %f %f\n", g.s.scax,g.s.scay,g.s.scaz);
+    /*
+    for(auto tran : g.transformacoes){
+        cout << tran.escolha << "\n";
+    }
+     */
 }
 
 void createVBO(string file)
 {
-
+    cout << file << "\n";
     std::string line;
     ifstream indata;
     indata.open(file);
@@ -129,11 +135,11 @@ void createVBO(string file)
 
         std::string delimiter = ",";
         std::vector<std::string> v = split (line, delimiter);
-		float point [3];
+
         for (auto i : v)
         {
-			p.push_back(atof(i.c_str()));
-            indice++;
+            p.push_back(atof(i.c_str()));
+
 
         }
 
@@ -144,7 +150,7 @@ void createVBO(string file)
 struct Group readGroup(XMLElement *group)
 {
 
-    
+
     XMLElement *trans = group-> FirstChildElement("transform");
 
     XMLElement *filho;
@@ -158,11 +164,11 @@ struct Group readGroup(XMLElement *group)
         rotates = trans-> FirstChildElement("rotate");
         scale = trans-> FirstChildElement("scale");
         filho = trans->FirstChildElement();
-    
+
         while (filho){
             string nome;
             nome = filho->Name();
-            
+
             if (nome == "translate")
             {
                 struct translate t;
@@ -204,28 +210,26 @@ struct Group readGroup(XMLElement *group)
     XMLElement *MODELS = group->FirstChildElement("models");
     if(MODELS){
         XMLElement *model = MODELS->FirstChildElement("model");
-    
-        while (model) 
+
+        while (model)
         {
-            
+
             std::string model_path = model->Attribute("file");
-            
+
             modelos g ;
             g.modelo = "../../3d/" + model_path;
             g.inicio = indice;
-            cout << indice << " " << p.size()/3 << "\n";
             createVBO(g.modelo);
-            cout << indice << " " << p.size()/3 << "\n";
-            g.final = (indice - g.inicio) / 3;
+            g.verticeCount = (indice - g.inicio) / 3;
             grupo.models.push_back(g);
             //mod.models.push_back(mod);
             //models.push_back ("../../3d/" + model_path);
             //render3D(aux);
             model = model->NextSiblingElement("model");
-            
+
         }
     }
-    
+
 
     group = group->FirstChildElement("group");
     while (group)
@@ -237,7 +241,7 @@ struct Group readGroup(XMLElement *group)
 }
 
 void readXML(std::string source){
-    
+
     source = "../../test_files/" + source;
     XMLDocument xml;
     xml.LoadFile(source.data());
@@ -288,13 +292,13 @@ void readXML(std::string source){
         group = group->NextSiblingElement("group");
     }
 
-    
+    indice = p.size() / 3;
     glBindBuffer(GL_ARRAY_BUFFER,buffers[0]);
-	glBufferData(
-		GL_ARRAY_BUFFER, // tipo do buffer, só é relevante na altura do desenho
-		sizeof(float) * p.size(), // tamanho do vector em bytes
-		p.data(), // os dados do array associado ao vector
-		GL_STATIC_DRAW); // indicativo da utilização (estático e para desenho)*/
+    glBufferData(
+            GL_ARRAY_BUFFER, // tipo do buffer, só é relevante na altura do desenho
+            sizeof(float) * p.size(), // tamanho do vector em bytes
+            p.data(), // os dados do array associado ao vector
+            GL_STATIC_DRAW); // indicativo da utilização (estático e para desenho)*/
 
     for (auto i : groups)
     {
@@ -308,28 +312,28 @@ void readXML(std::string source){
 
 void changeSize(int w, int h) {
 
-	// Prevent a divide by zero, when window is too short
-	// (you cant make a window with zero width).
-	if(h == 0)
-		h = 1;
+    // Prevent a divide by zero, when window is too short
+    // (you cant make a window with zero width).
+    if(h == 0)
+        h = 1;
 
-	// compute window's aspect ratio 
-	float ratio = w * 1.0 / h;
+    // compute window's aspect ratio
+    float ratio = w * 1.0 / h;
 
-	// Set the projection matrix as current
-	glMatrixMode(GL_PROJECTION);
-	// Load Identity Matrix
-	glLoadIdentity();
-	
-	// Set the viewport to be the entire window
+    // Set the projection matrix as current
+    glMatrixMode(GL_PROJECTION);
+    // Load Identity Matrix
+    glLoadIdentity();
+
+    // Set the viewport to be the entire window
     glViewport(0, 0, w, h);
 
-	// Set perspective
-	gluPerspective(fov,pers,near,far);
+    // Set perspective
+    gluPerspective(fov,pers,near,far);
 
 
-	// return to the model view matrix mode
-	glMatrixMode(GL_MODELVIEW);
+    // return to the model view matrix mode
+    glMatrixMode(GL_MODELVIEW);
 }
 
 void transacoes(struct Group g)
@@ -346,7 +350,7 @@ void transacoes(struct Group g)
             glScaled(t.s.scax,t.s.scay,t.s.scaz);
         }
     }
-    
+
 }
 
 
@@ -358,57 +362,54 @@ void recFilhos(struct Group g)
     transacoes(g);
     for (auto j: g.models)
     {
-        cout << "oiiiii\n" ;
-		glBindBuffer(GL_ARRAY_BUFFER,buffers[0]);
+        //printgroup(g)
         glVertexPointer(3, GL_FLOAT,0 , 0);
-	    glDrawArrays(GL_TRIANGLES, j.inicio /3, j.final);
-        cout << "oiiiiifechou\n" ;
-
+        glDrawArrays(GL_TRIANGLES, j.inicio /3, j.verticeCount);
     }
-        
-    glEnd();
-    for (auto j : g.grupos) 
-        recFilhos(j);    
+
+    //glEnd();
+    for (auto j : g.grupos)
+        recFilhos(j);
     glPopMatrix();
 }
 
 void renderScene(void) {
 
-	// clear buffers
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    // clear buffers
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	// set the camera
-	glLoadIdentity();
+    // set the camera
+    glLoadIdentity();
 
-	gluLookAt(camX,camY,camZ, 
-		      lookAX, lookAY, lookAZ,
-			  camVX, camVY, camVZ);
+    gluLookAt(camX,camY,camZ,
+              lookAX, lookAY, lookAZ,
+              camVX, camVY, camVZ);
 
-	glBegin(GL_LINES);
-	// X axis in red
-	glVertex3f(-100.0f, 0.0f, 0.0f);
-	glColor3f(1.0f, 0.0f, 0.0f);
-	glVertex3f(100.0f, 0.0f, 0.0f);
-	// Y Axis in Green
-	glColor3f(0.0f, 1.0f, 0.0f);
-	glVertex3f(0.0f, -100.0f, 0.0f);
-	glVertex3f(0.0f, 100.0f, 0.0f);
-	// Z Axis in Blue
-	glColor3f(0.0f, 0.0f, 1.0f);
-	glVertex3f(0.0f, 0.0f, -100.0f);
-	glVertex3f(0.0f, 0.0f, 100.0f);
+    glBegin(GL_LINES);
+    // X axis in red
+    glVertex3f(-100.0f, 0.0f, 0.0f);
+    glColor3f(1.0f, 0.0f, 0.0f);
+    glVertex3f(100.0f, 0.0f, 0.0f);
+    // Y Axis in Green
+    glColor3f(0.0f, 1.0f, 0.0f);
+    glVertex3f(0.0f, -100.0f, 0.0f);
+    glVertex3f(0.0f, 100.0f, 0.0f);
+    // Z Axis in Blue
+    glColor3f(0.0f, 0.0f, 1.0f);
+    glVertex3f(0.0f, 0.0f, -100.0f);
+    glVertex3f(0.0f, 0.0f, 100.0f);
 
     glBegin(GL_TRIANGLES);
 
     for (auto i : groups)
     {
         recFilhos(i);
-        
+
     }
 
     glEnd();
 
-	glutSwapBuffers();
+    glutSwapBuffers();
 }
 void processKeys(unsigned char key, int xx, int yy) {
     switch(key){
@@ -452,77 +453,77 @@ void processKeys(unsigned char key, int xx, int yy) {
             camY = sin(betah)*raio;
             camZ = cos(alpha)*cos(betah)*raio;
             break;
-            
+
         case 'p':
-			a = 0;
-			camX = 0.0f;
-			camZ = 0.0f;
-			camY = 0.0f;
-			lookAX = camX + sin(a);
-			lookAZ = camZ + cos(a);
-			lookAY = camY;
-			break;
-		case 'i':
-			a += M_PI/16;
-			
-			lookAX = camX + sin(a);
-			lookAZ = camZ + cos(a);
-			lookAY = camY;
-			break;
-		case 'o':
-			a -= M_PI/16;
-			
-			lookAX = camX + sin(a);
-			lookAZ = camZ + cos(a);
-			lookAY = camY;
-			break;
-		case 'w':
+            a = 0;
+            camX = 0.0f;
+            camZ = 0.0f;
+            camY = 0.0f;
+            lookAX = camX + sin(a);
+            lookAZ = camZ + cos(a);
+            lookAY = camY;
+            break;
+        case 'i':
+            a += M_PI/16;
 
-			dx = (lookAX-camX)*3;
-			dz = (lookAZ-camZ)*3;
-			camX = camX + dx;
-			camZ = camZ + dz;
-			lookAX = lookAX +  dx;
-			lookAZ = lookAZ +  dz;
-			lookAY = camY;
-			//lookY = camY;
-			break;
-		case 's':
+            lookAX = camX + sin(a);
+            lookAZ = camZ + cos(a);
+            lookAY = camY;
+            break;
+        case 'o':
+            a -= M_PI/16;
 
-			dx = (lookAX-camX)*3;
-			dz = (lookAZ-camZ)*3;
-			camX = camX - dx;
-			camZ = camZ - dz;
-			lookAX = lookAX -  dx;
-			lookAZ = lookAZ -  dz;
-			lookAY = camY;
+            lookAX = camX + sin(a);
+            lookAZ = camZ + cos(a);
+            lookAY = camY;
+            break;
+        case 'w':
 
-			break;
-		case 'a':
-			
-			camX += 1;
-			lookAX = camX + sin(a);
-			lookAZ = camZ + cos(a);
-			lookAY = camY;
-			break;
-		case 'd':
-			
-			camX -= 1;
-			
-			lookAX = camX + sin(a);
-			lookAZ = camZ + cos(a);
-			lookAY = camY;
-			break;
-            
-            
+            dx = (lookAX-camX)*3;
+            dz = (lookAZ-camZ)*3;
+            camX = camX + dx;
+            camZ = camZ + dz;
+            lookAX = lookAX +  dx;
+            lookAZ = lookAZ +  dz;
+            lookAY = camY;
+            //lookY = camY;
+            break;
+        case 's':
+
+            dx = (lookAX-camX)*3;
+            dz = (lookAZ-camZ)*3;
+            camX = camX - dx;
+            camZ = camZ - dz;
+            lookAX = lookAX -  dx;
+            lookAZ = lookAZ -  dz;
+            lookAY = camY;
+
+            break;
+        case 'a':
+
+            camX += 1;
+            lookAX = camX + sin(a);
+            lookAZ = camZ + cos(a);
+            lookAY = camY;
+            break;
+        case 'd':
+
+            camX -= 1;
+
+            lookAX = camX + sin(a);
+            lookAZ = camZ + cos(a);
+            lookAY = camY;
+            break;
+
+
     }
-    
+
     glutPostRedisplay();
 }
 
 /*
 void processMouseButtons(int button, int state, int xx, int yy) {
-	
+
 	if (state == GLUT_DOWN)  {
 		startX = xx;
 		startY = yy;
@@ -539,7 +540,7 @@ void processMouseButtons(int button, int state, int xx, int yy) {
 			betah += (yy - startY);
 		}
 		else if (tracking == 2) {
-			
+
 			raio -= yy - startY;
 			if (raio < 3)
 				raio = 3.0;
@@ -593,43 +594,271 @@ void processSpecialKeys(int key, int xx, int yy) {
 }
 
 
-int main(int argc, char **argv) 
+int main(int argc, char **argv)
 {
     //readXML("test_2_4.xml");
 
-    
+
 
 // init GLUT and the window
-	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_DEPTH|GLUT_DOUBLE|GLUT_RGBA);
-	glutInitWindowPosition(100,100);
-	glutInitWindowSize(camW,camL);
-	glutCreateWindow("CG@DI-UM");
-		
-// Required callback registry 
-	glutDisplayFunc(renderScene);
-	glutReshapeFunc(changeSize);
-	glutIdleFunc(renderScene);
-   
-// Callback registration for keyboard processing
-	glutKeyboardFunc(processKeys);
-	glutSpecialFunc(processSpecialKeys);
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_DEPTH|GLUT_DOUBLE|GLUT_RGBA);
+    glutInitWindowPosition(100,100);
+    glutInitWindowSize(camW,camL);
+    glutCreateWindow("CG@DI-UM");
 
+// Required callback registry
+    glutDisplayFunc(renderScene);
+    glutReshapeFunc(changeSize);
+    glutIdleFunc(renderScene);
+
+// Callback registration for keyboard processing
+    glutKeyboardFunc(processKeys);
+    glutSpecialFunc(processSpecialKeys);
+    glewInit(); // after glutCreateWindow and before calling any OpenGL function
 
 //  OpenGL settings
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-    glewInit(); // after glutCreateWindow and before calling any OpenGL function
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
     glEnableClientState(GL_VERTEX_ARRAY);
-	
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+
+
+
     if (argc > 1)
     {
         readXML(argv[1]);
     }
 // enter GLUT's main cycle
-	glutMainLoop();
-	
-	return 1;
+    glutMainLoop();
+
+    return 1;
 }
+
+/*
+#include <stdio.h>
+#ifdef __APPLE__
+#include <GLUT/glut.h>
+#else
+#include <GL/glew.h>
+#include <GL/glut.h>
+#endif
+
+#define _USE_MATH_DEFINES
+#include <math.h>
+#include <fstream>
+
+
+
+#include <iostream>
+#include <sstream>
+#include <vector>
+using namespace std;
+
+float alfa = 0.0f, betah = 0.0f, radius = 5.0f;
+float camX, camY, camZ;
+GLuint vertices[1];
+GLuint verticeCount;
+std::vector<float> p;
+
+
+GLuint indice = 0;
+
+void spherical2Cartesian() {
+
+    camX = radius * cos(betah) * sin(alfa);
+    camY = radius * sin(betah);
+    camZ = radius * cos(betah) * cos(alfa);
+}
+
+
+
+
+void changeSize(int w, int h) {
+
+    // Prevent a divide by zero, when window is too short
+    // (you cant make a window with zero width).
+    if(h == 0)
+        h = 1;
+
+    // compute window's aspect ratio
+    float ratio = w * 1.0 / h;
+
+    // Set the projection matrix as current
+    glMatrixMode(GL_PROJECTION);
+    // Load Identity Matrix
+    glLoadIdentity();
+
+    // Set the viewport to be the entire window
+    glViewport(0, 0, w, h);
+
+    // Set perspective
+    gluPerspective(45.0f ,ratio, 1.0f ,1000.0f);
+
+    // return to the model view matrix mode
+    glMatrixMode(GL_MODELVIEW);
+}
+
+std::vector<std::string> split(std::string s, std::string delimiter) {
+    size_t pos_start = 0, pos_end, delim_len = delimiter.length();
+    std::string token;
+    std::vector<std::string> res;
+
+    while ((pos_end = s.find(delimiter, pos_start)) != std::string::npos) {
+        token = s.substr (pos_start, pos_end - pos_start);
+        pos_start = pos_end + delim_len;
+        res.push_back (token);
+    }
+
+    res.push_back (s.substr (pos_start));
+    return res;
+}
+
+void createVBO(string file)
+{
+    cout << file << "\n";
+    std::string line;
+    ifstream indata;
+    indata.open(file);
+    while ( getline (indata,line) )
+    {
+        //cout << "teste\n";
+        std::string delimiter = ",";
+        std::vector<std::string> v = split (line, delimiter);
+
+        for (auto i : v)
+        {
+            p.push_back(atof(i.c_str()));
+
+
+
+        }
+
+
+    }
+
+    indata.close();
+
+    indice = p.size() / 3;
+    glGenBuffers(1, vertices);
+
+    // copiar o vector para a memória gráfica
+    glBindBuffer(GL_ARRAY_BUFFER, vertices[0]);
+    glBufferData(
+            GL_ARRAY_BUFFER, // tipo do buffer, só é relevante na altura do desenho
+            sizeof(float) * p.size(), // tamanho do vector em bytes
+            p.data(), // os dados do array associado ao vector
+            GL_STATIC_DRAW); // indicativo da utilização (estático e para desenho)
+}
+
+
+
+
+void renderScene(void) {
+
+    // clear buffers
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    cout << "teste\n";
+    // set the camera
+    glLoadIdentity();
+    gluLookAt(camX, camY, camZ,
+              0.0, 0.0, 0.0,
+              0.0f, 1.0f, 0.0f);
+    glColor3f(0.2f, 0.8f, 0.2f);
+    glBegin(GL_LINES);
+    // X axis in red
+    glColor3f(1.0f, 0.0f, 0.0f);
+    glVertex3f(-100.0f, 0.0f, 0.0f);
+    glVertex3f( 100.0f, 0.0f, 0.0f);
+    // Y Axis in Green
+    glColor3f(0.0f, 1.0f, 0.0f);
+    glVertex3f(0.0f, -100.0f, 0.0f);
+    glVertex3f(0.0f, 100.0f, 0.0f);
+    // Z Axis in Blue
+    glColor3f(0.0f, 0.0f, 1.0f);
+    glVertex3f(0.0f, 0.0f, -100.0f);
+    glVertex3f(0.0f, 0.0f, 100.0f);
+    glEnd();
+
+    glBindBuffer(GL_ARRAY_BUFFER, vertices[0]);
+    glVertexPointer(3, GL_FLOAT, 0, 0);
+    glDrawArrays(GL_TRIANGLES, 0, indice);
+
+    //cylinder(1,2,10);
+    //drawvbo();
+
+
+    // End of frame
+    glutSwapBuffers();
+}
+
+
+void processKeys(unsigned char c, int xx, int yy) {
+
+// put code to process regular keys in here
+
+}
+
+
+void processSpecialKeys(int key, int xx, int yy) {
+
+
+}
+
+
+void printInfo() {
+
+    printf("Vendor: %s\n", glGetString(GL_VENDOR));
+    printf("Renderer: %s\n", glGetString(GL_RENDERER));
+    printf("Version: %s\n", glGetString(GL_VERSION));
+
+    printf("\nUse Arrows to move the camera up/down and left/right\n");
+    printf("Page Up and Page Down control the distance from the camera to the origin");
+}
+
+
+int main(int argc, char **argv) {
+
+// init GLUT and the window
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_DEPTH|GLUT_DOUBLE|GLUT_RGBA);
+    glutInitWindowPosition(100,100);
+    glutInitWindowSize(800,800);
+    glutCreateWindow("CG@DI-UM");
+
+
+
+// Required callback registry
+    glutDisplayFunc(renderScene);
+    glutIdleFunc(renderScene);
+    glutReshapeFunc(changeSize);
+
+// Callback registration for keyboard processing
+    glutKeyboardFunc(processKeys);
+    glutSpecialFunc(processSpecialKeys);
+
+    // init GLEW
+#ifndef __APPLE__
+    glewInit();
+#endif
+
+
+//  OpenGL settings
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glPolygonMode(GL_FRONT, GL_LINE);
+
+
+
+    printInfo();
+
+    spherical2Cartesian();
+    createVBO("../../3d/cone_1_2_4_3.3d");
+// enter GLUT's main cycle
+    glutMainLoop();
+
+    return 1;
+}
+*/
