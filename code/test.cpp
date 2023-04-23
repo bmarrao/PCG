@@ -20,11 +20,13 @@ using namespace std;
 float alfa = 0.0f, betah = 0.0f, radius = 5.0f;
 float camX, camY, camZ;
 GLuint vertices[1];
-GLuint verticeCount;
 std::vector<float> p;
+int triangles1 ;
+int triangles2;
+int inicio;
+int indice = 0;
 
-
-GLuint indice = 0;
+//GLuint indice = 0;
 
 void spherical2Cartesian() {
 
@@ -76,7 +78,7 @@ std::vector<std::string> split(std::string s, std::string delimiter) {
     return res;
 }
 
-void createVBO(string file)
+void createVBO(string file,string file2)
 {
     cout << file << "\n";
     std::string line;
@@ -91,17 +93,34 @@ void createVBO(string file)
         for (auto i : v)
         {
             p.push_back(atof(i.c_str()));
-
-
-
+            indice++;
         }
 
 
     }
 
+
     indata.close();
 
-    indice = p.size() / 3;
+    triangles1 = indice;
+
+    indata.open(file2);
+    while ( getline (indata,line) )
+    {
+        //cout << "teste\n";
+        std::string delimiter = ",";
+        std::vector<std::string> v = split (line, delimiter);
+
+        for (auto i : v)
+        {
+            p.push_back(atof(i.c_str()));
+        }
+        indice++;
+
+    }
+
+    triangles2 = indice - triangles1;
+    indata.close();
     glGenBuffers(1, vertices);
 
     // copiar o vector para a memória gráfica
@@ -144,7 +163,10 @@ void renderScene(void) {
 
     glBindBuffer(GL_ARRAY_BUFFER, vertices[0]);
     glVertexPointer(3, GL_FLOAT, 0, 0);
-    glDrawArrays(GL_TRIANGLES, 0, indice);
+    glDrawArrays(GL_TRIANGLES, 0, triangles1);
+
+    
+    glDrawArrays(GL_TRIANGLES, triangles1, triangles2);
 
     //cylinder(1,2,10);
     //drawvbo();
@@ -216,9 +238,49 @@ int main(int argc, char **argv) {
     printInfo();
 
     spherical2Cartesian();
-    createVBO("../../3d/cone_1_2_4_3.3d");
+    createVBO("../../3d/cone_1_2_4_3.3d"  ,"../../3d/box_2_3.3d");
 // enter GLUT's main cycle
     glutMainLoop();
 
     return 1;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
