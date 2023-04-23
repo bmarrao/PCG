@@ -86,7 +86,6 @@ void createVBO(string file,string file2)
     indata.open(file);
     while ( getline (indata,line) )
     {
-        //cout << "teste\n";
         std::string delimiter = ",";
         std::vector<std::string> v = split (line, delimiter);
 
@@ -107,7 +106,6 @@ void createVBO(string file,string file2)
     indata.open(file2);
     while ( getline (indata,line) )
     {
-        //cout << "teste\n";
         std::string delimiter = ",";
         std::vector<std::string> v = split (line, delimiter);
 
@@ -139,7 +137,6 @@ void renderScene(void) {
 
     // clear buffers
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    cout << "teste\n";
     // set the camera
     glLoadIdentity();
     gluLookAt(camX, camY, camZ,
@@ -239,6 +236,10 @@ int main(int argc, char **argv) {
 
     spherical2Cartesian();
     createVBO("../../3d/cone_1_2_4_3.3d"  ,"../../3d/box_2_3.3d");
+    for (int i = 0; i < 84* 3 ; i++)
+    {
+        cout << p[i] << "\n";
+    }
 // enter GLUT's main cycle
     glutMainLoop();
 

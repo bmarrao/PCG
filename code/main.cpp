@@ -111,12 +111,11 @@ void printgroup(struct Group g){
     }
     for(auto j: g.models){
         cout<<j.modelo<< " " << j.inicio << " " << j.verticeCount << "\n";
-        /*
+
         for (int i = 0 ; i < (j.verticeCount * 3) - j.inicio; i++)
         {
-            cout << p[i + j.inicio] << "\n";
+            cout << p[i] << "\n";
         }
-        */
 
     }
     /*
@@ -361,7 +360,6 @@ void recFilhos(struct Group g)
     for (auto j: g.models)
     {
         //printgroup(g)
-        cout << j.inicio << " " << j.verticeCount << " \n";
         glDrawArrays(GL_TRIANGLES, j.inicio, j.verticeCount);
     }
 
@@ -397,7 +395,7 @@ void renderScene(void) {
     glVertex3f(0.0f, 0.0f, -100.0f);
     glVertex3f(0.0f, 0.0f, 100.0f);
 
-    glBegin(GL_TRIANGLES);
+    glEnd();
     glBindBuffer(GL_ARRAY_BUFFER,buffers[0]);
     glVertexPointer(3, GL_FLOAT, 0, 0);
 
@@ -408,7 +406,6 @@ void renderScene(void) {
 
     }
 
-    glEnd();
 
     glutSwapBuffers();
 }
