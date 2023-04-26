@@ -47,11 +47,22 @@ struct scale{
     float scaz;
 };
 
+
+struct catmullRom
+{
+
+    std::vector<point> pontos;
+    float time ;
+    int align;
+
+};
+
 struct Transformations
 {
     translate t;
     rotates r;
     scale s;
+    catmullRom c;
     int escolha ;
 
 };
@@ -89,15 +100,17 @@ float transx ,transy,transz;
 float rotx,roty,rotz;
 float scax,scay,scaz;
 
-std::vector<std::string> split(std::string s, std::string delimiter) {
+std::vector<std::string> split(std::string s, std::string delimiter) 
+{
     size_t pos_start = 0, pos_end, delim_len = delimiter.length();
     std::string token;
     std::vector<std::string> res;
 
-    while ((pos_end = s.find(delimiter, pos_start)) != std::string::npos) {
+    while ((pos_end = s.find(delimiter, pos_start)) != std::string::npos) 
+    {
         token = s.substr (pos_start, pos_end - pos_start);
         pos_start = pos_end + delim_len;
-        res.push_back (token);
+        res.push_back (token);"bezier_10.3d"
     }
 
     res.push_back (s.substr (pos_start));
@@ -161,6 +174,7 @@ struct Group readGroup(XMLElement *group)
         XMLElement *translate ;
         XMLElement *rotates ;
         XMLElement *scale;
+        XMLElement *catmull;
         translate = trans-> FirstChildElement("translate");
         rotates = trans-> FirstChildElement("rotate");
         scale = trans-> FirstChildElement("scale");
@@ -172,14 +186,44 @@ struct Group readGroup(XMLElement *group)
 
             if (nome == "translate")
             {
-                struct translate t;
-
-                t.transx = atof(translate->Attribute("x"));
-                t.transy = atof(translate->Attribute("y"));
-                t.transz = atof(translate->Attribute("z"));
                 struct Transformations transformacao ;
-                transformacao.escolha = 0;
-                transformacao.t = t;
+                catmull = translate->FirstChildElement("point");
+                if (catmull)
+                {
+                    catmullRom c ;
+                    c.time = atof(translate->Attribute("time"));
+                    point ponto ;
+                    ponto.x = atof(translate->Attribute("x"));
+                    ponto.y = atof(translate->Attribute("y"));
+                    ponto.z = atof(translate->Attribute("z"));
+                    c.pontos.push_back(ponto)
+                    catmull = catmull->NextSibling();
+                    while(catmull)
+                    {
+                        ponto.x = atof(translate->Attribute("x"));
+                        ponto.y = atof(translate->Attribute("y"));
+                        ponto.z = atof(translate->Attribute("z"));
+                        catmull = catmull->NextSibling();
+                        c.pontos.push_back(ponto)
+                        transformacao.c = c;
+
+
+                    }
+                    transformacao.escolha =3 ;
+                }
+                else
+                {
+                    struct translate t;
+                    t.transx = atof(translate->Attribute("x"));
+                    t.transy = atof(translate->Attribute("y"));
+                    t.transz = atof(translate->Attribute("z"));
+                    transformacao.escolha = 0;
+                    transformacao.t = t;
+
+                }
+
+
+                
                 grupo.transformacoes.push_back(transformacao);
             }
             else if (nome == "rotate")
