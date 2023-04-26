@@ -88,7 +88,7 @@ int camW,camL;
 float alpha,betah,raio;
 float lookAX, lookAY, lookAZ;
 float camVX, camVY, camVZ;
-float fov,near,far,pers;
+float fov,nears,fars,pers;
 GLuint buffers[1];
 float dx,dz;
 float camX, camY,camZ;
@@ -110,7 +110,7 @@ std::vector<std::string> split(std::string s, std::string delimiter)
     {
         token = s.substr (pos_start, pos_end - pos_start);
         pos_start = pos_end + delim_len;
-        res.push_back (token);"bezier_10.3d"
+        res.push_back(token); "bezier_10.3d";
     }
 
     res.push_back (s.substr (pos_start));
@@ -196,15 +196,15 @@ struct Group readGroup(XMLElement *group)
                     ponto.x = atof(translate->Attribute("x"));
                     ponto.y = atof(translate->Attribute("y"));
                     ponto.z = atof(translate->Attribute("z"));
-                    c.pontos.push_back(ponto)
-                    catmull = catmull->NextSibling();
+                    c.pontos.push_back(ponto);
+                    catmull = catmull->NextSiblingElement();
                     while(catmull)
                     {
                         ponto.x = atof(translate->Attribute("x"));
                         ponto.y = atof(translate->Attribute("y"));
                         ponto.z = atof(translate->Attribute("z"));
-                        catmull = catmull->NextSibling();
-                        c.pontos.push_back(ponto)
+                        catmull = catmull->NextSiblingElement();
+                        c.pontos.push_back(ponto);
                         transformacao.c = c;
 
 
@@ -320,8 +320,8 @@ void readXML(std::string source){
 
     XMLElement *projection = camera->FirstChildElement("projection");
     fov = atof(projection->Attribute("fov"));
-    near = atof(projection->Attribute("near"));
-    far = atof(projection->Attribute("far"));
+    nears = atof(projection->Attribute("near"));
+    fars = atof(projection->Attribute("far"));
     pers = camW/camL;
     XMLElement *GROUP = xml.FirstChildElement("world")->FirstChildElement("group");
     XMLElement *group = GROUP;
@@ -370,7 +370,7 @@ void changeSize(int w, int h) {
     glViewport(0, 0, w, h);
 
     // Set perspective
-    gluPerspective(fov,pers,near,far);
+    gluPerspective(fov,pers,nears,fars);
 
 
     // return to the model view matrix mode
