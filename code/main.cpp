@@ -51,7 +51,7 @@ struct scale{
 
 struct catmullRom{
 
-    std::vector<point> pontos;
+    std::vector<float [3]> pontos;
     float time ;
     int align;
 
@@ -98,6 +98,96 @@ float rotx,roty,rotz;
 float scax,scay,scaz;
 float tglobal = 0;
 
+void buildRotMatrix(float *x, float *y, float *z, float *m) {
+
+	m[0] = x[0]; m[1] = x[1]; m[2] = x[2]; m[3] = 0;
+	m[4] = y[0]; m[5] = y[1]; m[6] = y[2]; m[7] = 0;
+	m[8] = z[0]; m[9] = z[1]; m[10] = z[2]; m[11] = 0;
+	m[12] = 0; m[13] = 0; m[14] = 0; m[15] = 1;
+}
+
+
+void cross(float *a, float *b, float *res) {
+
+	res[0] = a[1]*b[2] - a[2]*b[1];
+	res[1] = a[2]*b[0] - a[0]*b[2];
+	res[2] = a[0]*b[1] - a[1]*b[0];
+}
+
+
+void normalize(float *a) {
+
+	float l = sqrt(a[0]*a[0] + a[1] * a[1] + a[2] * a[2]);
+	a[0] = a[0]/l;
+	a[1] = a[1]/l;
+	a[2] = a[2]/l;
+}
+
+
+float length(float *v) {
+
+	float res = sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
+	return res;
+
+}
+
+void multMatrixVector(float *m, float *v, float *res) {
+
+	for (int j = 0; j < 4; ++j) {
+		res[j] = 0;
+		for (int k = 0; k < 4; ++k) {
+			res[j] += v[k] * m[j * 4 + k];
+		}
+	}
+
+}
+
+
+void getCatmullRomPoint(float t, float *p0, float *p1, float *p2, float *p3, float *pos, float *deriv) {
+
+	// catmull-rom matrix
+	float m[4][4] = {	{-0.5f,  1.5f, -1.5f,  0.5f},
+						{ 1.0f, -2.5f,  2.0f, -0.5f},
+						{-0.5f,  0.0f,  0.5f,  0.0f},
+						{ 0.0f,  1.0f,  0.0f,  0.0f}};
+			
+	
+	float a[4] ={0.0f,0.0f,0.0f,0.0f};
+	float taux[4] = {powf(t,3),powf(t,2),t,1};
+	
+	float tauxd[4] = {3*powf(t,2),2*t,1,0};
+	// Compute A = M * P
+	for(int i = 0;i <3; i++){
+		float auxp[4] = {p0[i],p1[i],p2[i],p3[i]};
+		multMatrixVector((float*)m,auxp,a);
+		// Compute pos = T * A
+		pos[i] = (taux[0]*a[0]) +(taux[1]*a[1]) +(taux[2]*a[2]) +(taux[3]*a[3]);
+		// compute deriv = T' * A
+		deriv[i] = (tauxd[0]*a[0]) +(tauxd[1]*a[1]) +(tauxd[2]*a[2]) +(tauxd[3]*a[3]);
+		
+		
+	}
+	
+}
+
+
+// given  global t, returns the point in the curve
+void getGlobalCatmullRomPoint(float gt, float *pos, float *deriv,struct catmullRom cat) {
+    int POINT_COUNT = cat.pontos.size();
+	float t = tglobal * cat.pontos.size(); // this is the real global t
+	int index = floor(t);  // which segment
+	t = t - index; // where within  the segment
+
+	// indices store the points
+	int indices[4]; 
+	indices[0] = (index + POINT_COUNT-1)%POINT_COUNT;	
+	indices[1] = (indices[0]+1)%POINT_COUNT;
+	indices[2] = (indices[1]+1)%POINT_COUNT; 
+	indices[3] = (indices[2]+1)%POINT_COUNT;
+
+	getCatmullRomPoint(t, p[indices[0]], p[indices[1]], p[indices[2]], p[indices[3]], pos, deriv);
+}
+
 std::vector<std::string> split(std::string s, std::string delimiter) {
     size_t pos_start = 0, pos_end, delim_len = delimiter.length();
     std::string token;
@@ -128,10 +218,21 @@ void printgroup(struct Group g){
 
     }
     /*
-    for(auto tran : g.transformacoes){
+    for(auto tran : g.transformacoes)
+    {
         cout << tran.escolha << "\n";
+        cout << "Inicio pontos\n";
+        if (tran.escolha == 3)
+        {
+            for(auto i : tran.c.pontos)
+            {
+                cout << i.x << " " << i.y << " " << i.z << "\n";
+            }
+        }
+        cout << "Final pontos \n";
+
     }
-     */
+    */
 }
 
 void createVBO(string file){
@@ -180,26 +281,30 @@ struct Group readGroup(XMLElement *group){
                 struct Transformations transformacao ;
                 catmull = translate->FirstChildElement("point");
                 if (catmull){
+                    
                     catmullRom c ;
                     c.time = atof(translate->Attribute("time"));
-                    point ponto ;
-                    ponto.x = atof(translate->Attribute("x"));
-                    ponto.y = atof(translate->Attribute("y"));
-                    ponto.z = atof(translate->Attribute("z"));
-                    c.pontos.push_back(ponto);
+                    float arr1[3] = {0,0,0};
+                    arr1[0] = atof(catmull->Attribute("x"));
+                    arr1[1] = atof(catmull->Attribute("y"));
+                    arr1[2] = atof(catmull->Attribute("z"));
+                    c.pontos.push_back(arr1);
                     catmull = catmull->NextSiblingElement();
+                    cout << "teste\n";
                     while(catmull)
                     {
-                        ponto.x = atof(translate->Attribute("x"));
-                        ponto.y = atof(translate->Attribute("y"));
-                        ponto.z = atof(translate->Attribute("z"));
+                        float arr[3] = {0,0,0};
+                        arr[0] = atof(catmull->Attribute("x"));
+                        arr[1] = atof(catmull->Attribute("y"));
+                        arr[2] = atof(catmull->Attribute("z"));
                         catmull = catmull->NextSiblingElement();
-                        c.pontos.push_back(ponto);
+                        c.pontos.push_back(arr);
                         transformacao.c = c;
 
 
                     }
                     transformacao.escolha =3 ;
+                    
                 }
                 else{
                     struct translate t;
@@ -233,6 +338,7 @@ struct Group readGroup(XMLElement *group){
                 grupo.transformacoes.push_back(transformacao);
             }
             else if (nome == "scale"){
+
                 struct scale s;
                 s.scax = atof(scale->Attribute("x"));
                 s.scay = atof(scale->Attribute("y"));
@@ -334,6 +440,7 @@ void readXML(std::string source){
 
     for (auto i : groups) {
         printgroup(i);
+        cout << "teste\n";
     }
 
 }
@@ -377,15 +484,16 @@ void transacoes(struct Group g){
             if (t.r.time == 0)
                 glRotated(t.r.ang,t.r.rotx,t.r.roty,t.r.rotz);
             else{
+                t.r.ang = 360*(tglobal/1000)/t.r.time;
                 
-                t.r.ang += M_PI/t.r.time*tglobal;
-                cout << t.r.ang << "\n";
-                glRotated(t.r.ang,t.r.rotx,t.r.roty,t.r.rotz);
-                tglobal += 0.001;
+                glRotatef(t.r.ang,t.r.rotx,t.r.roty,t.r.rotz);
             }
         }
         else if (t.escolha == 2){
             glScaled(t.s.scax,t.s.scay,t.s.scaz);
+        }
+        else if (t.escolha == 3){
+            
         }
     }
 
@@ -447,6 +555,8 @@ void renderScene(void) {
 
 
     glutSwapBuffers();
+    tglobal = glutGet(GLUT_ELAPSED_TIME);
+  
 }
 void processKeys(unsigned char key, int xx, int yy) {
     switch(key){
