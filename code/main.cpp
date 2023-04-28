@@ -29,6 +29,7 @@ struct rotates{
     float roty;
     float rotz;
     float ang;
+    float time;
 
 };
 
@@ -232,7 +233,13 @@ struct Group readGroup(XMLElement *group)
                 r.rotx = atof(rotates->Attribute("x"));
                 r.roty = atof(rotates->Attribute("y"));
                 r.rotz = atof(rotates->Attribute("z"));
-                r.ang = atof(rotates->Attribute("angle"));
+                if (rotates->Attribute("angle")){
+                    r.ang = atof(rotates->Attribute("angle"));
+                    r.time = 0.0f;
+                }else{
+                    r.time= atof(rotates->Attribute("time"));
+                    r.ang = 0.0f;
+                }
                 struct Transformations transformacao ;
                 transformacao.escolha = 1;
                 transformacao.r = r;
@@ -385,7 +392,12 @@ void transacoes(struct Group g)
             glTranslated(t.t.transx,t.t.transy,t.t.transz);
         }
         else if (t.escolha == 1){
-            glRotated(t.r.ang,t.r.rotx,t.r.roty,t.r.rotz);
+            if (t.r.time == 0)
+                glRotated(t.r.ang,t.r.rotx,t.r.roty,t.r.rotz);
+            else{
+                t.r.ang += 360/t.r.time;
+                glRotated(t.r.ang,t.r.rotx,t.r.roty,t.r.rotz);
+            }
         }
         else if (t.escolha == 2){
             glScaled(t.s.scax,t.s.scay,t.s.scaz);
