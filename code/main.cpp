@@ -49,8 +49,7 @@ struct scale{
 };
 
 
-struct catmullRom
-{
+struct catmullRom{
 
     std::vector<point> pontos;
     float time ;
@@ -58,8 +57,7 @@ struct catmullRom
 
 };
 
-struct Transformations
-{
+struct Transformations{
     translate t;
     rotates r;
     scale s;
@@ -68,15 +66,13 @@ struct Transformations
 
 };
 
-struct modelos
-{
+struct modelos{
     string modelo;
     int inicio ;
     int verticeCount;
 };
 
-struct Group
-{
+struct Group{
     std::vector<struct Transformations> transformacoes;
     std::vector<Group> grupos;
     std::vector<modelos> models;
@@ -100,15 +96,14 @@ GLuint indice;
 float transx ,transy,transz;
 float rotx,roty,rotz;
 float scax,scay,scaz;
+float tglobal = 0;
 
-std::vector<std::string> split(std::string s, std::string delimiter) 
-{
+std::vector<std::string> split(std::string s, std::string delimiter) {
     size_t pos_start = 0, pos_end, delim_len = delimiter.length();
     std::string token;
     std::vector<std::string> res;
 
-    while ((pos_end = s.find(delimiter, pos_start)) != std::string::npos) 
-    {
+    while ((pos_end = s.find(delimiter, pos_start)) != std::string::npos) {
         token = s.substr (pos_start, pos_end - pos_start);
         pos_start = pos_end + delim_len;
         res.push_back(token); "bezier_10.3d";
@@ -139,13 +134,11 @@ void printgroup(struct Group g){
      */
 }
 
-void createVBO(string file)
-{
+void createVBO(string file){
     std::string line;
     ifstream indata;
     indata.open(file);
-    while ( getline (indata,line) )
-    {
+    while ( getline (indata,line) ){
 
         std::string delimiter = ",";
         std::vector<std::string> v = split (line, delimiter);
@@ -162,16 +155,14 @@ void createVBO(string file)
     indata.close();
 }
 
-struct Group readGroup(XMLElement *group)
-{
+struct Group readGroup(XMLElement *group){
 
 
     XMLElement *trans = group-> FirstChildElement("transform");
 
     XMLElement *filho;
     struct Group grupo ;
-    if (trans)
-    {
+    if (trans){
         XMLElement *translate ;
         XMLElement *rotates ;
         XMLElement *scale;
@@ -185,12 +176,10 @@ struct Group readGroup(XMLElement *group)
             string nome;
             nome = filho->Name();
 
-            if (nome == "translate")
-            {
+            if (nome == "translate"){
                 struct Transformations transformacao ;
                 catmull = translate->FirstChildElement("point");
-                if (catmull)
-                {
+                if (catmull){
                     catmullRom c ;
                     c.time = atof(translate->Attribute("time"));
                     point ponto ;
@@ -212,8 +201,7 @@ struct Group readGroup(XMLElement *group)
                     }
                     transformacao.escolha =3 ;
                 }
-                else
-                {
+                else{
                     struct translate t;
                     t.transx = atof(translate->Attribute("x"));
                     t.transy = atof(translate->Attribute("y"));
@@ -227,8 +215,7 @@ struct Group readGroup(XMLElement *group)
                 
                 grupo.transformacoes.push_back(transformacao);
             }
-            else if (nome == "rotate")
-            {
+            else if (nome == "rotate"){
                 struct rotates r;
                 r.rotx = atof(rotates->Attribute("x"));
                 r.roty = atof(rotates->Attribute("y"));
@@ -245,8 +232,7 @@ struct Group readGroup(XMLElement *group)
                 transformacao.r = r;
                 grupo.transformacoes.push_back(transformacao);
             }
-            else if (nome == "scale")
-            {
+            else if (nome == "scale"){
                 struct scale s;
                 s.scax = atof(scale->Attribute("x"));
                 s.scay = atof(scale->Attribute("y"));
@@ -263,8 +249,7 @@ struct Group readGroup(XMLElement *group)
     if(MODELS){
         XMLElement *model = MODELS->FirstChildElement("model");
 
-        while (model)
-        {
+        while (model){
 
             std::string model_path = model->Attribute("file");
 
@@ -281,8 +266,7 @@ struct Group readGroup(XMLElement *group)
 
 
     group = group->FirstChildElement("group");
-    while (group)
-    {
+    while (group){
         grupo.grupos.push_back(readGroup(group));
         group = group->NextSiblingElement("group");
     }
@@ -348,8 +332,7 @@ void readXML(std::string source){
             p.data(), // os dados do array associado ao vector
             GL_STATIC_DRAW); // indicativo da utilização (estático e para desenho)*/
 
-    for (auto i : groups)
-    {
+    for (auto i : groups) {
         printgroup(i);
     }
 
@@ -384,10 +367,9 @@ void changeSize(int w, int h) {
     glMatrixMode(GL_MODELVIEW);
 }
 
-void transacoes(struct Group g)
-{
-    for(auto t : g.transformacoes)
-    {
+void transacoes(struct Group g){
+    
+    for(auto t : g.transformacoes){
         if (t.escolha == 0){
             glTranslated(t.t.transx,t.t.transy,t.t.transz);
         }
@@ -395,8 +377,11 @@ void transacoes(struct Group g)
             if (t.r.time == 0)
                 glRotated(t.r.ang,t.r.rotx,t.r.roty,t.r.rotz);
             else{
-                t.r.ang += 360/t.r.time;
+                
+                t.r.ang += M_PI/t.r.time*tglobal;
+                cout << t.r.ang << "\n";
                 glRotated(t.r.ang,t.r.rotx,t.r.roty,t.r.rotz);
+                tglobal += 0.001;
             }
         }
         else if (t.escolha == 2){
@@ -408,13 +393,11 @@ void transacoes(struct Group g)
 
 
 
-void recFilhos(struct Group g)
-{
+void recFilhos(struct Group g){
 
     glPushMatrix();
     transacoes(g);
-    for (auto j: g.models)
-    {
+    for (auto j: g.models){
         //printgroup(g)
         glDrawArrays(GL_TRIANGLES, j.inicio, j.verticeCount);
     }
@@ -453,11 +436,11 @@ void renderScene(void) {
 
     glEnd();
     glBindBuffer(GL_ARRAY_BUFFER,buffers[0]);
+    glColor3f(1.0f,1.0f,1.0f);
     glVertexPointer(3, GL_FLOAT, 0, 0);
 
     
-    for (auto i : groups)
-    {
+    for (auto i : groups){
         recFilhos(i);
 
     }
@@ -648,8 +631,7 @@ void processKeys(unsigned char key, int xx, int yy) {
     }
 
 
-    int main(int argc, char **argv)
-    {
+    int main(int argc, char **argv){
         //readXML("test_2_4.xml");
 
 
