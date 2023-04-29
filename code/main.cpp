@@ -460,11 +460,12 @@ void readXML(std::string source){
             sizeof(float) * p.size(), // tamanho do vector em bytes
             p.data(), // os dados do array associado ao vector
             GL_STATIC_DRAW); // indicativo da utilização (estático e para desenho)*/
-
+    /*
     for (auto i : groups) {
         printgroup(i);
         cout << "teste\n";
     }
+     */
 
 }
 
@@ -520,7 +521,7 @@ void transacoes(struct Group g){
             glDrawArrays(GL_LINE_LOOP, t.c.inicio, t.c.verticeCount);
 
             if(t.c.align == 1){
-                static float curva = 0.0f;
+
                 float pos[3];
                 float deriv[3];
 
@@ -530,15 +531,17 @@ void transacoes(struct Group g){
                 static float y1[3] = {0.0f,1.0f,0.0f};
                 static float z[3] = {0.0f,0.0f,0.0f};
 
-                float tempo = 0.0f;
-                float tempoaux = 0.0f;
+                static float tempo = 0.0f;
+                static float tempoaux = 0.0f;
                 if(tempo>= 1){
                     tempoaux += 1;
-                    tempo = tglobal -tempoaux;
+
+                    tempo = ((tglobal/1000)/t.c.time) -tempoaux;
                 }
                 else{
-                    tempo = tglobal - tempoaux;
+                    tempo = ((tglobal/1000)/t.c.time) - tempoaux;
                 }
+                cout <<tempo<<endl;
 
                 getGlobalCatmullRomPoint(tempo,pos,deriv,t.c);
 
@@ -563,6 +566,28 @@ void transacoes(struct Group g){
 
 
 
+
+            }
+            else{
+
+                float pos[3];
+                float deriv[3];
+                static float *x = deriv;
+                static float y0[3] = {0.0f,1.0f,0.0f};
+                static float y1[3] = {0.0f,1.0f,0.0f};
+                static float z[3] = {0.0f,0.0f,0.0f};
+                static float tempo = 0.0f;
+                static float tempoaux = 0.0f;
+                if(tempo>= 1){
+                    tempoaux += 1;
+
+                    tempo = ((tglobal/1000)/t.c.time) -tempoaux;
+                }
+                else{
+                    tempo = ((tglobal/1000)/t.c.time) - tempoaux;
+                }
+                getGlobalCatmullRomPoint(tempo,pos,deriv,t.c);
+                glTranslatef(pos[0],pos[1],pos[2]);
 
             }
 
