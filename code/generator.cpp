@@ -231,6 +231,13 @@ void drawBox(float comp, int slices, string file)
     }
 }
 
+void drawBezier(string patch, int tess, string file)
+{
+    ifstream patch_file(patch);
+
+    patch_file >> 
+}
+
 int main (int argc, char const *argv[])
 {
     
@@ -256,6 +263,10 @@ int main (int argc, char const *argv[])
         else if (!(strcmp(argv[1],"plane")) && argc == 5 )
         {
             drawPlane(atoi(argv[2]), atoi(argv[3]),argv[4]);
+        }
+        else if (!(strcmp(argv[1],"patch")) && argc == 4 )
+        {
+            drawBezier(atoi(argv[2]), atoi(argv[3]),argv[4]);
         }
       
     }

@@ -12,6 +12,7 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include <bits/stdc++.h>
 #include "tinyxml2.h"
 
 using namespace tinyxml2;
@@ -32,7 +33,6 @@ struct rotates{
     float time;
 
 };
-
 struct translate{
 
     float transx;
@@ -51,9 +51,11 @@ struct scale{
 
 struct catmullRom{
 
-    std::vector<float [3]> pontos;
+    std::vector<tuple<float,float,float>> pontos;
     float time ;
     int align;
+    int inicio;
+    int verticeCount;
 
 };
 
@@ -184,21 +186,36 @@ void getGlobalCatmullRomPoint(float gt ,float *pos, float *deriv,struct catmullR
 	indices[2] = (indices[1]+1)%POINT_COUNT; 
 	indices[3] = (indices[2]+1)%POINT_COUNT;
 
-	getCatmullRomPoint(t, cat.pontos[indices[0]], cat.pontos[indices[1]], cat.pontos[indices[2]], cat.pontos[indices[3]], pos, deriv);
+    float p1[3] = {get<0>(cat.pontos[indices[0]]),get<1>(cat.pontos[indices[0]]),get<2>(cat.pontos[indices[0]])};
+    float p2[3] = {get<0>(cat.pontos[indices[1]]),get<1>(cat.pontos[indices[1]]),get<2>(cat.pontos[indices[1]])};
+    float p3[3] = {get<0>(cat.pontos[indices[2]]),get<1>(cat.pontos[indices[2]]),get<2>(cat.pontos[indices[2]])};
+    float p4[3] = {get<0>(cat.pontos[indices[3]]),get<1>(cat.pontos[indices[3]]),get<2>(cat.pontos[indices[3]])};
+
+
+	getCatmullRomPoint(t, p1, p2, p3, p4, pos, deriv);
 }
 
 
-void renderCatmullRomCurve(catmullRom c,float line_segments) 
+void vboCatmullRomCurve(catmullRom c,float line_segments)
 {
-	float pos[3], deriv[3];
-	glBegin(GL_LINE_LOOP);
-	for (int i = 0; i < line_segments; i++) 
-	{
-		getGlobalCatmullRomPoint(1/line_segments * i, pos, deriv,c);
-		glVertex3f(pos[0], pos[1], pos[2]);
-	}
-	glEnd();
+    float pos[3], deriv[3];
+    int j = 0;
+    float tess = 0.0f;
+    for (int i = 0; i < line_segments; i++,j++;)
+    {
+        getGlobalCatmullRomPoint(1/line_segments * i, pos, deriv,c);
+        p.push_back(pos[0]);
+        p.push_back(pos[1]);
+        p.push_back(pos[2]);
+        if (j == 2)
+        {
+            indice++;
+            j= 0;
+        }
+    }
+
 }
+
 
 std::vector<std::string> split(std::string s, std::string delimiter) {
     size_t pos_start = 0, pos_end, delim_len = delimiter.length();
@@ -296,25 +313,25 @@ struct Group readGroup(XMLElement *group){
                     
                     catmullRom c ;
                     c.time = atof(translate->Attribute("time"));
-                    float arr1[3] = {0,0,0};
-                    arr1[0] = atof(catmull->Attribute("x"));
-                    arr1[1] = atof(catmull->Attribute("y"));
-                    arr1[2] = atof(catmull->Attribute("z"));
-                    c.pontos.push_back(arr1);
+                    string str = translate->Attribute("align");
+                    if(str == "true") c.align = 1;
+                    else c.align = 0;
+                    c.pontos.push_back( tuple<float, float, float>(atof(catmull->Attribute("x")),atof(catmull->Attribute("y")),atof(catmull->Attribute("z"))) );
                     catmull = catmull->NextSiblingElement();
-                    cout << "teste\n";
-                    while(catmull)
-                    {
-                        float arr[3] = {0,0,0};
-                        arr[0] = atof(catmull->Attribute("x"));
-                        arr[1] = atof(catmull->Attribute("y"));
-                        arr[2] = atof(catmull->Attribute("z"));
+                    
+                    while(catmull){
+
+                        c.pontos.push_back( tuple<float, float, float>(atof(catmull->Attribute("x")),atof(catmull->Attribute("y")),atof(catmull->Attribute("z"))) );
                         catmull = catmull->NextSiblingElement();
-                        c.pontos.push_back(arr);
-                        transformacao.c = c;
+                        
+                        
 
 
                     }
+                    c.inicio = indice;
+                    vboCatmullRomCurve(c,100);
+                    c.verticeCount = indice ;
+                    transformacao.c = c;
                     transformacao.escolha =3 ;
                     
                 }
@@ -506,7 +523,40 @@ void transacoes(struct Group g){
         }
         else if (t.escolha == 3)
         {
-            renderCatmullRomCurve(t.c,100);
+            glDrawArrays(GL_LINE_LOOP, t.c.inicio, t.c.verticeCount);
+
+            if(t.c.align == 1){
+                float pos[3];
+                float deriv[3];
+
+
+                static float *x = deriv;
+                static float y0[3] = {0.0f,1.0f,0.0f};
+                static float y1[3] = {0.0f,1.0f,0.0f};
+                static float z[3] = {0.0f,0.0f,0.0f};
+
+                getGlobalCatmullRomPoint(tglobal,pos,deriv,t.c);
+
+                x = deriv;
+                normalize(x);
+                cross(x,y0,z);
+                normalize(z);
+                cross(z,x,y1);
+                normalize(y1);
+                for( int i = 0; i<3;i++){
+                    y0[i] = y1[i];
+                }
+
+                glTranslatef(pos[0],pos[1],pos[2]);
+
+                float matrix[16];
+
+                buildRotMatrix(x,y1,z,matrix);
+
+                glMultMatrixf(matrix);
+
+            }
+
         }
     }
 
