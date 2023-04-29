@@ -6,7 +6,7 @@
 #include <cstdlib>
 #include <fstream>
 #include <vector>
-#include <bits/stdc++.h>
+//#include <bits/stdc++.h>
 using std::ofstream;
 using namespace std;
 
@@ -249,8 +249,39 @@ void drawBox(float comp, int slices, string file)
     }
 }
 
+void multMatrix(float m[4][4], float v[4][4], float res[4][4]) {
+
+    for (int i = 0; i < 4; i++)
+    {
+        for (int j = 0; j < 4; ++j) {
+		    res[i][j] = 0;                  // inicializacao
+		    for (int k = 0; k < 4; ++k) {   // percorre linha * coluna
+			    res[i][j] += v[i][k] * m[k][j];
+		    }
+	    }
+    }   
+}
+
+void multMatrixVector(float m[4][4], float *v, float *res) {
+
+    for (int j = 0; j < 4; ++j) {
+        res[j] = 0;
+        for (int k = 0; k < 4; ++k) {
+            res[j] += v[k] * m[j][k];
+        }
+    }
+
+}
+
+void drawBezier(float xCoords[4][4], float yCoords[4][4], float zCoords[4][4], int tess, string file){
+    ofstream MyFile;
+    MyFile.open(path + file);
+}
+
+// P(U,V) = U * M * pontos[indices] * M * V      Mt = M
+
 // Trata do ficheiro patch dado
-void drawBezier(string patch, int tess, string file)
+void readPatch(string patch, int tess, string file)
 {
     ifstream patch_file("../" + patch);
     int n_patch, n_cpoints;
@@ -258,6 +289,13 @@ void drawBezier(string patch, int tess, string file)
     vector<vector<float>> indices;
     vector<point> pontos_controlo;
     string line ;
+    float xCoords[4][4];
+    float yCoords[4][4];
+    float zCoords[4][4];
+    float m[4][4] = {	{-1.0f,  3.0f, -3.0f,  1.0f},   // Matriz de Bezier
+						{ 3.0f, -6.0f,  3.0f,  0.0f},
+						{-3.0f,  3.0f,  0.5f,  0.0f},
+						{ 1.0f,  1.0f,  0.0f,  0.0f}};
     
     getline(patch_file,line);
 
@@ -266,6 +304,7 @@ void drawBezier(string patch, int tess, string file)
 
     cout << n_patch << " numero patches";
     
+    // Guardar os indices
     for (int i = 0; i < n_patch; i++)
     {
         vector<float> auxiliar;
@@ -311,6 +350,7 @@ void drawBezier(string patch, int tess, string file)
     // cout << "ola";
     // cout << n_cpoints;
 
+    // Guardar os pontos de controlo
     for (int i = 0; i < n_cpoints; i++)
     {
         point ponto;
@@ -323,10 +363,31 @@ void drawBezier(string patch, int tess, string file)
         pontos_controlo.push_back(ponto);
     }
 
-    // for (auto i : pontos_controlo)
-    //  {
-    //     cout << i.x << "\n";
-    // }
+    // Guardar os pontos de controlo de x,y,z nas respetivas matrizes dadas pelos indices
+    for(auto ind : indices){
+        for(int i=0; i<4; i++){
+            for(int j = 0; j<4; j++){
+                int index = ind[i * 4 + j];
+                xCoords[j][i] = pontos_controlo[index].x;
+                yCoords[j][i] = pontos_controlo[index].y;
+                zCoords[j][i] = pontos_controlo[index].z;
+            }
+        }
+    }
+    float temp[4][4];
+
+    //  M * pontos[indices] * M para x,y,z
+    multMatrix(m,xCoords,temp);
+    multMatrix(temp,m,xCoords); 
+
+    multMatrix(m,yCoords,temp);
+    multMatrix(temp,m,yCoords);
+
+    multMatrix(m,zCoords,temp);
+    multMatrix(temp,m,zCoords);
+
+    drawBezier(xCoords,yCoords,zCoords,tess,file);
+
 }
 
 int main (int argc, char const *argv[])
