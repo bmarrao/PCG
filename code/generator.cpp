@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <fstream>
 #include <vector>
+#include <bits/stdc++.h>
 using std::ofstream;
 using namespace std;
 
@@ -17,21 +18,20 @@ struct point
 	float z;
 };
 
-// vector<float> split(string s, string delimiter) {
-//     size_t pos_start = 0, pos_end, delim_len = delimiter.length();
-//     string token;
-//     vector<float> res;
+std::vector<std::string> split(std::string s, std::string delimiter) {
+    size_t pos_start = 0, pos_end, delim_len = delimiter.length();
+    std::string token;
+    std::vector<std::string> res;
 
-//     while ((pos_end = s.find(delimiter, pos_start)) != string::npos) {
-//         token = s.substr (pos_start, pos_end - pos_start);
-//         pos_start = pos_end + delim_len;
-//         res.push_back(stoi(token));
-//     }
+    while ((pos_end = s.find(delimiter, pos_start)) != std::string::npos) {
+        token = s.substr (pos_start, pos_end - pos_start);
+        pos_start = pos_end + delim_len;
+        res.push_back(token);
+    }
 
-//     res.push_back(stoi(s.substr (pos_start)));
-//     return res;
-// }
-
+    res.push_back (s.substr (pos_start));
+    return res;
+}
 void drawSphere(float radius,int slices, int stacks,string file)
 {
 	float al = 0;
@@ -262,30 +262,44 @@ void drawBezier(string patch, int tess, string file)
 
     cout << n_patch << " numero patches";
     
-    for (int i = 0; i < n_patch; i++)
+    for (int i = 0; i < n_patch++; i++)
     {
         vector<float> auxiliar;
+        string line ;
+        getline (patch_file,line);
+        std::vector<std::string> v = split (line, ",");
+        for (auto a: v)
+        {
+            auxiliar.push_back(atoi(a.c_str()));
+        }
         //string line;
+        /*
         for (int j = 0; j < 16; j++)
         {
+            string line ;
+            getline (patch_file,line);
+            std::vector<std::string> v = split (line, ",");
+
             // getline(patch_file,line);
             // string delimiter = ",";
             // auxiliar = split(line, delimiter);
-            patch_file.getline(valor, 256, ',');
+            //patch_file.getline(valor, 256, ',');
             auxiliar.push_back(atoi(valor));
-            cout << j << " ";
+            cout << valor << " ";
             
         }
+         */
         indices.push_back(auxiliar);
-        cout << i <<"\n";
+        //cout << i <<"\n";
     }
 
-    // for (auto i : indices)
-    // {
-    //     for(auto j : i){
-    //         cout << j << "\n";
-    //     }
-    // }
+     for (auto i : indices)
+     {
+         for(auto j : i){
+             cout << j << " " ;
+        }
+         cout <<"\n";
+    }
     
 
     patch_file >> n_cpoints;
