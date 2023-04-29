@@ -417,7 +417,7 @@ int main (int argc, char const *argv[])
         }
         else if (!(strcmp(argv[1],"patch")) && argc == 5 )
         {
-            drawBezier(argv[2], atoi(argv[3]),argv[4]);
+            readPatch(argv[2], atoi(argv[3]),argv[4]);
         }
       
     }
