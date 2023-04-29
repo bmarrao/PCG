@@ -2,6 +2,7 @@
 #include <math.h>	
 #include <iostream>
 #include <string.h>
+#include <string>
 #include <cstdlib>
 #include <fstream>
 #include <vector>
@@ -15,6 +16,22 @@ struct point
     float y;
 	float z;
 };
+
+// vector<float> split(string s, string delimiter) {
+//     size_t pos_start = 0, pos_end, delim_len = delimiter.length();
+//     string token;
+//     vector<float> res;
+
+//     while ((pos_end = s.find(delimiter, pos_start)) != string::npos) {
+//         token = s.substr (pos_start, pos_end - pos_start);
+//         pos_start = pos_end + delim_len;
+//         res.push_back(stoi(token));
+//     }
+
+//     res.push_back(stoi(s.substr (pos_start)));
+//     return res;
+// }
+
 void drawSphere(float radius,int slices, int stacks,string file)
 {
 	float al = 0;
@@ -235,26 +252,45 @@ void drawBox(float comp, int slices, string file)
 // Trata do ficheiro patch dado
 void drawBezier(string patch, int tess, string file)
 {
-    ifstream patch_file(patch);
+    ifstream patch_file("../" + patch);
     int n_patch, n_cpoints;
     char valor[2];
     vector<vector<float>> indices;
     vector<point> pontos_controlo;
 
     patch_file >> n_patch;
+
+    cout << n_patch << " numero patches";
     
     for (int i = 0; i < n_patch; i++)
     {
         vector<float> auxiliar;
+        //string line;
         for (int j = 0; j < 16; j++)
         {
+            // getline(patch_file,line);
+            // string delimiter = ",";
+            // auxiliar = split(line, delimiter);
             patch_file.getline(valor, 256, ',');
             auxiliar.push_back(atoi(valor));
+            cout << j << " ";
+            
         }
         indices.push_back(auxiliar);
+        cout << i <<"\n";
     }
 
+    // for (auto i : indices)
+    // {
+    //     for(auto j : i){
+    //         cout << j << "\n";
+    //     }
+    // }
+    
+
     patch_file >> n_cpoints;
+    // cout << "ola";
+    // cout << n_cpoints;
 
     for (int i = 0; i < n_cpoints; i++)
     {
@@ -270,8 +306,7 @@ void drawBezier(string patch, int tess, string file)
 }
 
 int main (int argc, char const *argv[])
-{
-    
+{  
     if (argc <=  1)
     {
           std::cout << "Invalid input";
@@ -295,7 +330,7 @@ int main (int argc, char const *argv[])
         {
             drawPlane(atoi(argv[2]), atoi(argv[3]),argv[4]);
         }
-        else if (!(strcmp(argv[1],"patch")) && argc == 4 )
+        else if (!(strcmp(argv[1],"patch")) && argc == 5 )
         {
             drawBezier(argv[2], atoi(argv[3]),argv[4]);
         }
