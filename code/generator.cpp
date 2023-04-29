@@ -231,11 +231,28 @@ void drawBox(float comp, int slices, string file)
     }
 }
 
+// Trata do ficheiro patch dado
 void drawBezier(string patch, int tess, string file)
 {
     ifstream patch_file(patch);
+    int n_patch, n_cpoints;
+    char valor[2];
+    vector<vector<float>> indices;
 
-    patch_file >> 
+    patch_file >> n_patch;
+    
+    for (int i = 0; i < n_patch; i++)
+    {
+        vector<float> auxiliar;
+        for (int j = 0; j < 16; j++)
+        {
+            patch_file.getline(valor, 256, ',');
+            auxiliar.push_back(atoi(valor));
+        }
+        indices.push_back(auxiliar);
+    }
+
+    patch_file >> n_cpoints;
 }
 
 int main (int argc, char const *argv[])
@@ -266,7 +283,7 @@ int main (int argc, char const *argv[])
         }
         else if (!(strcmp(argv[1],"patch")) && argc == 4 )
         {
-            drawBezier(atoi(argv[2]), atoi(argv[3]),argv[4]);
+            drawBezier(argv[2], atoi(argv[3]),argv[4]);
         }
       
     }
