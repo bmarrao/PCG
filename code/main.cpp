@@ -199,19 +199,13 @@ void getGlobalCatmullRomPoint(float gt ,float *pos, float *deriv,struct catmullR
 void vboCatmullRomCurve(catmullRom c,float line_segments)
 {
     float pos[3], deriv[3];
-    int j = 0;
-    float tess = 0.0f;
-    for (int i = 0; i < line_segments; i++,j++;)
+    for (int i = 0; i < line_segments; i++)
     {
         getGlobalCatmullRomPoint(1/line_segments * i, pos, deriv,c);
         p.push_back(pos[0]);
         p.push_back(pos[1]);
         p.push_back(pos[2]);
-        if (j == 2)
-        {
-            indice++;
-            j= 0;
-        }
+        indice++;
     }
 
 }
@@ -526,6 +520,7 @@ void transacoes(struct Group g){
             glDrawArrays(GL_LINE_LOOP, t.c.inicio, t.c.verticeCount);
 
             if(t.c.align == 1){
+                static float curva = 0.0f;
                 float pos[3];
                 float deriv[3];
 
@@ -535,7 +530,17 @@ void transacoes(struct Group g){
                 static float y1[3] = {0.0f,1.0f,0.0f};
                 static float z[3] = {0.0f,0.0f,0.0f};
 
-                getGlobalCatmullRomPoint(tglobal,pos,deriv,t.c);
+                float tempo = 0.0f;
+                float tempoaux = 0.0f;
+                if(tempo>= 1){
+                    tempoaux += 1;
+                    tempo = tglobal -tempoaux;
+                }
+                else{
+                    tempo = tglobal - tempoaux;
+                }
+
+                getGlobalCatmullRomPoint(tempo,pos,deriv,t.c);
 
                 x = deriv;
                 normalize(x);
@@ -554,6 +559,10 @@ void transacoes(struct Group g){
                 buildRotMatrix(x,y1,z,matrix);
 
                 glMultMatrixf(matrix);
+
+
+
+
 
             }
 
