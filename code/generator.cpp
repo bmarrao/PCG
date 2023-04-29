@@ -259,7 +259,7 @@ void drawBezier(string patch, int tess, string file)
     vector<point> pontos_controlo;
     string line ;
     
-    getline (patch_file,line);
+    getline(patch_file,line);
 
     n_patch = atoi(line.c_str());
     //patch_file >> n_patch;
@@ -296,16 +296,18 @@ void drawBezier(string patch, int tess, string file)
         //cout << i <<"\n";
     }
 
-     for (auto i : indices)
-     {
-         for(auto j : i){
-             cout << j << " " ;
-        }
-         cout <<"\n";
-    }
+    //  for (auto i : indices)
+    //  {
+    //      for(auto j : i){
+    //          cout << j << " " ;
+    //     }
+    //      cout <<"\n";
+    // }
     
 
-    patch_file >> n_cpoints;
+    getline(patch_file,line);
+
+    n_cpoints = atoi(line.c_str());
     // cout << "ola";
     // cout << n_cpoints;
 
@@ -320,6 +322,11 @@ void drawBezier(string patch, int tess, string file)
         patch_file >> ponto.z;
         pontos_controlo.push_back(ponto);
     }
+
+    // for (auto i : pontos_controlo)
+    //  {
+    //     cout << i.x << "\n";
+    // }
 }
 
 int main (int argc, char const *argv[])
