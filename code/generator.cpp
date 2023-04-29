@@ -4,6 +4,7 @@
 #include <string.h>
 #include <cstdlib>
 #include <fstream>
+#include <vector>
 using std::ofstream;
 using namespace std;
 
@@ -238,6 +239,7 @@ void drawBezier(string patch, int tess, string file)
     int n_patch, n_cpoints;
     char valor[2];
     vector<vector<float>> indices;
+    vector<point> pontos_controlo;
 
     patch_file >> n_patch;
     
@@ -253,6 +255,18 @@ void drawBezier(string patch, int tess, string file)
     }
 
     patch_file >> n_cpoints;
+
+    for (int i = 0; i < n_cpoints; i++)
+    {
+        point ponto;
+        string lixo;
+        patch_file >> ponto.x;
+        patch_file >> lixo;
+        patch_file >> ponto.y;
+        patch_file >> lixo;
+        patch_file >> ponto.z;
+        pontos_controlo.push_back(ponto);
+    }
 }
 
 int main (int argc, char const *argv[])
