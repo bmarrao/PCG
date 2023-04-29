@@ -257,15 +257,18 @@ void drawBezier(string patch, int tess, string file)
     char valor[2];
     vector<vector<float>> indices;
     vector<point> pontos_controlo;
+    string line ;
+    
+    getline (patch_file,line);
 
-    patch_file >> n_patch;
+    n_patch = atoi(line.c_str());
+    //patch_file >> n_patch;
 
     cout << n_patch << " numero patches";
     
-    for (int i = 0; i < n_patch++; i++)
+    for (int i = 0; i < n_patch; i++)
     {
         vector<float> auxiliar;
-        string line ;
         getline (patch_file,line);
         std::vector<std::string> v = split (line, ",");
         for (auto a: v)
