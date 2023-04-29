@@ -172,12 +172,11 @@ void getCatmullRomPoint(float t, float *p0, float *p1, float *p2, float *p3, flo
 
 
 // given  global t, returns the point in the curve
-void getGlobalCatmullRomPoint(float gt, float *pos, float *deriv,struct catmullRom cat) {
+void getGlobalCatmullRomPoint(float gt ,float *pos, float *deriv,struct catmullRom cat) {
     int POINT_COUNT = cat.pontos.size();
-	float t = tglobal * cat.pontos.size(); // this is the real global t
+	float t = gt * cat.pontos.size(); // this is the real global t
 	int index = floor(t);  // which segment
 	t = t - index; // where within  the segment
-
 	// indices store the points
 	int indices[4]; 
 	indices[0] = (index + POINT_COUNT-1)%POINT_COUNT;	
@@ -185,7 +184,20 @@ void getGlobalCatmullRomPoint(float gt, float *pos, float *deriv,struct catmullR
 	indices[2] = (indices[1]+1)%POINT_COUNT; 
 	indices[3] = (indices[2]+1)%POINT_COUNT;
 
-	getCatmullRomPoint(t, p[indices[0]], p[indices[1]], p[indices[2]], p[indices[3]], pos, deriv);
+	getCatmullRomPoint(t, cat.pontos[indices[0]], cat.pontos[indices[1]], cat.pontos[indices[2]], cat.pontos[indices[3]], pos, deriv);
+}
+
+
+void renderCatmullRomCurve(catmullRom c,float line_segments) 
+{
+	float pos[3], deriv[3];
+	glBegin(GL_LINE_LOOP);
+	for (int i = 0; i < line_segments; i++) 
+	{
+		getGlobalCatmullRomPoint(1/line_segments * i, pos, deriv,c);
+		glVertex3f(pos[0], pos[1], pos[2]);
+	}
+	glEnd();
 }
 
 std::vector<std::string> split(std::string s, std::string delimiter) {
@@ -492,8 +504,9 @@ void transacoes(struct Group g){
         else if (t.escolha == 2){
             glScaled(t.s.scax,t.s.scay,t.s.scaz);
         }
-        else if (t.escolha == 3){
-            
+        else if (t.escolha == 3)
+        {
+            renderCatmullRomCurve(t.c,100);
         }
     }
 
