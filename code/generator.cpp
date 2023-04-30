@@ -273,12 +273,67 @@ void multMatrixVector(float m[4][4], float *v, float *res) {
 
 }
 
+// Função para calcular P(U,V) = U * M * pontos[indices] * M * V      Mt = M
+float UbezierV(float u, float calculado[4][4], float v){ 
+    float V[4] = { powf(v, 3.0) , powf(v, 2.0) + v + 1 };
+    float temp[4];
+    float res;
+    // temp = M * pontos[indices] * M * V
+    multMatrixVector(calculado,V,temp);
+    // res = U * temp
+    res = powf(u, 3.0) * temp[0] + powf(u, 2.0) * temp[1] + u * temp[2] + temp[3];
+
+    return res;
+}
+
+// Calcular os pontos
 void drawBezier(float xCoords[4][4], float yCoords[4][4], float zCoords[4][4], int tess, string file){
     ofstream MyFile;
     MyFile.open(path + file);
-}
 
-// P(U,V) = U * M * pontos[indices] * M * V      Mt = M
+    float delta = 1.0 / tess;
+
+    for (float i = 0; i < 1; i+=delta)
+    {
+        for (float j = 0; j < 1; j+=delta)
+        {
+            // percorre a tesselacao, 4 pontos
+            point ponto;
+            point ponto1;
+            point ponto2;
+            point ponto3;
+
+            ponto.x = UbezierV(i,xCoords,j);
+            ponto.y = UbezierV(i,yCoords,j);
+            ponto.z = UbezierV(i,zCoords,j);
+
+            ponto1.x = UbezierV(i+delta,xCoords,j);
+            ponto1.y = UbezierV(i+delta,yCoords,j);
+            ponto1.z = UbezierV(i+delta,zCoords,j);
+
+            ponto2.x = UbezierV(i+delta,xCoords,j+delta);
+            ponto2.y = UbezierV(i+delta,yCoords,j+delta);
+            ponto2.z = UbezierV(i+delta,zCoords,j+delta);
+
+            ponto3.x = UbezierV(i,xCoords,j+delta);
+            ponto3.y = UbezierV(i,yCoords,j+delta);
+            ponto3.z = UbezierV(i,zCoords,j+delta);
+
+            // passar para o ficheiro o "quadrado"
+            // triangulo 1
+            MyFile << ponto.x << ", " << ponto.y << ", " << ponto.z << "\n";
+            MyFile << ponto1.x << ", " << ponto1.y << ", " << ponto1.z << "\n";
+            MyFile << ponto3.x << ", " << ponto3.y << ", " << ponto3.z << "\n";
+
+            // triangulo 2
+            MyFile << ponto1.x << ", " << ponto1.y << ", " << ponto1.z << "\n";
+            MyFile << ponto2.x << ", " << ponto2.y << ", " << ponto2.z << "\n";
+            MyFile << ponto3.x << ", " << ponto3.y << ", " << ponto3.z << "\n";
+        }
+        
+    }
+    
+}
 
 // Trata do ficheiro patch dado
 void readPatch(string patch, int tess, string file)
@@ -300,7 +355,6 @@ void readPatch(string patch, int tess, string file)
     getline(patch_file,line);
 
     n_patch = atoi(line.c_str());
-    //patch_file >> n_patch;
 
     cout << n_patch << " numero patches";
     
@@ -314,34 +368,8 @@ void readPatch(string patch, int tess, string file)
         {
             auxiliar.push_back(atoi(a.c_str()));
         }
-        //string line;
-        /*
-        for (int j = 0; j < 16; j++)
-        {
-            string line ;
-            getline (patch_file,line);
-            std::vector<std::string> v = split (line, ",");
-
-            // getline(patch_file,line);
-            // string delimiter = ",";
-            // auxiliar = split(line, delimiter);
-            //patch_file.getline(valor, 256, ',');
-            auxiliar.push_back(atoi(valor));
-            cout << valor << " ";
-            
-        }
-         */
         indices.push_back(auxiliar);
-        //cout << i <<"\n";
     }
-
-    //  for (auto i : indices)
-    //  {
-    //      for(auto j : i){
-    //          cout << j << " " ;
-    //     }
-    //      cout <<"\n";
-    // }
     
 
     getline(patch_file,line);
@@ -376,7 +404,7 @@ void readPatch(string patch, int tess, string file)
     }
     float temp[4][4];
 
-    //  M * pontos[indices] * M para x,y,z
+    //  M * pontos[indices] * M para x,y,z que podem ser pré calculados
     multMatrix(m,xCoords,temp);
     multMatrix(temp,m,xCoords); 
 
