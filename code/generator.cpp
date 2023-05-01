@@ -275,7 +275,7 @@ void multMatrixVector(float m[4][4], float *v, float *res) {
 
 // Função para calcular P(U,V) = U * M * pontos[indices] * M * V      Mt = M
 float UbezierV(float u, float calculado[4][4], float v){ 
-    float V[4] = { powf(v, 3.0) , powf(v, 2.0) + v + 1 };
+    float V[4] = { powf(v, 3.0) , powf(v, 2.0), v, 1 };
     float temp[4];
     float res;
     // temp = M * pontos[indices] * M * V
