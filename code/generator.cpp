@@ -18,6 +18,7 @@ struct point
 	float z;
 };
 
+
 std::vector<std::string> split(std::string s, std::string delimiter) {
     size_t pos_start = 0, pos_end, delim_len = delimiter.length();
     std::string token;
@@ -289,7 +290,7 @@ float UbezierV(float u, float calculado[4][4], float v){
 // Calcular os pontos
 void drawBezier(float xCoords[4][4], float yCoords[4][4], float zCoords[4][4], int tess, string file){
     ofstream MyFile;
-    MyFile.open(path + file);
+    MyFile.open(path + file,std::ios_base::app);
 
     float delta = 1.0 / tess;
 
@@ -349,10 +350,12 @@ void readPatch(string patch, int tess, string file)
     float zCoords[4][4];
     float m[4][4] = {	{-1.0f,  3.0f, -3.0f,  1.0f},   // Matriz de Bezier
 						{ 3.0f, -6.0f,  3.0f,  0.0f},
-						{-3.0f,  3.0f,  0.5f,  0.0f},
-						{ 1.0f,  1.0f,  0.0f,  0.0f}};
+						{-3.0f,  3.0f,  0.0f,  0.0f},
+						{ 1.0f,  0.0f,  0.0f,  0.0f}};
     
-    getline(patch_file,line);
+    getline(patch_file,line);   
+    std::ofstream outfile;
+    outfile.open(path+file);
 
     n_patch = atoi(line.c_str());
 
@@ -401,20 +404,21 @@ void readPatch(string patch, int tess, string file)
                 zCoords[j][i] = pontos_controlo[index].z;
             }
         }
+         float temp[4][4];
+
+        //  M * pontos[indices] * M para x,y,z que podem ser pré calculados
+        multMatrix(m,xCoords,temp);
+        multMatrix(temp,m,xCoords); 
+
+        multMatrix(m,yCoords,temp);
+        multMatrix(temp,m,yCoords);
+
+        multMatrix(m,zCoords,temp);
+        multMatrix(temp,m,zCoords);
+
+        drawBezier(xCoords,yCoords,zCoords,tess,file);
     }
-    float temp[4][4];
-
-    //  M * pontos[indices] * M para x,y,z que podem ser pré calculados
-    multMatrix(m,xCoords,temp);
-    multMatrix(temp,m,xCoords); 
-
-    multMatrix(m,yCoords,temp);
-    multMatrix(temp,m,yCoords);
-
-    multMatrix(m,zCoords,temp);
-    multMatrix(temp,m,zCoords);
-
-    drawBezier(xCoords,yCoords,zCoords,tess,file);
+   
 
 }
 
