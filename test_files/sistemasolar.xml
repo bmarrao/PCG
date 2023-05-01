@@ -10,6 +10,7 @@
     <group>
         <transform> 
                 <scale x="20" y="20" z="20" />
+                <rotate time="3" x="0" y="1" z="0" />
         </transform>
        
             <models><!-- Sol -->
@@ -45,6 +46,7 @@
                 
                 <translate x="15" y ="0" z="0" />
                 <scale x="0.1" y="0.1" z="0.1" />
+                <rotate time="10" x="0" y="1" z="0" />
             </transform>
             <models>
                 <model file="sphere_1_100_100.3d" />

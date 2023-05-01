@@ -541,7 +541,7 @@ void transacoes(struct Group g){
                 else{
                     tempo = ((tglobal/1000)/t.c.time) - tempoaux;
                 }
-                cout <<tempo<<endl;
+                //cout <<tempo<<endl;
 
                 getGlobalCatmullRomPoint(tempo,pos,deriv,t.c);
 
