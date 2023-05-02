@@ -87,10 +87,13 @@ int camW,camL;
 float alpha,betah,raio;
 float lookAX, lookAY, lookAZ;
 float camVX, camVY, camVZ;
+
+float lookAXaux, lookAYaux, lookAZaux;
 float fov,nears,fars,pers;
 GLuint buffers[1];
 float dx,dz;
 float camX, camY,camZ;
+float camXaux, camYaux,camZaux;
 std::vector<float> p;
 int startX, startY, tracking = 0;
 float a = 0;
@@ -99,6 +102,13 @@ float transx ,transy,transz;
 float rotx,roty,rotz;
 float scax,scay,scaz;
 float tglobal = 0;
+
+void spherical2Cartesian() {
+
+	camX = raio * cos(betah) * sin(alpha);
+	camY = raio * sin(betah);
+	camZ = raio * cos(betah) * cos(alpha);
+}
 
 void buildRotMatrix(float *x, float *y, float *z, float *m) {
 
@@ -401,6 +411,16 @@ struct Group readGroup(XMLElement *group){
     }
     return grupo;
 }
+void readWD(std::string source){
+    source = "../../test_files/" + source;
+    XMLDocument xml;
+    xml.LoadFile(source.data());
+
+    XMLElement *window = xml.FirstChildElement("world")->FirstChildElement("window");
+
+    camW = atoi(window->Attribute("width"));
+    camL = atoi(window->Attribute("height"));
+}
 
 void readXML(std::string source){
 
@@ -410,8 +430,6 @@ void readXML(std::string source){
 
     XMLElement *window = xml.FirstChildElement("world")->FirstChildElement("window");
 
-    camW = atoi(window->Attribute("width"));
-    camL = atoi(window->Attribute("height"));
 
     XMLElement *camera = xml.FirstChildElement("world")->FirstChildElement("camera");
 
@@ -427,11 +445,17 @@ void readXML(std::string source){
     camX = sin(alpha)*cos(betah)*raio;
     camY = sin(betah)*raio;
     camZ = cos(alpha)*cos(betah)*raio;
+    camXaux = camX;
+    camYaux = camY;
+    camZaux = camZ;
 
     XMLElement *lookAt = camera->FirstChildElement("lookAt");
     lookAX = atof(lookAt->Attribute("x"));
     lookAY = atof(lookAt->Attribute("y"));
     lookAZ = atof(lookAt->Attribute("z"));
+    lookAXaux = lookAX;
+    lookAYaux = lookAY;
+    lookAZaux = lookAZ;
 
     XMLElement *up = camera->FirstChildElement("up");
     camVX = atof(up->Attribute("x"));
@@ -627,8 +651,8 @@ void renderScene(void) {
 
     glBegin(GL_LINES);
     // X axis in red
-    glVertex3f(-100.0f, 0.0f, 0.0f);
     glColor3f(1.0f, 0.0f, 0.0f);
+    glVertex3f(-100.0f, 0.0f, 0.0f);
     glVertex3f(100.0f, 0.0f, 0.0f);
     // Y Axis in Green
     glColor3f(0.0f, 1.0f, 0.0f);
@@ -655,6 +679,8 @@ void renderScene(void) {
     tglobal = glutGet(GLUT_ELAPSED_TIME);
   
 }
+
+
 void processKeys(unsigned char key, int xx, int yy) {
     switch(key){
         case 'h':
@@ -698,7 +724,7 @@ void processKeys(unsigned char key, int xx, int yy) {
             camZ = cos(alpha)*cos(betah)*raio;
             break;
 
-        case 'p':
+        case 'f':
             a = 0;
             camX = 0.0f;
             camZ = 0.0f;
@@ -707,15 +733,15 @@ void processKeys(unsigned char key, int xx, int yy) {
             lookAZ = camZ + cos(a);
             lookAY = camY;
             break;
-        case 'i':
-            a += M_PI/16;
+        case 'o':
+            a += M_PI/32;
 
             lookAX = camX + sin(a);
             lookAZ = camZ + cos(a);
             lookAY = camY;
             break;
-        case 'o':
-            a -= M_PI/16;
+        case 'p':
+            a -= M_PI/32;
 
             lookAX = camX + sin(a);
             lookAZ = camZ + cos(a);
@@ -734,32 +760,38 @@ void processKeys(unsigned char key, int xx, int yy) {
             break;
         case 's':
 
-                dx = (lookAX-camX)*3;
-                dz = (lookAZ-camZ)*3;
-                camX = camX - dx;
-                camZ = camZ - dz;
-                lookAX = lookAX -  dx;
-                lookAZ = lookAZ -  dz;
-                lookAY = camY;
+            dx = (lookAX-camX)*3;
+            dz = (lookAZ-camZ)*3;
+            camX = camX - dx;
+            camZ = camZ - dz;
+            lookAX = lookAX -  dx;
+            lookAZ = lookAZ -  dz;
+            lookAY = camY;
 
-                break;
-            case 'a':
+            break;
+        case 'a':
 
-                camX += 1;
-                lookAX = camX + sin(a);
-                lookAZ = camZ + cos(a);
-                lookAY = camY;
-                break;
-            case 'd':
+            camX += 1;
+            lookAX = camX + sin(a);
+            lookAZ = camZ + cos(a);
+            lookAY = camY;
+            break;
+        case 'd':
 
-                camX -= 1;
+            camX -= 1;
 
-                lookAX = camX + sin(a);
-                lookAZ = camZ + cos(a);
-                lookAY = camY;
-                break;
-
-
+            lookAX = camX + sin(a);
+            lookAZ = camZ + cos(a);
+            lookAY = camY;
+            break;
+        case 'r':
+            camX =camXaux;
+            camY = camYaux;
+            camZ = camZaux;
+            lookAX = lookAXaux;
+            lookAY = lookAYaux;
+            lookAZ = lookAZaux;
+            break;
         }
 
         glutPostRedisplay();
@@ -792,90 +824,119 @@ void processKeys(unsigned char key, int xx, int yy) {
             tracking = 0;
         }
     }
+*/
+void processMouseButtons(int button, int state, int xx, int yy) {
+	
+	if (state == GLUT_DOWN)  {
+		startX = xx;
+		startY = yy;
+		if (button == GLUT_LEFT_BUTTON)
+			tracking = 1;
+		else if (button == GLUT_RIGHT_BUTTON)
+			tracking = 2;
+		else
+			tracking = 0;
+	}
+	else if (state == GLUT_UP) {
+		if (tracking == 1) {
+			alpha += (xx - startX);
+			betah += (yy - startY);
+		}
+		else if (tracking == 2) {
+			
+			raio -= yy - startY;
+			if (raio < 3)
+				raio = 3.0;
+		}
+		tracking = 0;
+	}
+}
 
-    void processMouseMotion(int xx, int yy) {
-
-        int deltaX, deltaY;
-        int alphaAux, betaAux;
-        int rAux;
-
-        if (!tracking)
-            return;
-
-        deltaX = xx - startX;
-        deltaY = yy - startY;
-
-        if (tracking == 1) {
-
-
-            alphaAux = alpha + deltaX;
-            betaAux = betah + deltaY;
-
-            if (betaAux > 85.0)
-                betaAux = 85.0;
-            else if (betaAux < -85.0)
-                betaAux = -85.0;
-
-            rAux = raio;
-        }
-        else if (tracking == 2) {
-
-            alphaAux = alpha;
-            betaAux = betah;
-            rAux = raio - deltaY;
-            if (rAux < 3)
-                rAux = 3;
-        }
-        camX = rAux * sin(alphaAux * 3.14 / 180.0) * cos(betaAux * 3.14 / 180.0);
-        camZ = rAux * cos(alphaAux * 3.14 / 180.0) * cos(betaAux * 3.14 / 180.0);
-        camY = rAux * 							     sin(betaAux * 3.14 / 180.0);
+void processMouseMotion(int xx, int yy) {
+    int deltaX, deltaY;
+    int alphaAux, betaAux;
+    int rAux;
+    if (!tracking)
+        return;
+    deltaX = xx - startX;
+    deltaY = yy - startY;
+    if (tracking == 1) {
+        alphaAux = alpha + deltaX;
+        betaAux = betah + deltaY;
+        if (betaAux > 85.0)
+            betaAux = 85.0;
+        else if (betaAux < -85.0)
+            betaAux = -85.0;
+        rAux = raio;
     }
-    */
-    void processSpecialKeys(int key, int xx, int yy) {
+    else if (tracking == 2) {
+        alphaAux = alpha;
+        betaAux = betah;
+        rAux = raio - deltaY;
+        if (rAux < 3)
+            rAux = 3;
+    }
+    camX = rAux * sin(alphaAux * 3.14 / 180.0) * cos(betaAux * 3.14 / 180.0);
+    camZ = rAux * cos(alphaAux * 3.14 / 180.0) * cos(betaAux * 3.14 / 180.0);
+    camY = rAux * 							     sin(betaAux * 3.14 / 180.0);
+}
+    
+void processSpecialKeys(int key, int xx, int yy) {
 
     // put code to process special keys in here
 
+}
+
+    void printInfo() {
+
+	printf("Vendor: %s\n", glGetString(GL_VENDOR));
+	printf("Renderer: %s\n", glGetString(GL_RENDERER));
+	printf("Version: %s\n", glGetString(GL_VERSION));
+
+	printf("\nuhjk are wasd \n");
+	printf("z to zoom and x to unzoom\n");
+    printf("press f to change to fps came and set pos to 0,0,0\n");
+    printf("and wasd to move around and o and p to change camera direction\n");
+    printf("r to reset to original position\n");
+    printf("only use mouse look arround when camera is at original position\n");
+
+
+
+}
+
+
+int main(int argc, char **argv){
+
+    if (argc > 1){
+        readWD(argv[1]);
     }
-
-
-    int main(int argc, char **argv){
-        //readXML("test_2_4.xml");
-
-
-
-    // init GLUT and the window
-        glutInit(&argc, argv);
-        glutInitDisplayMode(GLUT_DEPTH|GLUT_DOUBLE|GLUT_RGBA);
-        glutInitWindowPosition(100,100);
-        glutInitWindowSize(camW,camL);
-        glutCreateWindow("CG@DI-UM");
-
-    // Required callback registry
-        glutDisplayFunc(renderScene);
-        glutReshapeFunc(changeSize);
-        glutIdleFunc(renderScene);
-
-    // Callback registration for keyboard processing
-        glutKeyboardFunc(processKeys);
-        glutSpecialFunc(processSpecialKeys);
-        glewInit(); // after glutCreateWindow and before calling any OpenGL function
-
-    //  OpenGL settings
-        glEnable(GL_DEPTH_TEST);
-        glEnable(GL_CULL_FACE);
-        glEnableClientState(GL_VERTEX_ARRAY);
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-
-
-
-        if (argc > 1)
-        {
-            readXML(argv[1]);
-        }
-    // enter GLUT's main cycle
-        glutMainLoop();
-        
-
-        return 1;
+// init GLUT and the window
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_DEPTH|GLUT_DOUBLE|GLUT_RGBA);
+    glutInitWindowPosition(100,100);
+    glutInitWindowSize(camW,camL);
+    glutCreateWindow("CG@DI-UM");
+// Required callback registry
+    glutDisplayFunc(renderScene);
+    glutReshapeFunc(changeSize);
+    glutIdleFunc(renderScene);
+// Callback registration for keyboard processing
+    glutKeyboardFunc(processKeys);
+    glutSpecialFunc(processSpecialKeys);
+    glutMouseFunc(processMouseButtons);
+    glutMotionFunc(processMouseMotion);
+    glewInit(); // after glutCreateWindow and before calling any OpenGL function
+//  OpenGL settings
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    if (argc > 1){
+        readXML(argv[1]);
     }
+    printInfo();
+// enter GLUT's main cycle
+    glutMainLoop();
+    
+    return 1;
+}
