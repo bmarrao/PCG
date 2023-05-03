@@ -12,7 +12,7 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
-#include <bits/stdc++.h>
+#include <tuple>
 #include "tinyxml2.h"
 
 using namespace tinyxml2;
