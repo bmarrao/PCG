@@ -334,7 +334,7 @@ struct Group readGroup(XMLElement *group){
                     }
                     c.inicio = indice;
                     vboCatmullRomCurve(c,100);
-                    c.verticeCount = indice ;
+                    c.verticeCount = indice -c.inicio;
                     transformacao.c = c;
                     transformacao.escolha =3 ;
                     
