@@ -248,7 +248,7 @@ void printgroup(struct Group g){
         printgroup(i);
     }
     for(auto j: g.models){
-        cout<<j.modelo<< " " << j.inicio << " " << j.verticeCount << "\n";
+        cout<<j.modelo<< " " << j.inicio << " " << j.verticeCount << " " << j.shininess <<" " << j.textura << "\n";
 
         for (int i = 0 ; i < (j.verticeCount * 3) - j.inicio; i++)
         {
@@ -407,24 +407,32 @@ struct Group readGroup(XMLElement *group){
         {
             modelos g ;
             textura_name = model->FirstChildElement();
-            textura = textura_name->Name();
+            string textura = textura_name->Name();
             if (textura== "texture")
             {
                 g.textura = textura_name->Attribute("file");
-                cor = textura_name->NextSiblingElement();
+                color = textura_name->NextSiblingElement();
             }
             else
             {
-                color = textura_Name;
+                color = textura_name;
             }
             diffuse = color->FirstChildElement();
-            g.diffuse={diffuse->Attribute("R"),diffuse->Attribute("G"),diffuse->Attribute("B")};
+            g.diffuse[0]=atof(diffuse->Attribute("R"));
+            g.diffuse[1] =atof(diffuse->Attribute("G"));
+            g.diffuse[2]= atof(diffuse->Attribute("B"));
             ambient = diffuse->NextSiblingElement();
-            g.ambient = {ambient->Attribute("R"),ambient->Attribute("G"),ambient->Attribute("B")};
+            g.ambient[0] = atof(ambient->Attribute("R"));
+            g.ambient[1] =atof(ambient->Attribute("G"));
+            g.ambient[2] = atof(ambient->Attribute("B"));
             specular = ambient->NextSiblingElement();
-            g.specular = {specular->Attribute("R"),specular->Attribute("G"),specular->Attribute("B")};
+            g.specular[0] = atof(specular->Attribute("R"));
+            g.specular[1] = atof (specular->Attribute("G"));
+            g.specular[2] =  atof(specular->Attribute("B"));
             emissive = specular->NextSiblingElement();
-            g.emissive = {emissive->Attribute("R"),emissive->Attribute("G"),emissive->Attribute("B")};
+            g.emissive[0] = atof(emissive->Attribute("R"));
+            g.emissive[1] = atof(emissive->Attribute("G"));
+            g.emissive[2] =atof(emissive->Attribute("B"));
             shininess = emissive->NextSiblingElement();
             g.shininess = atof(shininess->Attribute("value"));
 
@@ -504,6 +512,9 @@ void readXML(std::string source){
     nears = atof(projection->Attribute("near"));
     fars = atof(projection->Attribute("far"));
     pers = camW/camL;
+
+    XMLElement *lights =  xml.FirstChildElement("world")->FirstChildElement("lights");
+    //CICLO pra pegar as lights
     XMLElement *GROUP = xml.FirstChildElement("world")->FirstChildElement("group");
     XMLElement *group = GROUP;
 
@@ -963,7 +974,12 @@ int main(int argc, char **argv){
     glutMouseFunc(processMouseButtons);
     glutMotionFunc(processMouseMotion);
     glewInit(); // after glutCreateWindow and before calling any OpenGL function
+
+
 //  OpenGL settings
+	glEnable(GL_RESCALE_NORMAL);
+    float amb[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, amb);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glEnableClientState(GL_VERTEX_ARRAY);
