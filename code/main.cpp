@@ -72,6 +72,12 @@ struct modelos{
     string modelo;
     int inicio ;
     int verticeCount;
+    int diffuse[3];
+    int ambient[3];
+    int specular[3];
+    int emissive[3];
+    float shininess;
+    string textura;
 };
 
 struct Group{
@@ -387,12 +393,43 @@ struct Group readGroup(XMLElement *group){
     XMLElement *MODELS = group->FirstChildElement("models");
     if(MODELS){
         XMLElement *model = MODELS->FirstChildElement("model");
+        XMLElement *textura_name ;
+        XMLElement *color ;
+        XMLElement *diffuse ;
+        XMLElement *ambient ;
+        XMLElement *specular ;
+        XMLElement *emissive ;
+        XMLElement *shininess ;
 
-        while (model){
 
-            std::string model_path = model->Attribute("file");
 
+        while (model)
+        {
             modelos g ;
+            textura_name = model->FirstChildElement();
+            textura = textura_name->Name();
+            if (textura== "texture")
+            {
+                g.textura = textura_name->Attribute("file");
+                cor = textura_name->NextSiblingElement();
+            }
+            else
+            {
+                color = textura_Name;
+            }
+            diffuse = color->FirstChildElement();
+            g.diffuse={diffuse->Attribute("R"),diffuse->Attribute("G"),diffuse->Attribute("B")};
+            ambient = diffuse->NextSiblingElement();
+            g.ambient = {ambient->Attribute("R"),ambient->Attribute("G"),ambient->Attribute("B")};
+            specular = ambient->NextSiblingElement();
+            g.specular = {specular->Attribute("R"),specular->Attribute("G"),specular->Attribute("B")};
+            emissive = specular->NextSiblingElement();
+            g.emissive = {emissive->Attribute("R"),emissive->Attribute("G"),emissive->Attribute("B")};
+            shininess = emissive->NextSiblingElement();
+            g.shininess = atof(shininess->Attribute("value"));
+
+    
+            std::string model_path = model->Attribute("file");
             g.modelo = "../../3d/" + model_path;
             g.inicio = indice;
             createVBO(g.modelo);
