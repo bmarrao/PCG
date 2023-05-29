@@ -109,7 +109,7 @@ float camVX, camVY, camVZ;
 
 float lookAXaux, lookAYaux, lookAZaux;
 float fov,nears,fars,pers;
-GLuint buffers[3];
+//GLuint buffers[3];
 float dx,dz;
 float camX, camY,camZ;
 float camXaux, camYaux,camZaux;
@@ -487,13 +487,13 @@ struct Group readGroup(XMLElement *group){
                     points.data(), // os dados do array associado ao vector
                     GL_STATIC_DRAW); // indicativo da utilização (estático e para desenho)*/
             
-            /*     
+             
             glBindBuffer(GL_ARRAY_BUFFER,g.buffers[1]);
             glBufferData(GL_ARRAY_BUFFER, sizeof(float) * normals.size(), normals.data(),     GL_STATIC_DRAW);
 
             glBindBuffer(GL_ARRAY_BUFFER,g.buffers[2]);
             glBufferData(GL_ARRAY_BUFFER, sizeof(float) * textures.size(), textures.data(),     GL_STATIC_DRAW);
-            */
+    
             g.verticeCount = points.size();
             grupo.models.push_back(g);
             model = model->NextSiblingElement("model");
