@@ -743,11 +743,12 @@ void recFilhos(struct Group g){
         glBindBuffer(GL_ARRAY_BUFFER, j.buffers[0]);
 	    glVertexPointer(3, GL_FLOAT, 0, 0);
 
-	    glBindBuffer(GL_ARRAY_BUFFER, j.buffers[1]);
-	    glNormalPointer(GL_FLOAT, 0, 0);
+	    //glBindBuffer(GL_ARRAY_BUFFER, j.buffers[1]);
+	    //glNormalPointer(GL_FLOAT, 0, 0);
 
 	    //glBindBuffer(GL_ARRAY_BUFFER, j.buffers[2]);
 	    //glTexCoordPointer(2, GL_FLOAT, 0, 0);
+
 
 
         glDrawArrays(GL_TRIANGLES, 0, j.verticeCount);
@@ -788,12 +789,6 @@ void renderScene(void) {
     glVertex3f(0.0f, 0.0f, 100.0f);
 
     glEnd();
-
-    /*
-    glBindBuffer(GL_ARRAY_BUFFER,buffers[0]);
-    glBindBuffer(GL_ARRAY_BUFFER, buffers[1]);
-    glBindBuffer(GL_ARRAY_BUFFER, buffers[2]);
-    */
 
     glColor3f(1.0f,1.0f,1.0f);
     glVertexPointer(3, GL_FLOAT, 0, 0);
@@ -1004,8 +999,9 @@ void processSpecialKeys(int key, int xx, int yy) {
 
 
 }
-
-int loadTexture(std::string s) {
+ /*
+int loadTexture(std::string s) 
+{
 
 	unsigned int t,tw,th;
 	unsigned char *texData;
@@ -1055,7 +1051,7 @@ int loadTexture(std::string s) {
 
 }
 
-
+*/
 int main(int argc, char **argv){
 
     if (argc > 1){
