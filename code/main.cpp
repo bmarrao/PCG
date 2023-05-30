@@ -795,6 +795,7 @@ void recFilhos(struct Group g){
 void renderScene(void) {
 
     // clear buffers
+    glClearColor(0.0f,0.0f,0.0f,0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // set the camera
@@ -820,7 +821,8 @@ void renderScene(void) {
             glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, posDirec);
             glLightfv(GL_LIGHT0, GL_SPOT_CUTOFF, posCutoff);
         }
-        else{
+        else
+        {
             float posDirec[3] =  {l.posx,l.posy,l.posz};
             glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, posDirec);
         }
@@ -1106,37 +1108,46 @@ int main(int argc, char **argv){
 
 
 //  OpenGL settings
-	//glEnable(GL_RESCALE_NORMAL);
-    //float amb[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
-	//glLightModelfv(GL_LIGHT_MODEL_AMBIENT, amb);
+	glEnable(GL_RESCALE_NORMAL);
+    float amb[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, amb);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
 
+    spherical2Cartesian();
     glEnableClientState(GL_VERTEX_ARRAY);
-    
-
-    glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
+    glEnableClientState(GL_NORMAL_ARRAY);
+    //glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
     //glEnable(GL_TEXTURE_2D);
 
     // LER AS CORES DO XML
-
-	// light colors
-    /*
-	glLightfv(GL_LIGHT0, GL_AMBIENT, dark);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, white);
-	glLightfv(GL_LIGHT0, GL_SPECULAR, white);
-    glLightfv(GL_LIGHT0, GL_EMISSION, white);
-    glLightfv(GL_LIGHT0, GL_SHININESS, white);
-
-	// controls global ambient light
-	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, black);
-*/
+    
+    //ISSO AQUIÉ ISSO ?
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     
     if (argc > 1){
         readXML(argv[1]);
+    }
+    if(Lights.size()>0){
+        glEnable(GL_LIGHTING);
+        glEnable(GL_LIGHT0);
+
+        //glEnable(GL_TEXTURE_2D);
+
+        // LER AS CORES DO XML
+        float dark[4] = { 0.2, 0.2, 0.2, 1.0 };
+        float white[4] = { 0.8, 0.8, 0.8, 1.0 };
+        float black[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+        // light colors
+        glLightfv(GL_LIGHT0, GL_AMBIENT, dark);
+        glLightfv(GL_LIGHT0, GL_DIFFUSE, white);
+        glLightfv(GL_LIGHT0, GL_SPECULAR, white);
+        glLightfv(GL_LIGHT0, GL_EMISSION, white);
+        glLightfv(GL_LIGHT0, GL_SHININESS, white);
+
+        // controls global ambient light
+        glLightModelfv(GL_LIGHT_MODEL_AMBIENT, black);
     }
     
     // Ler o ficheiro do xml
@@ -1144,8 +1155,7 @@ int main(int argc, char **argv){
 	//texIDFloor = loadTexture("Concrete.jpg");
 
 
-    glEnableClientState(GL_NORMAL_ARRAY);
-    //glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    
     //printInfo();
     // enter GLUT's main cycle
     glutMainLoop();
