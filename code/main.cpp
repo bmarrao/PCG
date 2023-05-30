@@ -76,20 +76,25 @@ struct Light{
     float posx;
     float posy;
     float posz;
+    float dirx;
+    float diry;
+    float dirz;
+    float cutoff;
 
 };
 
 struct modelos
 {
     string modelo;
-    GLuint buffers[1];
+    GLuint buffers[2];
     int verticeCount;
-    int diffuse[3];
-    int ambient[3];
-    int specular[3];
-    int emissive[3];
+    float diffuse[4];
+    float ambient[4];
+    float specular[4];
+    float emissive[4];
     float shininess;
     string textura;
+    int light_components ;
 };
 
 struct Group{
@@ -302,12 +307,19 @@ void createVBO(string file ,modelos* g)
         j=0;
 
     }
-    glGenBuffers(1, g->buffers);
+    glGenBuffers(2, g->buffers);
     glBindBuffer(GL_ARRAY_BUFFER,g->buffers[0]);
     glBufferData(
         GL_ARRAY_BUFFER, // tipo do buffer, só é relevante na altura do desenho
         sizeof(float) * points.size(), // tamanho do vector em bytes
         points.data(), // os dados do array associado ao vector
+        GL_STATIC_DRAW); // indicativo da utilização (estático e para desenho)*/
+    g->verticeCount = points.size()/3;
+    glBindBuffer(GL_ARRAY_BUFFER,g->buffers[1]);
+    glBufferData(
+        GL_ARRAY_BUFFER, // tipo do buffer, só é relevante na altura do desenho
+        sizeof(float) * points.size(), // tamanho do vector em bytes
+        normals.data(), // os dados do array associado ao vector
         GL_STATIC_DRAW); // indicativo da utilização (estático e para desenho)*/
     g->verticeCount = points.size()/3;
     cout<<"nome do buffer " << g->buffers[0] << "\n";
@@ -424,38 +436,47 @@ struct Group readGroup(XMLElement *group){
         while (model)
         {
             modelos g ;
-            /*
-            textura_name = model->FirstChildElement();
-            string textura = textura_name->Name();
-            if (textura== "texture")
+            textura_name = model->FirstChildElement("texture");
+            if (textura_name)
             {
                 g.textura = textura_name->Attribute("file");
                 color = textura_name->NextSiblingElement();
             }
+
+            color = model->FirstChildElement("color");
+
+            if (color)
+            {
+                g.light_components =1 ;
+                diffuse = color->FirstChildElement("diffuse");
+                g.diffuse[0]=atof(diffuse->Attribute("R"));
+                g.diffuse[1] =atof(diffuse->Attribute("G"));
+                g.diffuse[2]= atof(diffuse->Attribute("B"));
+                g.diffuse[3]= 1;
+                ambient = diffuse->NextSiblingElement("ambient");
+                g.ambient[0] = atof(ambient->Attribute("R"));
+                g.ambient[1] =atof(ambient->Attribute("G"));
+                g.ambient[2] = atof(ambient->Attribute("B"));
+                g.ambient[3] =1;
+                specular = ambient->NextSiblingElement("specular");
+                g.specular[0] = atof(specular->Attribute("R"));
+                g.specular[1] = atof (specular->Attribute("G"));
+                g.specular[2] =  atof(specular->Attribute("B"));
+                g.specular[3]= 1;
+                emissive = specular->NextSiblingElement("emissive");
+                g.emissive[0] = atof(emissive->Attribute("R"));
+                g.emissive[1] = atof(emissive->Attribute("G"));
+                g.emissive[2] =atof(emissive->Attribute("B"));
+                g.emissive[3] =1;
+                shininess = emissive->NextSiblingElement("shininess");
+                g.shininess = atof(shininess->Attribute("value"));
+            }
             else
             {
-                color = textura_name;
-            }
-            diffuse = color->FirstChildElement();
-            g.diffuse[0]=atof(diffuse->Attribute("R"));
-            g.diffuse[1] =atof(diffuse->Attribute("G"));
-            g.diffuse[2]= atof(diffuse->Attribute("B"));
-            ambient = diffuse->NextSiblingElement();
-            g.ambient[0] = atof(ambient->Attribute("R"));
-            g.ambient[1] =atof(ambient->Attribute("G"));
-            g.ambient[2] = atof(ambient->Attribute("B"));
-            specular = ambient->NextSiblingElement();
-            g.specular[0] = atof(specular->Attribute("R"));
-            g.specular[1] = atof (specular->Attribute("G"));
-            g.specular[2] =  atof(specular->Attribute("B"));
-            emissive = specular->NextSiblingElement();
-            g.emissive[0] = atof(emissive->Attribute("R"));
-            g.emissive[1] = atof(emissive->Attribute("G"));
-            g.emissive[2] =atof(emissive->Attribute("B"));
-            shininess = emissive->NextSiblingElement();
-            g.shininess = atof(shininess->Attribute("value"));
+                g.light_components =0 ;
 
-            */
+            }
+            //"
             std::string model_path = model->Attribute("file");
             g.modelo = "../../3d/" + model_path;
             //g.inicio = indice;
@@ -547,9 +568,33 @@ void readXML(std::string source){
             struct Light l;
 
             l.type = lights->Attribute("type");
-            l.posx = atof(projection->Attribute("posx"));
-            l.posy = atof(projection->Attribute("posy"));
-            l.posz = atof(projection->Attribute("posz"));
+            if(l.type == "point"){
+                l.posx = atof(projection->Attribute("posx"));
+                l.posy = atof(projection->Attribute("posy"));
+                l.posz = atof(projection->Attribute("posz"));
+                l.dirx = 0;
+                l.diry = 0;
+                l.dirz = 0;
+                l.cutoff = 0;
+            }
+            else if(l.type == "spot"){
+                l.posx = atof(projection->Attribute("posx"));
+                l.posy = atof(projection->Attribute("posy"));
+                l.posz = atof(projection->Attribute("posz"));
+                l.dirx = atof(projection->Attribute("dirx"));
+                l.diry = atof(projection->Attribute("diry"));
+                l.dirz = atof(projection->Attribute("dirz"));
+                l.cutoff = atof(projection->Attribute("cutoff"));
+            }
+            else{
+                l.dirx = atof(projection->Attribute("dirx"));
+                l.diry = atof(projection->Attribute("diry"));
+                l.dirz = atof(projection->Attribute("dirz"));
+                l.posx = 0;
+                l.posy = 0;
+                l.posz = 0;
+                l.cutoff = 0;
+            }
 
             Lights.push_back(l);
             light = lights->NextSiblingElement("light");
@@ -622,8 +667,7 @@ void transacoes(struct Group g){
         else if (t.escolha == 2){
             glScaled(t.s.scax,t.s.scay,t.s.scaz);
         }
-        else if (t.escolha == 3)
-        {
+        else if (t.escolha == 3){
             glBindBuffer(GL_ARRAY_BUFFER, t.c.buffers[0]);
 	        glVertexPointer(3, GL_FLOAT, 0, 0);
             glDrawArrays(GL_LINE_LOOP, 0, t.c.verticeCount);
@@ -709,30 +753,35 @@ void recFilhos(struct Group g){
 
     glPushMatrix();
     transacoes(g);
-    for (auto j: g.models)
-    {
+    for (auto j: g.models){
         //glBindTexture(GL_TEXTURE_2D,texture)
         /*
         float *ptr = (GLubyte*) glMapBufferRange(GL_ARRAY_BUFFER_ARB,0,1,GL_MAP_READ_BIT);
         printf("Ptr: %d",*ptr);
         */
-        printf("%u\n", j.buffers[0]);
-
+        
+        if (j.light_components == 1){
+            glMaterialfv(GL_FRONT, GL_DIFFUSE,j.diffuse);
+            glMaterialfv(GL_FRONT, GL_AMBIENT,j.ambient);
+            glMaterialfv(GL_FRONT, GL_EMISSION,j.emissive);
+            glMaterialfv(GL_FRONT, GL_SPECULAR, j.specular);
+            glMaterialf(GL_FRONT, GL_SHININESS, j.shininess);   
+        }
         
         glBindBuffer(GL_ARRAY_BUFFER, j.buffers[0]);
 	    glVertexPointer(3, GL_FLOAT, 0, 0);
-        cout << "nome do buffer " << j.buffers[0] << "\n";
+        //cout << "nome do buffer " << j.buffers[0] << "\n";
 
-	    //glBindBuffer(GL_ARRAY_BUFFER, j.buffers[1]);
-	    //glNormalPointer(GL_FLOAT, 0, 0);
+	    glBindBuffer(GL_ARRAY_BUFFER, j.buffers[1]);
+	    glNormalPointer(GL_FLOAT, 0, 0);
 
 	    //glBindBuffer(GL_ARRAY_BUFFER, j.buffers[2]);
 	    //glTexCoordPointer(2, GL_FLOAT, 0, 0);
 
-        cout << "vertices " << j.verticeCount << "\n";
+        //cout << "vertices " << j.verticeCount << "\n";
 
         glDrawArrays(GL_TRIANGLES, 0, j.verticeCount);
-        cout << "acabei de desenhar\n";
+        //cout << "acabei de desenhar\n";
         //glBindTexture(GL_TEXTURE_2D,0)
 
     }
@@ -757,7 +806,25 @@ void renderScene(void) {
 
     glColor3f(1.0f,1.0f,1.0f);
     
-
+    //SPOTLIGHT - DIRECTION 
+    for(auto l : Lights){
+        if (l.type== "point"){
+            float pos[3] =  {l.posx,l.posy,l.posz};
+            glLightfv(GL_LIGHT0, GL_POSITION,pos);
+        }
+        else if (l.type == "spot"){
+            float pos[3] =  {l.posx,l.posy,l.posz};
+            float posDirec[3] =  {l.posx,l.posy,l.posz};
+            float posCutoff[3] =  {l.posx,l.posy,l.posz};
+            glLightfv(GL_LIGHT0, GL_POSITION,pos);
+            glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, posDirec);
+            glLightfv(GL_LIGHT0, GL_SPOT_CUTOFF, posCutoff);
+        }
+        else{
+            float posDirec[3] =  {l.posx,l.posy,l.posz};
+            glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, posDirec);
+        }
+    }
 
     for (auto i : groups){
         recFilhos(i);
@@ -864,9 +931,6 @@ void processKeys(unsigned char key, int xx, int yy) {
             lookAX = camX + sin(a);
             lookAZ = camZ + cos(a);
             lookAY = camY;
-            break;
-        case 'd':
-
             camX -= 1;
 
             lookAX = camX + sin(a);
@@ -1051,8 +1115,8 @@ int main(int argc, char **argv){
     glEnableClientState(GL_VERTEX_ARRAY);
     
 
-    //glEnable(GL_LIGHTING);
-	//glEnable(GL_LIGHT0);
+    glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
 
     //glEnable(GL_TEXTURE_2D);
 
@@ -1080,10 +1144,10 @@ int main(int argc, char **argv){
 	//texIDFloor = loadTexture("Concrete.jpg");
 
 
-    //glEnableClientState(GL_NORMAL_ARRAY);
+    glEnableClientState(GL_NORMAL_ARRAY);
     //glEnableClientState(GL_TEXTURE_COORD_ARRAY);
     //printInfo();
-// enter GLUT's main cycle
+    // enter GLUT's main cycle
     glutMainLoop();
 
 
