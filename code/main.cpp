@@ -82,8 +82,7 @@ struct Light{
 struct modelos
 {
     string modelo;
-    int inicio ;
-    GLuint buffers[3];
+    GLuint buffers[1];
     int verticeCount;
     int diffuse[3];
     int ambient[3];
@@ -227,16 +226,27 @@ void getGlobalCatmullRomPoint(float gt ,float *pos, float *deriv,struct catmullR
 	getCatmullRomPoint(t, p1, p2, p3, p4, pos, deriv);
 }
 
-void vboCatmullRomCurve(catmullRom c,float line_segments,std::vector<float>points)
+void vboCatmullRomCurve(catmullRom *c,float line_segments)
 {
+    std::vector<float>points;
     float pos[3], deriv[3];
     for (int i = 0; i < line_segments; i++)
     {
-        getGlobalCatmullRomPoint(1/line_segments * i, pos, deriv,c);
+        getGlobalCatmullRomPoint(1/line_segments * i, pos, deriv,*c);
         points.push_back(pos[0]);
         points.push_back(pos[1]);
         points.push_back(pos[2]);
     }
+    glGenBuffers(1, c->buffers);
+    glBindBuffer(GL_ARRAY_BUFFER,c->buffers[0]);
+    glBufferData(
+            GL_ARRAY_BUFFER, // tipo do buffer, só é relevante na altura do desenho
+            sizeof(float) * points.size(), // tamanho do vector em bytes
+            points.data(), // os dados do array associado ao vector
+            GL_STATIC_DRAW); // indicativo da utilização (estático e para desenho)*/
+
+    c->verticeCount = points.size()/3;
+    
 
 }
 
@@ -256,36 +266,11 @@ std::vector<std::string> split(std::string s, std::string delimiter) {
     return res;
 }
 
-
-void printgroup(struct Group g){
-    for(auto i :g.grupos){
-        printgroup(i);
-    }
-    for(auto j: g.models){
-        cout<<j.modelo<< " " << j.inicio << " " << j.verticeCount << " " << j.shininess <<" " << j.textura << "\n";
-
-
-    }
-    /*
-    for(auto tran : g.transformacoes)
-    {
-        cout << tran.escolha << "\n";
-        cout << "Inicio pontos\n";
-        if (tran.escolha == 3)
-        {
-            for(auto i : tran.c.pontos)
-            {
-                cout << i.x << " " << i.y << " " << i.z << "\n";
-            }
-        }
-        cout << "Final pontos \n";
-
-    }
-    */
-}
-
-void createVBO(string file ,std::vector<float>points,std::vector<float> normals,    std::vector<float> textures)
+void createVBO(string file ,modelos* g)
 {
+    std::vector<float>points;
+    std::vector<float> normals;
+    std::vector<float> textures;
     std::string line;
     ifstream indata;
     indata.open(file);
@@ -317,6 +302,15 @@ void createVBO(string file ,std::vector<float>points,std::vector<float> normals,
         j=0;
 
     }
+    glGenBuffers(1, g->buffers);
+    glBindBuffer(GL_ARRAY_BUFFER,g->buffers[0]);
+    glBufferData(
+        GL_ARRAY_BUFFER, // tipo do buffer, só é relevante na altura do desenho
+        sizeof(float) * points.size(), // tamanho do vector em bytes
+        points.data(), // os dados do array associado ao vector
+        GL_STATIC_DRAW); // indicativo da utilização (estático e para desenho)*/
+    g->verticeCount = points.size()/3;
+    cout<<"nome do buffer " << g->buffers[0] << "\n";
 
 }
 
@@ -363,18 +357,8 @@ struct Group readGroup(XMLElement *group){
 
 
                     }
-                    //Talvez tenha q fazer free ? 
-                    std::vector<float>points;
-                    vboCatmullRomCurve(c,100,points);
-                    glGenBuffers(1, c.buffers);
-                    glBindBuffer(GL_ARRAY_BUFFER,c.buffers[0]);
-                    glBufferData(
-                            GL_ARRAY_BUFFER, // tipo do buffer, só é relevante na altura do desenho
-                            sizeof(float) * points.size(), // tamanho do vector em bytes
-                            points.data(), // os dados do array associado ao vector
-                            GL_STATIC_DRAW); // indicativo da utilização (estático e para desenho)*/
-
-                    c.verticeCount = points.size();
+                    
+                    vboCatmullRomCurve(&c,100);
                     transformacao.c = c;
                     transformacao.escolha =3 ;
                     
@@ -440,6 +424,7 @@ struct Group readGroup(XMLElement *group){
         while (model)
         {
             modelos g ;
+            /*
             textura_name = model->FirstChildElement();
             string textura = textura_name->Name();
             if (textura== "texture")
@@ -470,32 +455,19 @@ struct Group readGroup(XMLElement *group){
             shininess = emissive->NextSiblingElement();
             g.shininess = atof(shininess->Attribute("value"));
 
-    
+            */
             std::string model_path = model->Attribute("file");
             g.modelo = "../../3d/" + model_path;
-            g.inicio = indice;
+            //g.inicio = indice;
             
-            std::vector<float>points;
-            std::vector<float> normals;
-            std::vector<float> textures;
-            createVBO(g.modelo,points,normals,textures);
-            glGenBuffers(3, g.buffers[0]);
-            glBindBuffer(GL_ARRAY_BUFFER,g.buffers[0]);
-            glBufferData(
-                    GL_ARRAY_BUFFER, // tipo do buffer, só é relevante na altura do desenho
-                    sizeof(float) * points.size(), // tamanho do vector em bytes
-                    points.data(), // os dados do array associado ao vector
-                    GL_STATIC_DRAW); // indicativo da utilização (estático e para desenho)*/
-            
-            for (auto )
-             
-            glBindBuffer(GL_ARRAY_BUFFER,g.buffers[1]);
-            glBufferData(GL_ARRAY_BUFFER, sizeof(float) * normals.size(), normals.data(),     GL_STATIC_DRAW);
+            g.verticeCount=0;
+            cout<<"antes" << g.verticeCount<< "\n";
+            createVBO(g.modelo,&g);
+            cout <<"depois"<< g.verticeCount<< "\n";
 
-            glBindBuffer(GL_ARRAY_BUFFER,g.buffers[2]);
-            glBufferData(GL_ARRAY_BUFFER, sizeof(float) * textures.size(), textures.data(),     GL_STATIC_DRAW);
+            cout<<"nome do buffer2 " << g.buffers[0] << "\n";
     
-            g.verticeCount = points.size();
+            //g.verticeCount = points.size();
             grupo.models.push_back(g);
             model = model->NextSiblingElement("model");
 
@@ -740,9 +712,16 @@ void recFilhos(struct Group g){
     for (auto j: g.models)
     {
         //glBindTexture(GL_TEXTURE_2D,texture)
+        /*
+        float *ptr = (GLubyte*) glMapBufferRange(GL_ARRAY_BUFFER_ARB,0,1,GL_MAP_READ_BIT);
+        printf("Ptr: %d",*ptr);
+        */
+        printf("%u\n", j.buffers[0]);
+
         
         glBindBuffer(GL_ARRAY_BUFFER, j.buffers[0]);
 	    glVertexPointer(3, GL_FLOAT, 0, 0);
+        cout << "nome do buffer " << j.buffers[0] << "\n";
 
 	    //glBindBuffer(GL_ARRAY_BUFFER, j.buffers[1]);
 	    //glNormalPointer(GL_FLOAT, 0, 0);
@@ -750,9 +729,10 @@ void recFilhos(struct Group g){
 	    //glBindBuffer(GL_ARRAY_BUFFER, j.buffers[2]);
 	    //glTexCoordPointer(2, GL_FLOAT, 0, 0);
 
-
+        cout << "vertices " << j.verticeCount << "\n";
 
         glDrawArrays(GL_TRIANGLES, 0, j.verticeCount);
+        cout << "acabei de desenhar\n";
         //glBindTexture(GL_TEXTURE_2D,0)
 
     }
@@ -775,26 +755,10 @@ void renderScene(void) {
               lookAX, lookAY, lookAZ,
               camVX, camVY, camVZ);
 
-    glBegin(GL_LINES);
-    // X axis in red
-    glColor3f(1.0f, 0.0f, 0.0f);
-    glVertex3f(-100.0f, 0.0f, 0.0f);
-    glVertex3f(100.0f, 0.0f, 0.0f);
-    // Y Axis in Green
-    glColor3f(0.0f, 1.0f, 0.0f);
-    glVertex3f(0.0f, -100.0f, 0.0f);
-    glVertex3f(0.0f, 100.0f, 0.0f);
-    // Z Axis in Blue
-    glColor3f(0.0f, 0.0f, 1.0f);
-    glVertex3f(0.0f, 0.0f, -100.0f);
-    glVertex3f(0.0f, 0.0f, 100.0f);
-
-    glEnd();
-
     glColor3f(1.0f,1.0f,1.0f);
-    glVertexPointer(3, GL_FLOAT, 0, 0);
-
     
+
+
     for (auto i : groups){
         recFilhos(i);
 
@@ -1078,20 +1042,19 @@ int main(int argc, char **argv){
 
 
 //  OpenGL settings
-	glEnable(GL_RESCALE_NORMAL);
-    float amb[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
-	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, amb);
+	//glEnable(GL_RESCALE_NORMAL);
+    //float amb[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	//glLightModelfv(GL_LIGHT_MODEL_AMBIENT, amb);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
 
     glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_NORMAL_ARRAY);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    
 
-    glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
+    //glEnable(GL_LIGHTING);
+	//glEnable(GL_LIGHT0);
 
-    glEnable(GL_TEXTURE_2D);
+    //glEnable(GL_TEXTURE_2D);
 
     // LER AS CORES DO XML
 
@@ -1105,19 +1068,25 @@ int main(int argc, char **argv){
 
 	// controls global ambient light
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, black);
-
+*/
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    
     if (argc > 1){
         readXML(argv[1]);
     }
-    */
+    
     // Ler o ficheiro do xml
     //texIDCylinder = loadTexture("Oil_Drum001h.jpg");
 	//texIDFloor = loadTexture("Concrete.jpg");
 
-    printInfo();
+
+    //glEnableClientState(GL_NORMAL_ARRAY);
+    //glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    //printInfo();
 // enter GLUT's main cycle
     glutMainLoop();
+
+
     
     return 1;
 }
