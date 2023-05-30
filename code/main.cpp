@@ -479,7 +479,7 @@ struct Group readGroup(XMLElement *group){
             std::vector<float> normals;
             std::vector<float> textures;
             createVBO(g.modelo,points,normals,textures);
-            glGenBuffers(3, g.buffers);
+            glGenBuffers(3, g.buffers[0]);
             glBindBuffer(GL_ARRAY_BUFFER,g.buffers[0]);
             glBufferData(
                     GL_ARRAY_BUFFER, // tipo do buffer, só é relevante na altura do desenho
@@ -487,6 +487,7 @@ struct Group readGroup(XMLElement *group){
                     points.data(), // os dados do array associado ao vector
                     GL_STATIC_DRAW); // indicativo da utilização (estático e para desenho)*/
             
+            for (auto )
              
             glBindBuffer(GL_ARRAY_BUFFER,g.buffers[1]);
             glBufferData(GL_ARRAY_BUFFER, sizeof(float) * normals.size(), normals.data(),     GL_STATIC_DRAW);
