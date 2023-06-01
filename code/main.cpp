@@ -350,7 +350,7 @@ void createVBO(string file ,modelos* g){
 
 struct Group readGroup(XMLElement *group){
 
-
+    cout << "done\n";
     XMLElement *trans = group-> FirstChildElement("transform");
 
     XMLElement *filho;
@@ -442,6 +442,7 @@ struct Group readGroup(XMLElement *group){
             filho = filho->NextSiblingElement();
         }
     }
+    
     XMLElement *MODELS = group->FirstChildElement("models");
     if(MODELS){
         XMLElement *model = MODELS->FirstChildElement("model");
@@ -454,7 +455,7 @@ struct Group readGroup(XMLElement *group){
         XMLElement *shininess ;
 
 
-
+        cout << "done\n";
         while (model){
             modelos g ;
             textura_name = model->FirstChildElement("texture");
@@ -494,6 +495,7 @@ struct Group readGroup(XMLElement *group){
                 g.light_components =0 ;
 
             }
+            cout << "done\n";
             //"
             std::string model_path = model->Attribute("file");
             g.modelo = "../../3d/" + model_path;
@@ -533,7 +535,7 @@ void readWD(std::string source){
 }
 
 void readXML(std::string source){
-
+    
     source = "../../test_files/" + source;
     XMLDocument xml;
     xml.LoadFile(source.data());
@@ -584,12 +586,13 @@ void readXML(std::string source){
         XMLElement *light = lights ->FirstChildElement("light");
         while (light){
             struct Light l;
-
-            l.type = lights->Attribute("type");
+            
+            l.type = light->Attribute("type");
+            
             if(l.type == "point"){
-                l.posx = atof(projection->Attribute("posx"));
-                l.posy = atof(projection->Attribute("posy"));
-                l.posz = atof(projection->Attribute("posz"));
+                l.posx = atof(light->Attribute("posx"));
+                l.posy = atof(light->Attribute("posy"));
+                l.posz = atof(light->Attribute("posz"));
                 l.dirx = 0;
                 l.diry = 0;
                 l.dirz = 0;
@@ -597,19 +600,20 @@ void readXML(std::string source){
                 l.i = Luz(lightindex);
             }
             else if(l.type == "spot"){
-                l.posx = atof(projection->Attribute("posx"));
-                l.posy = atof(projection->Attribute("posy"));
-                l.posz = atof(projection->Attribute("posz"));
-                l.dirx = atof(projection->Attribute("dirx"));
-                l.diry = atof(projection->Attribute("diry"));
-                l.dirz = atof(projection->Attribute("dirz"));
-                l.cutoff = atof(projection->Attribute("cutoff"));
+                l.posx = atof(light->Attribute("posx"));
+                l.posy = atof(light->Attribute("posy"));
+                l.posz = atof(light->Attribute("posz"));
+                l.dirx = atof(light->Attribute("dirx"));
+                l.diry = atof(light->Attribute("diry"));
+                l.dirz = atof(light->Attribute("dirz"));
+                l.cutoff = atof(light->Attribute("cutoff"));
                 l.i = Luz(lightindex);
             }
             else{
-                l.dirx = atof(projection->Attribute("dirx"));
-                l.diry = atof(projection->Attribute("diry"));
-                l.dirz = atof(projection->Attribute("dirz"));
+                cout << "done1\n";
+                l.dirx = atof(light->Attribute("dirx"));
+                l.diry = atof(light->Attribute("diry"));
+                l.dirz = atof(light->Attribute("dirz"));
                 l.posx = 0;
                 l.posy = 0;
                 l.posz = 0;
@@ -621,7 +625,7 @@ void readXML(std::string source){
             light = lights->NextSiblingElement("light");
         }
     }
-    
+    cout << "done142135123\n";
     XMLElement *GROUP = xml.FirstChildElement("world")->FirstChildElement("group");
     XMLElement *group = GROUP;
 
@@ -802,6 +806,7 @@ void recFilhos(struct Group g){
         //cout << "vertices " << j.verticeCount << "\n";
 
         glDrawArrays(GL_TRIANGLES, 0, j.verticeCount);
+        
         //cout << "acabei de desenhar\n";
         //glBindTexture(GL_TEXTURE_2D,0)
 
@@ -831,20 +836,21 @@ void renderScene(void) {
     //SPOTLIGHT - DIRECTION 
     for(auto l : Lights){
         if (l.type== "point"){
-            float pos[3] =  {l.posx,l.posy,l.posz};
+            float pos[4] =  {l.posx,l.posy,l.posz,1.0f};
             glLightfv(l.i, GL_POSITION,pos);
         }
         else if (l.type == "spot"){
-            float pos[3] =  {l.posx,l.posy,l.posz};
-            float posDirec[3] =  {l.posx,l.posy,l.posz};
-            float posCutoff[3] =  {l.posx,l.posy,l.posz};
+            float pos[4] =  {l.posx,l.posy,l.posz,1.0f};
+            float posDirec[4] =  {l.posx,l.posy,l.posz,0.0f};
+            float posCutoff  = l.cutoff;
             glLightfv(l.i, GL_POSITION,pos);
             glLightfv(l.i, GL_SPOT_DIRECTION, posDirec);
-            glLightfv(l.i, GL_SPOT_CUTOFF, posCutoff);
+            glLightfv(l.i, GL_SPOT_CUTOFF, &posCutoff);
         }
         else{
-            float posDirec[3] =  {l.posx,l.posy,l.posz};
-            glLightfv(l.i, GL_SPOT_DIRECTION, posDirec);
+            float posDirec[4] =  {l.posx,l.posy,l.posz,0.0f};
+            cout << l.i<<"\n";
+            glLightfv(l.i, GL_POSITION, posDirec);
         }
     }
 
@@ -1122,6 +1128,7 @@ int main(int argc, char **argv){
     glutSpecialFunc(processSpecialKeys);
     glutMouseFunc(processMouseButtons);
     glutMotionFunc(processMouseMotion);
+    
     glewInit(); // after glutCreateWindow and before calling any OpenGL function
 
 
@@ -1143,31 +1150,35 @@ int main(int argc, char **argv){
     // LER AS CORES DO XML
     
     //ISSO AQUIÉ ISSO ?
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    
     
     if (argc > 1){
         readXML(argv[1]);
     }
+    
     if(Lights.size()>0){
         glEnable(GL_LIGHTING);
-        glEnable(GL_LIGHT0);
+        
 
         //glEnable(GL_TEXTURE_2D);
 
         // LER AS CORES DO XML
-        //float dark[4] = { 0.2, 0.2, 0.2, 1.0 };
-        //float white[4] = { 0.8, 0.8, 0.8, 1.0 };
-        //float black[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+        float dark[4] = { 0.2, 0.2, 0.2, 1.0 };
+        float white[4] = { 0.8, 0.8, 0.8, 1.0 };
+        float black[4] = {0.0f, 0.0f, 0.0f, 0.0f};
         // light colors
-        //glLightfv(GL_LIGHT0, GL_AMBIENT, dark);
-        //glLightfv(GL_LIGHT0, GL_DIFFUSE, white);
-        //glLightfv(GL_LIGHT0, GL_SPECULAR, white);
-        //glLightfv(GL_LIGHT0, GL_EMISSION, white);
-        //glLightfv(GL_LIGHT0, GL_SHININESS, white);
+        for(Light l : Lights){
+            glEnable(l.i);
+            glLightfv(l.i, GL_AMBIENT, dark);
+            glLightfv(l.i, GL_DIFFUSE, white);
+            glLightfv(l.i, GL_SPECULAR, white);
+        }
 
         // controls global ambient light
-        //glLightModelfv(GL_LIGHT_MODEL_AMBIENT, black);
+        glLightModelfv(GL_LIGHT_MODEL_AMBIENT, black);
     }
+    
     
     // Ler o ficheiro do xml
     //texIDCylinder = loadTexture("Oil_Drum001h.jpg");
@@ -1175,7 +1186,7 @@ int main(int argc, char **argv){
 
 
     
-    //printInfo();
+    printInfo();
     // enter GLUT's main cycle
     glutMainLoop();
 
