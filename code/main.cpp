@@ -73,6 +73,7 @@ struct Transformations{
 
 struct Light{
     string type;
+    int i;
     float posx;
     float posy;
     float posz;
@@ -83,8 +84,7 @@ struct Light{
 
 };
 
-struct modelos
-{
+struct modelos{
     string modelo;
     GLuint buffers[2];
     int verticeCount;
@@ -128,6 +128,36 @@ float rotx,roty,rotz;
 float scax,scay,scaz;
 float tglobal = 0;
 std::vector<Light> Lights;
+int lightindex = 0;
+
+int Luz(int i){
+    int luz;
+    if(i == 0){
+        luz = GL_LIGHT0;
+    }
+    else if( i == 1){
+        luz = GL_LIGHT1;
+    }
+    else if( i == 2){
+        luz = GL_LIGHT2;
+    }
+    else if( i == 3){
+        luz = GL_LIGHT3;
+    }
+    else if( i == 4){
+        luz = GL_LIGHT4;
+    }
+    else if( i == 5){
+        luz = GL_LIGHT5;
+    }
+    else if( i == 6){
+        luz = GL_LIGHT6;
+    }
+    else if( i == 7){
+        luz = GL_LIGHT7;
+    }
+    return luz;
+}
 
 void spherical2Cartesian() {
 
@@ -231,12 +261,10 @@ void getGlobalCatmullRomPoint(float gt ,float *pos, float *deriv,struct catmullR
 	getCatmullRomPoint(t, p1, p2, p3, p4, pos, deriv);
 }
 
-void vboCatmullRomCurve(catmullRom *c,float line_segments)
-{
+void vboCatmullRomCurve(catmullRom *c,float line_segments){
     std::vector<float>points;
     float pos[3], deriv[3];
-    for (int i = 0; i < line_segments; i++)
-    {
+    for (int i = 0; i < line_segments; i++){
         getGlobalCatmullRomPoint(1/line_segments * i, pos, deriv,*c);
         points.push_back(pos[0]);
         points.push_back(pos[1]);
@@ -271,8 +299,7 @@ std::vector<std::string> split(std::string s, std::string delimiter) {
     return res;
 }
 
-void createVBO(string file ,modelos* g)
-{
+void createVBO(string file ,modelos* g){
     std::vector<float>points;
     std::vector<float> normals;
     std::vector<float> textures;
@@ -285,21 +312,16 @@ void createVBO(string file ,modelos* g)
         std::string delimiter = ",";
         std::vector<std::string> v = split (line, delimiter);
         
-        for (auto i : v)
-        {
-            if (j >2)
-            {
-                if (j >5)
-                {
+        for (auto i : v){
+            if (j >2){
+                if (j >5){
                     textures.push_back(atof(i.c_str()));
                 }
-                else
-                {
+                else{
                     normals.push_back(atof(i.c_str()));
                 }
             }
-            else
-            {
+            else{
                 points.push_back(atof(i.c_str()));   
             }
             j++;
@@ -433,20 +455,17 @@ struct Group readGroup(XMLElement *group){
 
 
 
-        while (model)
-        {
+        while (model){
             modelos g ;
             textura_name = model->FirstChildElement("texture");
-            if (textura_name)
-            {
+            if (textura_name){
                 g.textura = textura_name->Attribute("file");
                 color = textura_name->NextSiblingElement();
             }
 
             color = model->FirstChildElement("color");
 
-            if (color)
-            {
+            if (color){
                 g.light_components =1 ;
                 diffuse = color->FirstChildElement("diffuse");
                 g.diffuse[0]=atof(diffuse->Attribute("R"));
@@ -471,8 +490,7 @@ struct Group readGroup(XMLElement *group){
                 shininess = emissive->NextSiblingElement("shininess");
                 g.shininess = atof(shininess->Attribute("value"));
             }
-            else
-            {
+            else{
                 g.light_components =0 ;
 
             }
@@ -576,6 +594,7 @@ void readXML(std::string source){
                 l.diry = 0;
                 l.dirz = 0;
                 l.cutoff = 0;
+                l.i = Luz(lightindex);
             }
             else if(l.type == "spot"){
                 l.posx = atof(projection->Attribute("posx"));
@@ -585,6 +604,7 @@ void readXML(std::string source){
                 l.diry = atof(projection->Attribute("diry"));
                 l.dirz = atof(projection->Attribute("dirz"));
                 l.cutoff = atof(projection->Attribute("cutoff"));
+                l.i = Luz(lightindex);
             }
             else{
                 l.dirx = atof(projection->Attribute("dirx"));
@@ -594,8 +614,9 @@ void readXML(std::string source){
                 l.posy = 0;
                 l.posz = 0;
                 l.cutoff = 0;
+                l.i = Luz(lightindex);
             }
-
+            lightindex++;
             Lights.push_back(l);
             light = lights->NextSiblingElement("light");
         }
@@ -811,20 +832,19 @@ void renderScene(void) {
     for(auto l : Lights){
         if (l.type== "point"){
             float pos[3] =  {l.posx,l.posy,l.posz};
-            glLightfv(GL_LIGHT0, GL_POSITION,pos);
+            glLightfv(l.i, GL_POSITION,pos);
         }
         else if (l.type == "spot"){
             float pos[3] =  {l.posx,l.posy,l.posz};
             float posDirec[3] =  {l.posx,l.posy,l.posz};
             float posCutoff[3] =  {l.posx,l.posy,l.posz};
-            glLightfv(GL_LIGHT0, GL_POSITION,pos);
-            glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, posDirec);
-            glLightfv(GL_LIGHT0, GL_SPOT_CUTOFF, posCutoff);
+            glLightfv(l.i, GL_POSITION,pos);
+            glLightfv(l.i, GL_SPOT_DIRECTION, posDirec);
+            glLightfv(l.i, GL_SPOT_CUTOFF, posCutoff);
         }
-        else
-        {
+        else{
             float posDirec[3] =  {l.posx,l.posy,l.posz};
-            glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, posDirec);
+            glLightfv(l.i, GL_SPOT_DIRECTION, posDirec);
         }
     }
 
@@ -1014,7 +1034,7 @@ void processSpecialKeys(int key, int xx, int yy) {
 
 }
 
-    void printInfo() {
+void printInfo() {
 
 	printf("Vendor: %s\n", glGetString(GL_VENDOR));
 	printf("Renderer: %s\n", glGetString(GL_RENDERER));
@@ -1031,8 +1051,7 @@ void processSpecialKeys(int key, int xx, int yy) {
 
 }
  /*
-int loadTexture(std::string s) 
-{
+int loadTexture(std::string s) {
 
 	unsigned int t,tw,th;
 	unsigned char *texData;
@@ -1136,18 +1155,18 @@ int main(int argc, char **argv){
         //glEnable(GL_TEXTURE_2D);
 
         // LER AS CORES DO XML
-        float dark[4] = { 0.2, 0.2, 0.2, 1.0 };
-        float white[4] = { 0.8, 0.8, 0.8, 1.0 };
-        float black[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+        //float dark[4] = { 0.2, 0.2, 0.2, 1.0 };
+        //float white[4] = { 0.8, 0.8, 0.8, 1.0 };
+        //float black[4] = {0.0f, 0.0f, 0.0f, 0.0f};
         // light colors
-        glLightfv(GL_LIGHT0, GL_AMBIENT, dark);
-        glLightfv(GL_LIGHT0, GL_DIFFUSE, white);
-        glLightfv(GL_LIGHT0, GL_SPECULAR, white);
-        glLightfv(GL_LIGHT0, GL_EMISSION, white);
-        glLightfv(GL_LIGHT0, GL_SHININESS, white);
+        //glLightfv(GL_LIGHT0, GL_AMBIENT, dark);
+        //glLightfv(GL_LIGHT0, GL_DIFFUSE, white);
+        //glLightfv(GL_LIGHT0, GL_SPECULAR, white);
+        //glLightfv(GL_LIGHT0, GL_EMISSION, white);
+        //glLightfv(GL_LIGHT0, GL_SHININESS, white);
 
         // controls global ambient light
-        glLightModelfv(GL_LIGHT_MODEL_AMBIENT, black);
+        //glLightModelfv(GL_LIGHT_MODEL_AMBIENT, black);
     }
     
     // Ler o ficheiro do xml
