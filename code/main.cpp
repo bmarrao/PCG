@@ -128,7 +128,7 @@ float rotx,roty,rotz;
 float scax,scay,scaz;
 float tglobal = 0;
 std::vector<Light> Lights;
-int lightindex = 0;
+int lightindex = 1;
 
 int Luz(int i){
     int luz;
@@ -344,13 +344,11 @@ void createVBO(string file ,modelos* g){
         normals.data(), // os dados do array associado ao vector
         GL_STATIC_DRAW); // indicativo da utilização (estático e para desenho)*/
     g->verticeCount = points.size()/3;
-    cout<<"nome do buffer " << g->buffers[0] << "\n";
 
 }
 
 struct Group readGroup(XMLElement *group){
 
-    cout << "done\n";
     XMLElement *trans = group-> FirstChildElement("transform");
 
     XMLElement *filho;
@@ -455,7 +453,6 @@ struct Group readGroup(XMLElement *group){
         XMLElement *shininess ;
 
 
-        cout << "done\n";
         while (model){
             modelos g ;
             textura_name = model->FirstChildElement("texture");
@@ -469,44 +466,46 @@ struct Group readGroup(XMLElement *group){
             if (color){
                 g.light_components =1 ;
                 diffuse = color->FirstChildElement("diffuse");
-                g.diffuse[0]=atof(diffuse->Attribute("R"));
-                g.diffuse[1] =atof(diffuse->Attribute("G"));
-                g.diffuse[2]= atof(diffuse->Attribute("B"));
+                g.diffuse[0]=atof(diffuse->Attribute("R"))/255;
+                g.diffuse[1] =atof(diffuse->Attribute("G"))/255;
+                g.diffuse[2]= atof(diffuse->Attribute("B"))/255;
                 g.diffuse[3]= 1;
                 ambient = diffuse->NextSiblingElement("ambient");
-                g.ambient[0] = atof(ambient->Attribute("R"));
-                g.ambient[1] =atof(ambient->Attribute("G"));
-                g.ambient[2] = atof(ambient->Attribute("B"));
+                g.ambient[0] = atof(ambient->Attribute("R"))/255;
+                g.ambient[1] =atof(ambient->Attribute("G"))/255;
+                g.ambient[2] = atof(ambient->Attribute("B"))/255;
                 g.ambient[3] =1;
                 specular = ambient->NextSiblingElement("specular");
-                g.specular[0] = atof(specular->Attribute("R"));
-                g.specular[1] = atof (specular->Attribute("G"));
-                g.specular[2] =  atof(specular->Attribute("B"));
+                g.specular[0] = atof(specular->Attribute("R"))/255;
+                g.specular[1] = atof (specular->Attribute("G"))/255;
+                g.specular[2] =  atof(specular->Attribute("B"))/255;
                 g.specular[3]= 1;
                 emissive = specular->NextSiblingElement("emissive");
-                g.emissive[0] = atof(emissive->Attribute("R"));
-                g.emissive[1] = atof(emissive->Attribute("G"));
-                g.emissive[2] =atof(emissive->Attribute("B"));
+                g.emissive[0] = atof(emissive->Attribute("R"))/255;
+                g.emissive[1] = atof(emissive->Attribute("G"))/255;
+                g.emissive[2] =atof(emissive->Attribute("B"))/255;
                 g.emissive[3] =1;
                 shininess = emissive->NextSiblingElement("shininess");
                 g.shininess = atof(shininess->Attribute("value"));
+                /*
+                cout << g.diffuse[0] << " " << g.diffuse[1] << " "<< g.diffuse[2] << " "<< "\n";
+                cout << g.ambient[0] << " " << g.ambient[1] << " "<< g.ambient[2] << " "<< "\n";
+                cout << g.specular[0] << " " << g.specular[1] << " "<< g.specular[2] << " "<< "\n";
+                cout << g.emissive[0] << " " << g.emissive[1] << " "<< g.emissive[2] << " "<< "\n";
+                cout << g.shininess << "\n";
+                */
             }
             else{
                 g.light_components =0 ;
 
             }
-            cout << "done\n";
             //"
             std::string model_path = model->Attribute("file");
             g.modelo = "../../3d/" + model_path;
             //g.inicio = indice;
             
             g.verticeCount=0;
-            cout<<"antes" << g.verticeCount<< "\n";
             createVBO(g.modelo,&g);
-            cout <<"depois"<< g.verticeCount<< "\n";
-
-            cout<<"nome do buffer2 " << g.buffers[0] << "\n";
     
             //g.verticeCount = points.size();
             grupo.models.push_back(g);
@@ -549,6 +548,7 @@ void readXML(std::string source){
     float posx = atof(position->Attribute("x"));
     float posy = atof(position->Attribute("y"));
     float posz = atof(position->Attribute("z"));
+    cout << posx << " " << posy << " " << posz << "\n"; 
 
     raio = sqrt(posx*posx + posy*posy + posz*posz);
     betah = asin(posy / raio);
@@ -598,6 +598,7 @@ void readXML(std::string source){
                 l.dirz = 0;
                 l.cutoff = 0;
                 l.i = Luz(lightindex);
+                //cout << " POINT \n";
             }
             else if(l.type == "spot"){
                 l.posx = atof(light->Attribute("posx"));
@@ -608,9 +609,9 @@ void readXML(std::string source){
                 l.dirz = atof(light->Attribute("dirz"));
                 l.cutoff = atof(light->Attribute("cutoff"));
                 l.i = Luz(lightindex);
+                
             }
             else{
-                cout << "done1\n";
                 l.dirx = atof(light->Attribute("dirx"));
                 l.diry = atof(light->Attribute("diry"));
                 l.dirz = atof(light->Attribute("dirz"));
@@ -622,10 +623,9 @@ void readXML(std::string source){
             }
             lightindex++;
             Lights.push_back(l);
-            light = lights->NextSiblingElement("light");
+            light = light->NextSiblingElement("light");
         }
     }
-    cout << "done142135123\n";
     XMLElement *GROUP = xml.FirstChildElement("world")->FirstChildElement("group");
     XMLElement *group = GROUP;
 
@@ -786,6 +786,7 @@ void recFilhos(struct Group g){
         */
         
         if (j.light_components == 1){
+            
             glMaterialfv(GL_FRONT, GL_DIFFUSE,j.diffuse);
             glMaterialfv(GL_FRONT, GL_AMBIENT,j.ambient);
             glMaterialfv(GL_FRONT, GL_EMISSION,j.emissive);
@@ -832,10 +833,27 @@ void renderScene(void) {
               camVX, camVY, camVZ);
 
     glColor3f(1.0f,1.0f,1.0f);
-    
+
+    glBegin(GL_LINES);
+	// X axis in red
+	glColor3f(1.0f, 0.0f, 0.0f);
+	glVertex3f(-100.0f, 0.0f, 0.0f);
+	glVertex3f( 100.0f, 0.0f, 0.0f);
+	// Y Axis in Green
+	glColor3f(0.0f, 1.0f, 0.0f);
+	glVertex3f(0.0f, -100.0f, 0.0f);
+	glVertex3f(0.0f, 100.0f, 0.0f);
+	// Z Axis in Blue
+	glColor3f(0.0f, 0.0f, 1.0f);
+	glVertex3f(0.0f, 0.0f, -100.0f);
+	glVertex3f(0.0f, 0.0f, 100.0f);
+	glEnd();
+    glColor3f(1.0f,1.0f,1.0f);
+
     //SPOTLIGHT - DIRECTION 
     for(auto l : Lights){
         if (l.type== "point"){
+            cout << "POINT\n";
             float pos[4] =  {l.posx,l.posy,l.posz,1.0f};
             glLightfv(l.i, GL_POSITION,pos);
         }
@@ -843,14 +861,15 @@ void renderScene(void) {
             float pos[4] =  {l.posx,l.posy,l.posz,1.0f};
             float posDirec[4] =  {l.posx,l.posy,l.posz,0.0f};
             float posCutoff  = l.cutoff;
+            //cout << pos << " " << posDirec << " " << posCutoff << "\n";
             glLightfv(l.i, GL_POSITION,pos);
             glLightfv(l.i, GL_SPOT_DIRECTION, posDirec);
             glLightfv(l.i, GL_SPOT_CUTOFF, &posCutoff);
         }
         else{
-            float posDirec[4] =  {l.posx,l.posy,l.posz,0.0f};
-            cout << l.i<<"\n";
-            glLightfv(l.i, GL_POSITION, posDirec);
+            float posDirec[4] =  {l.dirx,l.diry,l.dirz,0.0f};
+            //out << l.dirx << " " << l.diry << " " << l.dirz << "\n";
+            glLightfv(l.i, GL_POSITION, posDirec);	
         }
     }
 
@@ -1072,7 +1091,7 @@ int loadTexture(std::string s) {
 	ilEnable(IL_ORIGIN_SET);
 	ilOriginFunc(IL_ORIGIN_LOWER_LEFT);
 
-	// Carregar a textura para memória
+	// Carregar a textura para memóriadir
 	ilGenImages(1,&t);
 	ilBindImage(t);
 	success = ilLoadImage((ILstring)s.c_str());
@@ -1150,8 +1169,7 @@ int main(int argc, char **argv){
     // LER AS CORES DO XML
     
     //ISSO AQUIÉ ISSO ?
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     
     if (argc > 1){
         readXML(argv[1]);
@@ -1159,24 +1177,25 @@ int main(int argc, char **argv){
     
     if(Lights.size()>0){
         glEnable(GL_LIGHTING);
-        
-
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        float dark[4] = { 0.2, 0.2, 0.2, 1.0 };
+        float white[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+        float black[4] = {0.0f, 0.0f, 0.0f, 0.0f};
         //glEnable(GL_TEXTURE_2D);
 
         // LER AS CORES DO XML
-        float dark[4] = { 0.2, 0.2, 0.2, 1.0 };
-        float white[4] = { 0.8, 0.8, 0.8, 1.0 };
-        float black[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+       
         // light colors
         for(Light l : Lights){
+            cout << "teste\n";
             glEnable(l.i);
             glLightfv(l.i, GL_AMBIENT, dark);
             glLightfv(l.i, GL_DIFFUSE, white);
             glLightfv(l.i, GL_SPECULAR, white);
+            
         }
 
         // controls global ambient light
-        glLightModelfv(GL_LIGHT_MODEL_AMBIENT, black);
     }
     
     
