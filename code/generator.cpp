@@ -17,7 +17,14 @@ struct point
     float y;
 	float z;
 };
+struct catmullRom{
 
+    std::vector<tuple<float,float,float>> pontos;
+    int align;
+    int verticeCount;
+
+
+};
 void normalize(float *a){
 
 	float l = sqrt(a[0]*a[0] + a[1] * a[1] + a[2] * a[2]);
@@ -195,22 +202,24 @@ void drawPlane(float comp, int slices, string file)
 
 
             // Vista de cima
-            MyFile << ponto1.x << ", " << ponto1.y << ", " << ponto1.z << ", " << 0 << ", " << 1 << ", " << 0 << "\n";
-            MyFile << ponto2.x << ", " << ponto1.y << ", " << ponto2.z << ", " << 0 << ", " << 1 << ", " << 0 << "\n";
-            MyFile << ponto2.x << ", " << ponto1.y << ", " << ponto1.z << ", " << 0 << ", " << 1 << ", " << 0 << "\n";
+            MyFile << ponto1.x << ", " << ponto1.y << ", " << ponto1.z << ", " << 0 << ", " << 1 << ", " << 0 << ", " << ponto1.x/comp  << " " << ponto1.z/comp << "\n";
+            MyFile << ponto2.x << ", " << ponto1.y << ", " << ponto2.z << ", " << 0 << ", " << 1 << ", " << 0 << ", " << ponto2.x/comp  << " " << ponto2.z/comp << "\n";
+            MyFile << ponto2.x << ", " << ponto1.y << ", " << ponto1.z << ", " << 0 << ", " << 1 << ", " << 0 << ", " << ponto2.x/comp  << " " << ponto1.z/comp << "\n";
 
-            MyFile << ponto1.x << ", " << ponto1.y << ", " << ponto1.z << ", " << 0 << ", " << 1 << ", " << 0 << "\n";
-            MyFile << ponto1.x << ", " << ponto1.y << ", " << ponto2.z << ", " << 0 << ", " << 1 << ", " << 0 << "\n";
-            MyFile << ponto2.x << ", " << ponto1.y << ", " << ponto2.z << ", " << 0 << ", " << 1 << ", " << 0 << "\n";
+            MyFile << ponto1.x << ", " << ponto1.y << ", " << ponto1.z << ", " << 0 << ", " << 1 << ", " << 0 << ", " << ponto1.x/comp  << " " << ponto1.z/comp << "\n";
+            MyFile << ponto1.x << ", " << ponto1.y << ", " << ponto2.z << ", " << 0 << ", " << 1 << ", " << 0 << ", " << ponto1.x/comp  << " " << ponto2.z/comp << "\n";
+            MyFile << ponto2.x << ", " << ponto1.y << ", " << ponto2.z << ", " << 0 << ", " << 1 << ", " << 0 << ", " << ponto2.x/comp  << " " << ponto2.z/comp << "\n";
+            
+            
 
             // Vista de baixo
-            MyFile << ponto1.x << ", " << ponto1.y << ", " << ponto1.z << ", " << 0 << ", " << -1 << ", " << 0 << "\n";
-            MyFile << ponto2.x << ", " << ponto1.y << ", " << ponto1.z << ", " << 0 << ", " << -1 << ", " << 0 << "\n";
-            MyFile << ponto2.x << ", " << ponto1.y << ", " << ponto2.z << ", " << 0 << ", " << -1 << ", " << 0 << "\n";
+            MyFile << ponto1.x << ", " << ponto1.y << ", " << ponto1.z << ", " << 0 << ", " << -1 << ", " << 0 << ", " << ponto1.x/comp  << " " << ponto1.z/comp << "\n";
+            MyFile << ponto2.x << ", " << ponto1.y << ", " << ponto1.z << ", " << 0 << ", " << -1 << ", " << 0 << ", " << ponto2.x/comp  << " " << ponto1.z/comp << "\n";
+            MyFile << ponto2.x << ", " << ponto1.y << ", " << ponto2.z << ", " << 0 << ", " << -1 << ", " << 0 << ", " << ponto2.x/comp  << " " << ponto2.z/comp << "\n";
 
-            MyFile << ponto1.x << ", " << ponto1.y << ", " << ponto1.z << ", " << 0 << ", " << -1 << ", " << 0 << "\n";
-            MyFile << ponto2.x << ", " << ponto1.y << ", " << ponto2.z << ", " << 0 << ", " << -1 << ", " << 0 << "\n";
-            MyFile << ponto1.x << ", " << ponto1.y << ", " << ponto2.z << ", " << 0 << ", " << -1 << ", " << 0 << "\n";
+            MyFile << ponto1.x << ", " << ponto1.y << ", " << ponto1.z << ", " << 0 << ", " << -1 << ", " << 0 << ", " << ponto1.x/comp  << " " << ponto1.z/comp << "\n";;
+            MyFile << ponto2.x << ", " << ponto1.y << ", " << ponto2.z << ", " << 0 << ", " << -1 << ", " << 0 << ", " << ponto2.x/comp  << " " << ponto2.z/comp << "\n";;
+            MyFile << ponto1.x << ", " << ponto1.y << ", " << ponto2.z << ", " << 0 << ", " << -1 << ", " << 0 << ", " << ponto1.x/comp  << " " << ponto2.z/comp << "\n";;
         }
     }
 }
@@ -317,7 +326,7 @@ void multMatrixVector(float m[4][4], float *v, float *res) {
 }
 
 // Função para calcular P(U,V) = U * M * pontos[indices] * M * V      Mt = M
-float UbezierV(float u, float calculado[4][4], float v){ 
+float UbezierV(float u, float calculado[4][4], float v,float *deriv){ 
     float V[4] = { powf(v, 3.0) , powf(v, 2.0), v, 1 };
     float temp[4];
     float res;
@@ -325,9 +334,17 @@ float UbezierV(float u, float calculado[4][4], float v){
     multMatrixVector(calculado,V,temp);
     // res = U * temp
     res = powf(u, 3.0) * temp[0] + powf(u, 2.0) * temp[1] + u * temp[2] + temp[3];
-
+    deriv[0] = 3*powf(u,2)*temp[0] + 2*u*temp[1] +temp[2];
+    
     return res;
 }
+void cross(float *a, float *b, float *res) {
+
+	res[0] = a[1]*b[2] - a[2]*b[1];
+	res[1] = a[2]*b[0] - a[0]*b[2];
+	res[2] = a[0]*b[1] - a[1]*b[0];
+}
+
 
 
 void drawBezier(float xCoords[4][4], float yCoords[4][4], float zCoords[4][4], int tess, string file){
@@ -345,33 +362,106 @@ void drawBezier(float xCoords[4][4], float yCoords[4][4], float zCoords[4][4], i
             point ponto1;
             point ponto2;
             point ponto3;
+            float deriv11, deriv12,deriv13;
+            float deriv21, deriv22,deriv23;
+            float deriv31, deriv32,deriv33;
+            float deriv41, deriv42,deriv43;
 
-            ponto.x = UbezierV(i,xCoords,j);
-            ponto.y = UbezierV(i,yCoords,j);
-            ponto.z = UbezierV(i,zCoords,j);
+            static float x[3] = {0,0,0};
+            static float y0[3] = {0.0f,1.0f,0.0f};
+            static float y1[3] = {0.0f,1.0f,0.0f};
+            static float z[3] = {0.0f,0.0f,0.0f};
 
-            ponto1.x = UbezierV(i+delta,xCoords,j);
-            ponto1.y = UbezierV(i+delta,yCoords,j);
-            ponto1.z = UbezierV(i+delta,zCoords,j);
+            static float x2[3] = {0,0,0};
+            static float y02[3] = {0.0f,1.0f,0.0f};
+            static float y12[3] = {0.0f,1.0f,0.0f};
+            static float z2[3] = {0.0f,0.0f,0.0f};
 
-            ponto2.x = UbezierV(i+delta,xCoords,j+delta);
-            ponto2.y = UbezierV(i+delta,yCoords,j+delta);
-            ponto2.z = UbezierV(i+delta,zCoords,j+delta);
+            static float x3[3] = {0,0,0};
+            static float y03[3] = {0.0f,1.0f,0.0f};
+            static float y13[3] = {0.0f,1.0f,0.0f};
+            static float z3[3] = {0.0f,0.0f,0.0f};
+            
+            static float x4[3] = {0,0,0};
+            static float y04[3] = {0.0f,1.0f,0.0f};
+            static float y14[3] = {0.0f,1.0f,0.0f};
+            static float z4[3] = {0.0f,0.0f,0.0f};
 
-            ponto3.x = UbezierV(i,xCoords,j+delta);
-            ponto3.y = UbezierV(i,yCoords,j+delta);
-            ponto3.z = UbezierV(i,zCoords,j+delta);
+            ponto.x = UbezierV(i,xCoords,j,&deriv11);
+            ponto.y = UbezierV(i,yCoords,j,&deriv12);
+            ponto.z = UbezierV(i,zCoords,j,&deriv13);
+
+            x[0] = deriv11;
+            x[1] = deriv12;
+            x[2] = deriv13;
+            normalize(x);
+            cross(x,y0,z);
+            normalize(z);
+            cross(z,x,y1);
+            normalize(y1);
+            for( int i = 0; i<3;i++){
+                    y0[i] = y1[i];
+            }
+
+            ponto1.x = UbezierV(i+delta,xCoords,j,&deriv21);
+            ponto1.y = UbezierV(i+delta,yCoords,j,&deriv22);
+            ponto1.z = UbezierV(i+delta,zCoords,j,&deriv23);
+
+            x2[0] = deriv21;
+            x2[1] = deriv22;
+            x2[2] = deriv23;
+            normalize(x2);
+            cross(x2,y02,z2);
+            normalize(z2);
+            cross(z2,x2,y12);
+            normalize(y12);
+            for( int i = 0; i<3;i++){
+                    y02[i] = y12[i];
+                }
+           
+
+            ponto2.x = UbezierV(i+delta,xCoords,j+delta,&deriv31);
+            ponto2.y = UbezierV(i+delta,yCoords,j+delta,&deriv32);
+            ponto2.z = UbezierV(i+delta,zCoords,j+delta,&deriv33);
+
+            x3[0] = deriv31;
+            x3[1] = deriv32;
+            x3[2] = deriv33;
+            normalize(x3);
+            cross(x3,y03,z3);
+            normalize(z3);
+            cross(z3,x3,y13);
+            normalize(y13);
+           for( int i = 0; i<3;i++){
+                    y03[i] = y13[i];
+                }
+
+            ponto3.x = UbezierV(i,xCoords,j+delta,&deriv41);
+            ponto3.y = UbezierV(i,yCoords,j+delta,&deriv42);
+            ponto3.z = UbezierV(i,zCoords,j+delta,&deriv43);
+
+            x4[0] = deriv41;
+            x4[1] = deriv42;
+            x4[2] = deriv43;
+            normalize(x4);
+            cross(x4,y04,z4);
+            normalize(z4);
+            cross(z4,x4,y14);
+            normalize(y14);
+            for( int i = 0; i<3;i++){
+                    y04[i] = y14[i];
+                }
 
             // passar para o ficheiro o "quadrado"
             // triangulo 1
-            MyFile << ponto.x << ", " << ponto.y << ", " << ponto.z << "\n";
-            MyFile << ponto1.x << ", " << ponto1.y << ", " << ponto1.z << "\n";
-            MyFile << ponto3.x << ", " << ponto3.y << ", " << ponto3.z << "\n";
+            MyFile << ponto.x << ", " << ponto.y << ", " << ponto.z << ", "<< y1[0] <<", "<< y1[1] <<", "<< y1[2] << "\n";
+            MyFile << ponto1.x << ", " << ponto1.y << ", " << ponto1.z <<", "<< y12[0] <<", "<< y12[1] << ", "<< y12[2] <<"\n";
+            MyFile << ponto3.x << ", " << ponto3.y << ", " << ponto3.z << ", "<< y14[0] <<", "<< y14[1] <<", "<< y14[2] <<"\n";
 
             // triangulo 2
-            MyFile << ponto1.x << ", " << ponto1.y << ", " << ponto1.z << "\n";
-            MyFile << ponto2.x << ", " << ponto2.y << ", " << ponto2.z << "\n";
-            MyFile << ponto3.x << ", " << ponto3.y << ", " << ponto3.z << "\n";
+            MyFile << ponto1.x << ", " << ponto1.y << ", " << ponto1.z <<", "<< y12[0] <<", "<< y12[1] << ", "<< y12[2]<< "\n";
+            MyFile << ponto2.x << ", " << ponto2.y << ", " << ponto2.z <<", "<< y13[0] <<", "<< y13[1] << ", "<< y13[2] <<"\n";
+            MyFile << ponto3.x << ", " << ponto3.y << ", " << ponto3.z <<", "<< y14[0] <<", "<< y14[1] << ", "<< y14[2] << "\n";
         }
         
     }

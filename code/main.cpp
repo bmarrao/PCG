@@ -111,6 +111,7 @@ float alpha,betah,raio;
 float lookAX, lookAY, lookAZ;
 float camVX, camVY, camVZ;
 
+
 float lookAXaux, lookAYaux, lookAZaux;
 float fov,nears,fars,pers;
 //GLuint buffers[3];
@@ -343,7 +344,13 @@ void createVBO(string file ,modelos* g){
         sizeof(float) * points.size(), // tamanho do vector em bytes
         normals.data(), // os dados do array associado ao vector
         GL_STATIC_DRAW); // indicativo da utilização (estático e para desenho)*/
-    g->verticeCount = points.size()/3;
+    /*
+    glBindBuffer(GL_ARRAY_BUFFER,g->buffers[2]);
+    glBufferData(
+        GL_ARRAY_BUFFER, // tipo do buffer, só é relevante na altura do desenho
+        sizeof(float) * textures.size(), // tamanho do vector em bytes
+        textures.data(), // os dados do array associado ao vector
+        GL_STATIC_DRAW); // indicativo da utilização (estático e para desenho)*/
 
 }
 
@@ -545,18 +552,15 @@ void readXML(std::string source){
     XMLElement *camera = xml.FirstChildElement("world")->FirstChildElement("camera");
 
     XMLElement *position = camera->FirstChildElement("position");
-    float posx = atof(position->Attribute("x"));
-    float posy = atof(position->Attribute("y"));
-    float posz = atof(position->Attribute("z"));
-    cout << posx << " " << posy << " " << posz << "\n"; 
+    camX = atof(position->Attribute("x"));
+    camY = atof(position->Attribute("y"));
+    camZ = atof(position->Attribute("z"));
+    
+    raio = sqrt(camX*camX + camY*camY + camZ*camZ);
+    betah = asin(camY / raio);
+    alpha = asin(camX / (raio * cos(betah)));
 
-    raio = sqrt(posx*posx + posy*posy + posz*posz);
-    betah = asin(posy / raio);
-    alpha = asin(posx / (raio * cos(betah)));
-
-    camX = sin(alpha)*cos(betah)*raio;
-    camY = sin(betah)*raio;
-    camZ = cos(alpha)*cos(betah)*raio;
+    //Possivel erro de alterarmos o camX ...  e o posX ...
     camXaux = camX;
     camYaux = camY;
     camZaux = camZ;
@@ -609,6 +613,13 @@ void readXML(std::string source){
                 l.dirz = atof(light->Attribute("dirz"));
                 l.cutoff = atof(light->Attribute("cutoff"));
                 l.i = Luz(lightindex);
+                cout << l.posx <<" "<<
+                l.posy<<" "<<
+                l.posz <<" "<<
+                l.dirx <<" "<<
+                l.diry <<" "<<
+                l.dirz << " "<<
+                l.cutoff<<"\n";
                 
             }
             else{
@@ -739,10 +750,6 @@ void transacoes(struct Group g){
 
                 glMultMatrixf(matrix);
 
-
-
-
-
             }
             else{
 
@@ -778,8 +785,9 @@ void recFilhos(struct Group g){
 
     glPushMatrix();
     transacoes(g);
-    for (auto j: g.models){
-        //glBindTexture(GL_TEXTURE_2D,texture)
+    for (auto j: g.models)
+    {
+        //glBindTexture(GL_TEXTURE_2D,j.textura)
         /*
         float *ptr = (GLubyte*) glMapBufferRange(GL_ARRAY_BUFFER_ARB,0,1,GL_MAP_READ_BIT);
         printf("Ptr: %d",*ptr);
@@ -853,13 +861,13 @@ void renderScene(void) {
     //SPOTLIGHT - DIRECTION 
     for(auto l : Lights){
         if (l.type== "point"){
-            cout << "POINT\n";
+            
             float pos[4] =  {l.posx,l.posy,l.posz,1.0f};
             glLightfv(l.i, GL_POSITION,pos);
         }
         else if (l.type == "spot"){
             float pos[4] =  {l.posx,l.posy,l.posz,1.0f};
-            float posDirec[4] =  {l.posx,l.posy,l.posz,0.0f};
+            float posDirec[4] =  {l.dirx,l.diry,l.dirz,0.0f};
             float posCutoff  = l.cutoff;
             //cout << pos << " " << posDirec << " " << posCutoff << "\n";
             glLightfv(l.i, GL_POSITION,pos);
@@ -1075,7 +1083,7 @@ void printInfo() {
 
 
 }
- /*
+ 
 int loadTexture(std::string s) {
 
 	unsigned int t,tw,th;
@@ -1126,7 +1134,7 @@ int loadTexture(std::string s) {
 
 }
 
-*/
+
 int main(int argc, char **argv){
 
     if (argc > 1){
