@@ -137,7 +137,7 @@ int loadTexture(std::string s) {
 
 	unsigned int t,tw,th;
 	unsigned char *texData;
-	unsigned int texID;
+	GLuint texID;
 
 	ILboolean success;
 
@@ -157,7 +157,7 @@ int loadTexture(std::string s) {
 	}
 	tw = ilGetInteger(IL_IMAGE_WIDTH);
 	th = ilGetInteger(IL_IMAGE_HEIGHT);
-
+    cout << tw << " " << th << "\n";
 	// Assegurar que a textura se encontra em RGBA (Red, Green, Blue, Alpha) com um byte (0 -
 	// 255) por componente
 	ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
@@ -383,7 +383,7 @@ void createVBO(string file ,modelos* g){
         j=0;
 
     }
-    glGenBuffers(2, g->buffers);
+    glGenBuffers(3, g->buffers);
     glBindBuffer(GL_ARRAY_BUFFER,g->buffers[0]);
     glBufferData(
         GL_ARRAY_BUFFER, // tipo do buffer, só é relevante na altura do desenho
@@ -397,13 +397,16 @@ void createVBO(string file ,modelos* g){
         sizeof(float) * points.size(), // tamanho do vector em bytes
         normals.data(), // os dados do array associado ao vector
         GL_STATIC_DRAW); // indicativo da utilização (estático e para desenho)*/
-    /*
+    for (auto w : textures)
+    {
+        cout << w << " \n";
+    }
     glBindBuffer(GL_ARRAY_BUFFER,g->buffers[2]);
     glBufferData(
         GL_ARRAY_BUFFER, // tipo do buffer, só é relevante na altura do desenho
         sizeof(float) * textures.size(), // tamanho do vector em bytes
         textures.data(), // os dados do array associado ao vector
-        GL_STATIC_DRAW); // indicativo da utilização (estático e para desenho)*/
+        GL_STATIC_DRAW); // indicativo da utilização (estático e para desenho)
 
 }
 
@@ -555,13 +558,6 @@ struct Group readGroup(XMLElement *group){
                 g.emissive[3] =1;
                 shininess = emissive->NextSiblingElement("shininess");
                 g.shininess = atof(shininess->Attribute("value"));
-                /*
-                cout << g.diffuse[0] << " " << g.diffuse[1] << " "<< g.diffuse[2] << " "<< "\n";
-                cout << g.ambient[0] << " " << g.ambient[1] << " "<< g.ambient[2] << " "<< "\n";
-                cout << g.specular[0] << " " << g.specular[1] << " "<< g.specular[2] << " "<< "\n";
-                cout << g.emissive[0] << " " << g.emissive[1] << " "<< g.emissive[2] << " "<< "\n";
-                cout << g.shininess << "\n";
-                */
             }
             else{
                 g.light_components =0 ;
@@ -663,7 +659,6 @@ void readXML(std::string source){
                 l.dirz = 0;
                 l.cutoff = 0;
                 l.i = Luz(lightindex);
-                //cout << " POINT \n";
             }
             else if(l.type == "spot"){
                 l.posx = atof(light->Attribute("posx"));
@@ -674,13 +669,6 @@ void readXML(std::string source){
                 l.dirz = atof(light->Attribute("dirz"));
                 l.cutoff = atof(light->Attribute("cutoff"));
                 l.i = Luz(lightindex);
-                cout << l.posx <<" "<<
-                l.posy<<" "<<
-                l.posz <<" "<<
-                l.dirx <<" "<<
-                l.diry <<" "<<
-                l.dirz << " "<<
-                l.cutoff<<"\n";
                 
             }
             else{
@@ -706,14 +694,6 @@ void readXML(std::string source){
         groups.push_back(readGroup(group));
         group = group->NextSiblingElement("group");
     }
-
-
-    /*
-    for (auto i : groups) {
-        printgroup(i);
-        cout << "teste\n";
-    }
-     */
 
 }
 
@@ -902,7 +882,23 @@ void renderScene(void) {
               camVX, camVY, camVZ);
 
 
+    glDisable(GL_LIGHTING);
+    glBegin(GL_LINES);
+	// X axis in red
+	glColor3f(1.0f, 0.0f, 0.0f);
+	glVertex3f(-100.0f, 0.0f, 0.0f);
+	glVertex3f( 100.0f, 0.0f, 0.0f);
+	// Y Axis in Green
+	glColor3f(0.0f, 1.0f, 0.0f);
+	glVertex3f(0.0f, -100.0f, 0.0f);
+	glVertex3f(0.0f, 100.0f, 0.0f);
+	// Z Axis in Blue
+	glColor3f(0.0f, 0.0f, 1.0f);
+	glVertex3f(0.0f, 0.0f, -100.0f);
+	glVertex3f(0.0f, 0.0f, 100.0f);
+	glEnd();
     glColor3f(1.0f,1.0f,1.0f);
+    glEnable(GL_LIGHTING);
 
     //SPOTLIGHT - DIRECTION 
     for(auto l : Lights){
@@ -931,22 +927,6 @@ void renderScene(void) {
         recFilhos(i);
 
     }
-
-
-    glBegin(GL_LINES);
-	// X axis in red
-	glColor3f(1.0f, 0.0f, 0.0f);
-	glVertex3f(-100.0f, 0.0f, 0.0f);
-	glVertex3f( 100.0f, 0.0f, 0.0f);
-	// Y Axis in Green
-	glColor3f(0.0f, 1.0f, 0.0f);
-	glVertex3f(0.0f, -100.0f, 0.0f);
-	glVertex3f(0.0f, 100.0f, 0.0f);
-	// Z Axis in Blue
-	glColor3f(0.0f, 0.0f, 1.0f);
-	glVertex3f(0.0f, 0.0f, -100.0f);
-	glVertex3f(0.0f, 0.0f, 100.0f);
-	glEnd();
 
     tglobal = glutGet(GLUT_ELAPSED_TIME);
 
