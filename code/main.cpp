@@ -94,6 +94,7 @@ struct modelos{
     float emissive[4];
     float shininess;
     string textura;
+    int tem_textura;
     int light_components ;
 };
 
@@ -464,8 +465,13 @@ struct Group readGroup(XMLElement *group){
             modelos g ;
             textura_name = model->FirstChildElement("texture");
             if (textura_name){
+                g.tem_textura = 1;
                 g.textura = textura_name->Attribute("file");
                 color = textura_name->NextSiblingElement();
+            }
+            else 
+            {
+                g.tem_textura = 0;
             }
 
             color = model->FirstChildElement("color");
@@ -787,11 +793,12 @@ void recFilhos(struct Group g){
     transacoes(g);
     for (auto j: g.models)
     {
-        //glBindTexture(GL_TEXTURE_2D,j.textura)
-        /*
-        float *ptr = (GLubyte*) glMapBufferRange(GL_ARRAY_BUFFER_ARB,0,1,GL_MAP_READ_BIT);
-        printf("Ptr: %d",*ptr);
-        */
+        
+        if (j.tem_textura = 1)
+        {
+            //glBindTexture(GL_TEXTURE_2D,j.textura);
+        }
+
         
         if (j.light_components == 1){
             
@@ -804,7 +811,6 @@ void recFilhos(struct Group g){
         
         glBindBuffer(GL_ARRAY_BUFFER, j.buffers[0]);
 	    glVertexPointer(3, GL_FLOAT, 0, 0);
-        //cout << "nome do buffer " << j.buffers[0] << "\n";
 
 	    glBindBuffer(GL_ARRAY_BUFFER, j.buffers[1]);
 	    glNormalPointer(GL_FLOAT, 0, 0);
@@ -817,7 +823,11 @@ void recFilhos(struct Group g){
         glDrawArrays(GL_TRIANGLES, 0, j.verticeCount);
         
         //cout << "acabei de desenhar\n";
-        //glBindTexture(GL_TEXTURE_2D,0)
+
+        if (j.tem_textura == 1)
+        {
+            glBindTexture(GL_TEXTURE_2D,0);
+        }
 
     }
 
@@ -1084,6 +1094,7 @@ void printInfo() {
 
 }
  
+/*
 int loadTexture(std::string s) {
 
 	unsigned int t,tw,th;
@@ -1134,7 +1145,7 @@ int loadTexture(std::string s) {
 
 }
 
-
+*/
 int main(int argc, char **argv){
 
     if (argc > 1){
@@ -1214,7 +1225,6 @@ int main(int argc, char **argv){
 
     
     printInfo();
-    // enter GLUT's main cycle
     glutMainLoop();
 
 

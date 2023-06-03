@@ -61,27 +61,27 @@ void drawSphere(float radius,int slices, int stacks,string file){
 		for(int i = 0;i!= slices;i++){
             float n1[3] = {radius*cos(be)*sin(al) , radius*sin(be), radius*cos(be)*cos(al)};
             normalize(n1);
-			MyFile << radius*cos(be)*sin(al) << ", "  << radius*sin(be) << ", "<< radius*cos(be)*cos(al) << ", "<< n1[0] << ", " << n1[1] << ", " <<n1[2] <<'\n';
+			MyFile << radius*cos(be)*sin(al) << ", "  << radius*sin(be) << ", "<< radius*cos(be)*cos(al) << ", "<< n1[0] << ", " << n1[1] << ", " <<n1[2] << ", "<< (float)i/slices << ", " << (float)j/stacks << '\n';
             
             float n2[3] = {radius*cos(be)*sin(al+2*M_PI/stacks), radius*sin(be), radius*cos(be)*cos(al+2*M_PI/stacks)};
             normalize(n2);
-            MyFile << radius*cos(be)*sin(al+2*M_PI/stacks) << ", " << radius*sin(be) << ", "<< radius*cos(be)*cos(al+2*M_PI/stacks) << ", " << n2[0] << ", "<< n2[1] << ", "<< n2[2] <<'\n';
+            MyFile << radius*cos(be)*sin(al+2*M_PI/stacks) << ", " << radius*sin(be) << ", "<< radius*cos(be)*cos(al+2*M_PI/stacks) << ", " << n2[0] << ", "<< n2[1] << ", "<< n2[2]<<", "<< (float)(i+1)/slices << ", " << (float)j/stacks <<'\n';
             
             float n3[3] = {radius*cos(be+M_PI/slices)*sin(al),  radius*sin(be+M_PI/slices), radius*cos(be+M_PI/slices)*cos(al)};
             normalize(n3);
-            MyFile << radius*cos(be+M_PI/slices)*sin(al) << ", "<< radius*sin(be+M_PI/slices) << ", "<< radius*cos(be+M_PI/slices)*cos(al) << ", "<< n3[0] << ", "<< n3[1] << ", "<< n3[2] <<'\n';
+            MyFile << radius*cos(be+M_PI/slices)*sin(al) << ", "<< radius*sin(be+M_PI/slices) << ", "<< radius*cos(be+M_PI/slices)*cos(al) << ", "<< n3[0] << ", "<< n3[1] << ", "<< n3[2]<<", "<< (float)i/slices << ", " << (float)(j+1)/stacks <<'\n';
 
             float n4[3] = {radius*cos(be)*sin(al+2*M_PI/stacks), radius*sin(be), radius*cos(be)*cos(al+2*M_PI/stacks)};
             normalize(n4);
-            MyFile << radius*cos(be)*sin(al+2*M_PI/stacks) << ", " << radius*sin(be) << ", "<< radius*cos(be)*cos(al+2*M_PI/stacks) <<", "<< n4[0] << ", " << n4[1] << ", "<< n4[2] <<'\n';
+            MyFile << radius*cos(be)*sin(al+2*M_PI/stacks) << ", " << radius*sin(be) << ", "<< radius*cos(be)*cos(al+2*M_PI/stacks) <<", "<< n4[0] << ", " << n4[1] << ", "<< n4[2] <<", "<< (float)(i+1)/slices << ", " << (float)j/stacks<<'\n';
 
                       
             float n5[3] = {radius*cos(be+M_PI/slices)*sin(al+2*M_PI/stacks) , radius*sin(be+M_PI/slices) , radius*cos(be+M_PI/slices)*cos(al+2*M_PI/stacks)};
             normalize(n5);
-            MyFile << radius*cos(be+M_PI/slices)*sin(al+2*M_PI/stacks) << ", " << radius*sin(be+M_PI/slices) << ", "<<  radius*cos(be+M_PI/slices)*cos(al+2*M_PI/stacks)<<", " << n5[0] << ", " << n5[1] << ", "<<  n5[2] << '\n';
+            MyFile << radius*cos(be+M_PI/slices)*sin(al+2*M_PI/stacks) << ", " << radius*sin(be+M_PI/slices) << ", "<<  radius*cos(be+M_PI/slices)*cos(al+2*M_PI/stacks)<<", " << n5[0] << ", " << n5[1] << ", "<<  n5[2] << ", "<< (float)(i+1)/slices << ", " << (float)(j+1)/stacks<<'\n';
             
             float n6[3] = {radius*cos(be+M_PI/slices)*sin(al) ,  radius*sin(be+M_PI/slices) ,  radius*cos(be+M_PI/slices)*cos(al)};
-            MyFile << radius*cos(be+M_PI/slices)*sin(al) << ", "<< radius*sin(be+M_PI/slices) << ", "<< radius*cos(be+M_PI/slices)*cos(al) << ", "<< n6[0] << ", "<< n6[1] << ", " << n6[2] <<'\n';
+            MyFile << radius*cos(be+M_PI/slices)*sin(al) << ", "<< radius*sin(be+M_PI/slices) << ", "<< radius*cos(be+M_PI/slices)*cos(al) << ", "<< n6[0] << ", "<< n6[1] << ", " << n6[2] <<", "<< (float)i/slices << ", " << (float)(j+1)/stacks<<'\n';
 
 			al += 2*M_PI/stacks;
 			
@@ -121,9 +121,9 @@ void drawCone(float radius, float height, int slices,int stacks, string file	)
         ponto2.z = cos(ang+(M_PI*2/slices))*r;
 
     
-        MyFile << 0.0 << ", " << 0.0 << ", "<< 0.0 << ", " << 0.0 << ", " << -1.0 << ", "<< 0.0 << "\n";
-        MyFile << ponto2.x << ", " << ponto2.y << ", "<< ponto2.z<<  ", " << 0.0 << ", " << -1.0 << ", "<< 0.0 << "\n";
-        MyFile << ponto1.x << ", " << ponto1.y << ", "<< ponto1.z << ", " << 0.0 << ", " << -1.0 << ", "<< 0.0  << "\n";
+        MyFile << 0.0 << ", " << 0.0 << ", "<< 0.0 << ", " << 0.0 << ", " << -1.0 << ", "<< 0.0 << ", "<<(float)0.5<< ", "<<(float)0.5<<"\n";
+        MyFile << ponto2.x << ", " << ponto2.y << ", "<< ponto2.z<<  ", " << 0.0 << ", " << -1.0 << ", "<< 0.0 << ", "<<0.5*sin(ang+(M_PI*2/slices))<< ", "<<0.5*cos(ang+(M_PI*2/slices))<<"\n";
+        MyFile << ponto1.x << ", " << ponto1.y << ", "<< ponto1.z << ", " << 0.0 << ", " << -1.0 << ", "<< 0.0  << ", "<<0.5*sin(ang)<< ", "<<0.5*cos(ang)<<"\n";
 
         nx=0;
         ny= height;
@@ -152,13 +152,13 @@ void drawCone(float radius, float height, int slices,int stacks, string file	)
             ponto4.y = alt+ height/stacks;
             ponto4.z = cos(ang+(M_PI*2/slices))*(r-draio);
 
-            MyFile << ponto1.x << ", " << ponto1.y << ", "<< ponto1.z<<  ", " << n[0] << ", " << n[1] << ", "<< n[2] << "\n";
-            MyFile << ponto2.x << ", " << ponto2.y << ", "<< ponto2.z<< ", " << n[0] << ", " << n[1] << ", "<< n[2] <<"\n";
-            MyFile << ponto3.x << ", " << ponto3.y << ", "<< ponto3.z<< ", " << n[0] << ", " << n[1] << ", "<< n[2] <<"\n";
+            MyFile << ponto1.x << ", " << ponto1.y << ", "<< ponto1.z<<  ", " << n[0] << ", " << n[1] << ", "<< n[2] <<", "<<(float)i/slices << ", "<<(float)j/stacks<< "\n";
+            MyFile << ponto2.x << ", " << ponto2.y << ", "<< ponto2.z<< ", " << n[0] << ", " << n[1] << ", "<< n[2] <<", "<<(float)(i+1)/slices << ", "<<(float)j/stacks<<"\n";
+            MyFile << ponto3.x << ", " << ponto3.y << ", "<< ponto3.z<< ", " << n[0] << ", " << n[1] << ", "<< n[2]<<", "<<(float)i/slices << ", "<<(float)(j+1)/stacks <<"\n";
 
-            MyFile << ponto2.x << ", " << ponto2.y << ", "<< ponto2.z<< ", " << n[0] << ", " << n[1] << ", "<< n[2] << "\n";
-            MyFile << ponto4.x << ", " << ponto4.y << ", "<< ponto4.z<< ", " << n[0] << ", " << n[1] << ", "<< n[2] <<"\n";
-            MyFile << ponto3.x << ", " << ponto3.y << ", "<< ponto3.z<< ", " << n[0] << ", " << n[1] << ", "<< n[2] <<"\n";
+            MyFile << ponto2.x << ", " << ponto2.y << ", "<< ponto2.z<< ", " << n[0] << ", " << n[1] << ", "<< n[2] << ", "<<(float)(i+1)/slices << ", "<<(float)j/stacks<<"\n";
+            MyFile << ponto4.x << ", " << ponto4.y << ", "<< ponto4.z<< ", " << n[0] << ", " << n[1] << ", "<< n[2] <<", "<<(float)(i+1)/slices << ", "<<(float)(j+1)/stacks <<"\n";
+            MyFile << ponto3.x << ", " << ponto3.y << ", "<< ponto3.z<< ", " << n[0] << ", " << n[1] << ", "<< n[2] <<", "<<(float)i/slices << ", "<<(float)(j+1)/stacks <<"\n";
             
             r -= draio;
             alt += height/stacks;
@@ -202,24 +202,24 @@ void drawPlane(float comp, int slices, string file)
 
 
             // Vista de cima
-            MyFile << ponto1.x << ", " << ponto1.y << ", " << ponto1.z << ", " << 0 << ", " << 1 << ", " << 0 << ", " << ponto1.x/comp  << " " << ponto1.z/comp << "\n";
-            MyFile << ponto2.x << ", " << ponto1.y << ", " << ponto2.z << ", " << 0 << ", " << 1 << ", " << 0 << ", " << ponto2.x/comp  << " " << ponto2.z/comp << "\n";
-            MyFile << ponto2.x << ", " << ponto1.y << ", " << ponto1.z << ", " << 0 << ", " << 1 << ", " << 0 << ", " << ponto2.x/comp  << " " << ponto1.z/comp << "\n";
+            MyFile << ponto1.x << ", " << ponto1.y << ", " << ponto1.z << ", " << 0 << ", " << 1 << ", " << 0 << ", " << (ponto1.x+comp/2)/comp   << ", " << (ponto1.z+comp/2)/comp << "\n";
+            MyFile << ponto2.x << ", " << ponto1.y << ", " << ponto2.z << ", " << 0 << ", " << 1 << ", " << 0 << ", " << (ponto2.x+comp/2)/comp  << ", " << (ponto2.z+comp/2)/comp << "\n";
+            MyFile << ponto2.x << ", " << ponto1.y << ", " << ponto1.z << ", " << 0 << ", " << 1 << ", " << 0 << ", " << (ponto2.x+comp/2)/comp  << ", " << (ponto1.z+comp/2)/comp << "\n";
 
-            MyFile << ponto1.x << ", " << ponto1.y << ", " << ponto1.z << ", " << 0 << ", " << 1 << ", " << 0 << ", " << ponto1.x/comp  << " " << ponto1.z/comp << "\n";
-            MyFile << ponto1.x << ", " << ponto1.y << ", " << ponto2.z << ", " << 0 << ", " << 1 << ", " << 0 << ", " << ponto1.x/comp  << " " << ponto2.z/comp << "\n";
-            MyFile << ponto2.x << ", " << ponto1.y << ", " << ponto2.z << ", " << 0 << ", " << 1 << ", " << 0 << ", " << ponto2.x/comp  << " " << ponto2.z/comp << "\n";
+            MyFile << ponto1.x << ", " << ponto1.y << ", " << ponto1.z << ", " << 0 << ", " << 1 << ", " << 0 << ", " << ponto1.x/comp +0.5 << ", " << ponto1.z/comp +0.5 << "\n";
+            MyFile << ponto1.x << ", " << ponto1.y << ", " << ponto2.z << ", " << 0 << ", " << 1 << ", " << 0 << ", " << ponto1.x/comp +0.5  << ", " << ponto2.z/comp +0.5 << "\n";
+            MyFile << ponto2.x << ", " << ponto1.y << ", " << ponto2.z << ", " << 0 << ", " << 1 << ", " << 0 << ", " << ponto2.x/comp +0.5  << ", " << ponto2.z/comp +0.5 << "\n";
             
             
 
             // Vista de baixo
-            MyFile << ponto1.x << ", " << ponto1.y << ", " << ponto1.z << ", " << 0 << ", " << -1 << ", " << 0 << ", " << ponto1.x/comp  << " " << ponto1.z/comp << "\n";
-            MyFile << ponto2.x << ", " << ponto1.y << ", " << ponto1.z << ", " << 0 << ", " << -1 << ", " << 0 << ", " << ponto2.x/comp  << " " << ponto1.z/comp << "\n";
-            MyFile << ponto2.x << ", " << ponto1.y << ", " << ponto2.z << ", " << 0 << ", " << -1 << ", " << 0 << ", " << ponto2.x/comp  << " " << ponto2.z/comp << "\n";
+            MyFile << ponto1.x << ", " << ponto1.y << ", " << ponto1.z << ", " << 0 << ", " << -1 << ", " << 0 << ", " << ponto1.x/comp +0.5  << ", " << ponto1.z/comp +0.5 << "\n";
+            MyFile << ponto2.x << ", " << ponto1.y << ", " << ponto1.z << ", " << 0 << ", " << -1 << ", " << 0 << ", " << ponto2.x/comp +0.5  << ", " << ponto1.z/comp+0.5  << "\n";
+            MyFile << ponto2.x << ", " << ponto1.y << ", " << ponto2.z << ", " << 0 << ", " << -1 << ", " << 0 << ", " << ponto2.x/comp +0.5  << ", " << ponto2.z/comp +0.5 << "\n";
 
-            MyFile << ponto1.x << ", " << ponto1.y << ", " << ponto1.z << ", " << 0 << ", " << -1 << ", " << 0 << ", " << ponto1.x/comp  << " " << ponto1.z/comp << "\n";;
-            MyFile << ponto2.x << ", " << ponto1.y << ", " << ponto2.z << ", " << 0 << ", " << -1 << ", " << 0 << ", " << ponto2.x/comp  << " " << ponto2.z/comp << "\n";;
-            MyFile << ponto1.x << ", " << ponto1.y << ", " << ponto2.z << ", " << 0 << ", " << -1 << ", " << 0 << ", " << ponto1.x/comp  << " " << ponto2.z/comp << "\n";;
+            MyFile << ponto1.x << ", " << ponto1.y << ", " << ponto1.z << ", " << 0 << ", " << -1 << ", " << 0 << ", " << ponto1.x/comp +0.5  << ", " << ponto1.z/comp +0.5 << "\n";;
+            MyFile << ponto2.x << ", " << ponto1.y << ", " << ponto2.z << ", " << 0 << ", " << -1 << ", " << 0 << ", " << ponto2.x/comp +0.5 << ", " << ponto2.z/comp+0.5  << "\n";;
+            MyFile << ponto1.x << ", " << ponto1.y << ", " << ponto2.z << ", " << 0 << ", " << -1 << ", " << 0 << ", " << ponto1.x/comp +0.5  << ", " << ponto2.z/comp+0.5  << "\n";;
         }
     }
 }
@@ -245,59 +245,61 @@ void drawBox(float comp, int slices, string file)
             ponto2.y = -posicao;
             ponto2.z = (j + 1) * aresta - posicao;
 
-            // Face de cima
-            MyFile << ponto1.x << ", " << ponto1.y << ", " << ponto1.z << ", " << 0 << ", " << 1 << ", " << 0 << "\n";
-            MyFile << ponto2.x << ", " << ponto1.y << ", " << ponto2.z << ", " << 0 << ", " << 1 << ", " << 0 << "\n";
-            MyFile << ponto2.x << ", " << ponto1.y << ", " << ponto1.z << ", " << 0 << ", " << 1 << ", " << 0 << "\n";
+            
 
-            MyFile << ponto1.x << ", " << ponto1.y << ", " << ponto1.z << ", " << 0 << ", " << 1 << ", " << 0 << "\n";
-            MyFile << ponto1.x << ", " << ponto1.y << ", " << ponto2.z << ", " << 0 << ", " << 1 << ", " << 0 << "\n";
-            MyFile << ponto2.x << ", " << ponto1.y << ", " << ponto2.z << ", " << 0 << ", " << 1 << ", " << 0 << "\n";
+            // Face de cima
+            MyFile << ponto1.x << ", " << ponto1.y << ", " << ponto1.z << ", " << 0 << ", " << 1 << ", " << 0 << ", "<<ponto1.x/comp+0.5  << ", "<<ponto1.z/comp+0.5 << "\n";
+            MyFile << ponto2.x << ", " << ponto1.y << ", " << ponto2.z << ", " << 0 << ", " << 1 << ", " << 0 <<", "<<ponto2.x/comp +0.5 << ", "<<ponto2.z/comp+0.5 << "\n";
+            MyFile << ponto2.x << ", " << ponto1.y << ", " << ponto1.z << ", " << 0 << ", " << 1 << ", " << 0 <<", "<<ponto2.x/comp +0.5 << ", "<<ponto1.z/comp+0.5 << "\n";
+
+            MyFile << ponto1.x << ", " << ponto1.y << ", " << ponto1.z << ", " << 0 << ", " << 1 << ", " << 0 << ", "<<ponto1.x/comp +0.5 << ", "<<ponto1.z/comp+0.5 <<"\n";
+            MyFile << ponto1.x << ", " << ponto1.y << ", " << ponto2.z << ", " << 0 << ", " << 1 << ", " << 0 << ", "<<ponto1.x/comp +0.5 << ", "<<ponto2.z/comp+0.5 <<"\n";
+            MyFile << ponto2.x << ", " << ponto1.y << ", " << ponto2.z << ", " << 0 << ", " << 1 << ", " << 0 <<", "<<ponto2.x/comp +0.5 << ", "<<ponto2.z/comp+0.5 << "\n";
 
             // Face de baixo
-            MyFile << ponto1.x << ", " << ponto2.y << ", " << ponto1.z << ", " << 0 << ", " << -1 << ", " << 0 << "\n";
-            MyFile << ponto2.x << ", " << ponto2.y << ", " << ponto1.z << ", " << 0 << ", " << -1 << ", " << 0 << "\n";
-            MyFile << ponto2.x << ", " << ponto2.y << ", " << ponto2.z << ", " << 0 << ", " << -1 << ", " << 0 << "\n";
+            MyFile << ponto1.x << ", " << ponto2.y << ", " << ponto1.z << ", " << 0 << ", " << -1 << ", " << 0 << ", "<<ponto1.x/comp+0.5  << ", "<<ponto1.z/comp+0.5 <<"\n";
+            MyFile << ponto2.x << ", " << ponto2.y << ", " << ponto1.z << ", " << 0 << ", " << -1 << ", " << 0 << ", "<<ponto2.x/comp +0.5 << ", "<<ponto1.z/comp+0.5 <<"\n";
+            MyFile << ponto2.x << ", " << ponto2.y << ", " << ponto2.z << ", " << 0 << ", " << -1 << ", " << 0 <<", "<<ponto2.x/comp +0.5 << ", "<<ponto2.z/comp+0.5 << "\n";
 
-            MyFile << ponto1.x << ", " << ponto2.y << ", " << ponto1.z << ", " << 0 << ", " << -1 << ", " << 0 << "\n";
-            MyFile << ponto2.x << ", " << ponto2.y << ", " << ponto2.z << ", " << 0 << ", " << -1 << ", " << 0 << "\n";
-            MyFile << ponto1.x << ", " << ponto2.y << ", " << ponto2.z << ", " << 0 << ", " << -1 << ", " << 0 << "\n";
+            MyFile << ponto1.x << ", " << ponto2.y << ", " << ponto1.z << ", " << 0 << ", " << -1 << ", " << 0 <<", "<<ponto1.x/comp +0.5 << ", "<<ponto1.z/comp+0.5 << "\n";
+            MyFile << ponto2.x << ", " << ponto2.y << ", " << ponto2.z << ", " << 0 << ", " << -1 << ", " << 0 << ", "<<ponto2.x/comp +0.5 << ", "<<ponto2.z/comp+0.5 <<"\n";
+            MyFile << ponto1.x << ", " << ponto2.y << ", " << ponto2.z << ", " << 0 << ", " << -1 << ", " << 0 <<", "<<ponto1.x/comp +0.5 << ", "<<ponto2.z/comp+0.5 << "\n";
 
             // Face de X constante negativo
-            MyFile << ponto2.y << ", " << ponto1.x << ", " << ponto1.z << ", " << -1 << ", " << 0 << ", " << 0 << "\n";
-            MyFile << ponto2.y << ", " << ponto2.x << ", " << ponto2.z << ", " << -1 << ", " << 0 << ", " << 0 << "\n";
-            MyFile << ponto2.y << ", " << ponto2.x << ", " << ponto1.z << ", " << -1 << ", " << 0 << ", " << 0 << "\n";
+            MyFile << ponto2.y << ", " << ponto1.x << ", " << ponto1.z << ", " << -1 << ", " << 0 << ", " << 0 <<", "<<ponto2.y/comp +0.5 << ", "<<ponto1.z/comp+0.5 << "\n";
+            MyFile << ponto2.y << ", " << ponto2.x << ", " << ponto2.z << ", " << -1 << ", " << 0 << ", " << 0 << ", "<<ponto2.y/comp +0.5 << ", "<<ponto2.z/comp+0.5 <<"\n";
+            MyFile << ponto2.y << ", " << ponto2.x << ", " << ponto1.z << ", " << -1 << ", " << 0 << ", " << 0 << ", "<<ponto2.y/comp +0.5 << ", "<<ponto1.z/comp+0.5 <<"\n";
 
-            MyFile << ponto2.y << ", " << ponto1.x << ", " << ponto1.z << ", " << -1 << ", " << 0 << ", " << 0 << "\n";
-            MyFile << ponto2.y << ", " << ponto1.x << ", " << ponto2.z << ", " << -1 << ", " << 0 << ", " << 0 << "\n";
-            MyFile << ponto2.y << ", " << ponto2.x << ", " << ponto2.z << ", " << -1 << ", " << 0 << ", " << 0 << "\n";
+            MyFile << ponto2.y << ", " << ponto1.x << ", " << ponto1.z << ", " << -1 << ", " << 0 << ", " << 0 << ", "<<ponto2.y/comp +0.5 << ", "<<ponto1.z/comp+0.5 <<"\n";
+            MyFile << ponto2.y << ", " << ponto1.x << ", " << ponto2.z << ", " << -1 << ", " << 0 << ", " << 0 <<", "<<ponto2.y/comp +0.5 << ", "<<ponto2.z/comp+0.5 << "\n";
+            MyFile << ponto2.y << ", " << ponto2.x << ", " << ponto2.z << ", " << -1 << ", " << 0 << ", " << 0 <<", "<<ponto2.y/comp +0.5 << ", "<<ponto2.z/comp+0.5 << "\n";
 
             // Face de X constante positivo
-            MyFile << ponto1.y << ", " << ponto1.x << ", " << ponto1.z << ", " << 1 << ", " << 0 << ", " << 0 << "\n";
-            MyFile << ponto1.y << ", " << ponto2.x << ", " << ponto1.z << ", " << 1 << ", " << 0 << ", " << 0 << "\n";
-            MyFile << ponto1.y << ", " << ponto2.x << ", " << ponto2.z << ", " << 1 << ", " << 0 << ", " << 0 << "\n";
+            MyFile << ponto1.y << ", " << ponto1.x << ", " << ponto1.z << ", " << 1 << ", " << 0 << ", " << 0 <<", "<<ponto1.y/comp +0.5 << ", "<<ponto1.z/comp+0.5 << "\n";
+            MyFile << ponto1.y << ", " << ponto2.x << ", " << ponto1.z << ", " << 1 << ", " << 0 << ", " << 0 << ", "<<ponto1.y/comp +0.5 << ", "<<ponto1.z/comp+0.5 <<"\n";
+            MyFile << ponto1.y << ", " << ponto2.x << ", " << ponto2.z << ", " << 1 << ", " << 0 << ", " << 0 <<", "<<ponto1.x/comp +0.5 << ", "<<ponto2.z/comp+0.5 << "\n";
 
-            MyFile << ponto1.y << ", " << ponto1.x << ", " << ponto1.z << ", " << 1 << ", " << 0 << ", " << 0 << "\n";
-            MyFile << ponto1.y << ", " << ponto2.x << ", " << ponto2.z << ", " << 1 << ", " << 0 << ", " << 0 << "\n";
-            MyFile << ponto1.y << ", " << ponto1.x << ", " << ponto2.z << ", " << 1 << ", " << 0 << ", " << 0 << "\n";
+            MyFile << ponto1.y << ", " << ponto1.x << ", " << ponto1.z << ", " << 1 << ", " << 0 << ", " << 0 << ", "<<ponto1.y/comp +0.5 << ", "<<ponto1.z/comp+0.5 <<"\n";
+            MyFile << ponto1.y << ", " << ponto2.x << ", " << ponto2.z << ", " << 1 << ", " << 0 << ", " << 0 <<", "<<ponto1.y/comp +0.5 << ", "<<ponto2.z/comp+0.5 << "\n";
+            MyFile << ponto1.y << ", " << ponto1.x << ", " << ponto2.z << ", " << 1 << ", " << 0 << ", " << 0 <<", "<<ponto1.y/comp +0.5 << ", "<<ponto2.z/comp+0.5 << "\n";
 
             // Face de Z constante negativo
-            MyFile << ponto1.x << ", " << ponto1.z << ", " << ponto2.y << ", " << 0 << ", " << 0 << ", " << -1 << "\n";
-            MyFile << ponto2.x << ", " << ponto2.z << ", " << ponto2.y << ", " << 0 << ", " << 0 << ", " << -1 << "\n";
-            MyFile << ponto2.x << ", " << ponto1.z << ", " << ponto2.y << ", " << 0 << ", " << 0 << ", " << -1 << "\n";
+            MyFile << ponto1.x << ", " << ponto1.z << ", " << ponto2.y << ", " << 0 << ", " << 0 << ", " << -1 << ", "<<ponto1.x/comp +0.5 << ", "<<ponto2.y/comp+0.5 <<"\n";
+            MyFile << ponto2.x << ", " << ponto2.z << ", " << ponto2.y << ", " << 0 << ", " << 0 << ", " << -1 << ", "<<ponto2.x/comp +0.5 << ", "<<ponto2.y/comp+0.5 <<"\n";
+            MyFile << ponto2.x << ", " << ponto1.z << ", " << ponto2.y << ", " << 0 << ", " << 0 << ", " << -1 << ", "<<ponto2.x/comp +0.5 << ", "<<ponto2.y/comp+0.5 <<"\n";
 
-            MyFile << ponto1.x << ", " << ponto1.z << ", " << ponto2.y << ", " << 0 << ", " << 0 << ", " << -1 << "\n";
-            MyFile << ponto1.x << ", " << ponto2.z << ", " << ponto2.y << ", " << 0 << ", " << 0 << ", " << -1 << "\n";
-            MyFile << ponto2.x << ", " << ponto2.z << ", " << ponto2.y << ", " << 0 << ", " << 0 << ", " << -1 << "\n";
+            MyFile << ponto1.x << ", " << ponto1.z << ", " << ponto2.y << ", " << 0 << ", " << 0 << ", " << -1 <<", "<<ponto1.x/comp +0.5 << ", "<<ponto2.y/comp+0.5 << "\n";
+            MyFile << ponto1.x << ", " << ponto2.z << ", " << ponto2.y << ", " << 0 << ", " << 0 << ", " << -1 <<", "<<ponto1.x/comp +0.5 << ", "<<ponto2.y/comp+0.5 << "\n";
+            MyFile << ponto2.x << ", " << ponto2.z << ", " << ponto2.y << ", " << 0 << ", " << 0 << ", " << -1 <<", "<<ponto2.x/comp +0.5 << ", "<<ponto2.y/comp+0.5 << "\n";
 
             // Face de Z constante positivo
-            MyFile << ponto1.x << ", " << ponto1.z << ", " << ponto1.y << ", " << 0 << ", " << 0 << ", " << 1 << "\n";
-            MyFile << ponto2.x << ", " << ponto1.z << ", " << ponto1.y << ", " << 0 << ", " << 0 << ", " << 1 << "\n";
-            MyFile << ponto2.x << ", " << ponto2.z << ", " << ponto1.y << ", " << 0 << ", " << 0 << ", " << 1 << "\n";
+            MyFile << ponto1.x << ", " << ponto1.z << ", " << ponto1.y << ", " << 0 << ", " << 0 << ", " << 1 << ", "<<ponto1.x/comp +0.5 << ", "<<ponto1.y/comp+0.5 <<"\n";
+            MyFile << ponto2.x << ", " << ponto1.z << ", " << ponto1.y << ", " << 0 << ", " << 0 << ", " << 1 <<", "<<ponto2.x/comp +0.5 << ", "<<ponto1.y/comp+0.5 << "\n";
+            MyFile << ponto2.x << ", " << ponto2.z << ", " << ponto1.y << ", " << 0 << ", " << 0 << ", " << 1 << ", "<<ponto2.x/comp +0.5 << ", "<<ponto1.y/comp+0.5 <<"\n";
 
-            MyFile << ponto1.x << ", " << ponto1.z << ", " << ponto1.y << ", " << 0 << ", " << 0 << ", " << 1 << "\n";
-            MyFile << ponto2.x << ", " << ponto2.z << ", " << ponto1.y << ", " << 0 << ", " << 0 << ", " << 1 << "\n";
-            MyFile << ponto1.x << ", " << ponto2.z << ", " << ponto1.y << ", " << 0 << ", " << 0 << ", " << 1 << "\n";
+            MyFile << ponto1.x << ", " << ponto1.z << ", " << ponto1.y << ", " << 0 << ", " << 0 << ", " << 1 << ", "<<ponto1.x/comp +0.5 << ", "<<ponto1.y/comp+0.5 <<"\n";
+            MyFile << ponto2.x << ", " << ponto2.z << ", " << ponto1.y << ", " << 0 << ", " << 0 << ", " << 1 << ", "<<ponto2.x/comp +0.5 << ", "<<ponto1.y/comp+0.5 <<"\n";
+            MyFile << ponto1.x << ", " << ponto2.z << ", " << ponto1.y << ", " << 0 << ", " << 0 << ", " << 1 << ", "<<ponto1.x/comp +0.5 << ", "<<ponto1.y/comp+0.5 <<"\n";
         }
     }
 }
@@ -326,7 +328,7 @@ void multMatrixVector(float m[4][4], float *v, float *res) {
 }
 
 // Função para calcular P(U,V) = U * M * pontos[indices] * M * V      Mt = M
-float UbezierV(float u, float calculado[4][4], float v,float *deriv){ 
+float UbezierV(float u, float calculado[4][4], float v){ 
     float V[4] = { powf(v, 3.0) , powf(v, 2.0), v, 1 };
     float temp[4];
     float res;
@@ -334,7 +336,6 @@ float UbezierV(float u, float calculado[4][4], float v,float *deriv){
     multMatrixVector(calculado,V,temp);
     // res = U * temp
     res = powf(u, 3.0) * temp[0] + powf(u, 2.0) * temp[1] + u * temp[2] + temp[3];
-    deriv[0] = 3*powf(u,2)*temp[0] + 2*u*temp[1] +temp[2];
     
     return res;
 }
@@ -362,106 +363,58 @@ void drawBezier(float xCoords[4][4], float yCoords[4][4], float zCoords[4][4], i
             point ponto1;
             point ponto2;
             point ponto3;
-            float deriv11, deriv12,deriv13;
-            float deriv21, deriv22,deriv23;
-            float deriv31, deriv32,deriv33;
-            float deriv41, deriv42,deriv43;
-
-            static float x[3] = {0,0,0};
-            static float y0[3] = {0.0f,1.0f,0.0f};
-            static float y1[3] = {0.0f,1.0f,0.0f};
-            static float z[3] = {0.0f,0.0f,0.0f};
-
-            static float x2[3] = {0,0,0};
-            static float y02[3] = {0.0f,1.0f,0.0f};
-            static float y12[3] = {0.0f,1.0f,0.0f};
-            static float z2[3] = {0.0f,0.0f,0.0f};
-
-            static float x3[3] = {0,0,0};
-            static float y03[3] = {0.0f,1.0f,0.0f};
-            static float y13[3] = {0.0f,1.0f,0.0f};
-            static float z3[3] = {0.0f,0.0f,0.0f};
             
-            static float x4[3] = {0,0,0};
-            static float y04[3] = {0.0f,1.0f,0.0f};
-            static float y14[3] = {0.0f,1.0f,0.0f};
-            static float z4[3] = {0.0f,0.0f,0.0f};
 
-            ponto.x = UbezierV(i,xCoords,j,&deriv11);
-            ponto.y = UbezierV(i,yCoords,j,&deriv12);
-            ponto.z = UbezierV(i,zCoords,j,&deriv13);
+            
 
-            x[0] = deriv11;
-            x[1] = deriv12;
-            x[2] = deriv13;
-            normalize(x);
-            cross(x,y0,z);
-            normalize(z);
-            cross(z,x,y1);
-            normalize(y1);
-            for( int i = 0; i<3;i++){
-                    y0[i] = y1[i];
-            }
 
-            ponto1.x = UbezierV(i+delta,xCoords,j,&deriv21);
-            ponto1.y = UbezierV(i+delta,yCoords,j,&deriv22);
-            ponto1.z = UbezierV(i+delta,zCoords,j,&deriv23);
+            ponto.x = UbezierV(i,xCoords,j);
+            ponto.y = UbezierV(i,yCoords,j);
+            ponto.z = UbezierV(i,zCoords,j);
 
-            x2[0] = deriv21;
-            x2[1] = deriv22;
-            x2[2] = deriv23;
-            normalize(x2);
-            cross(x2,y02,z2);
-            normalize(z2);
-            cross(z2,x2,y12);
-            normalize(y12);
-            for( int i = 0; i<3;i++){
-                    y02[i] = y12[i];
-                }
-           
+            
+            
+            
+            ponto1.x = UbezierV(i+delta,xCoords,j);
+            ponto1.y = UbezierV(i+delta,yCoords,j);
+            ponto1.z = UbezierV(i+delta,zCoords,j);
 
-            ponto2.x = UbezierV(i+delta,xCoords,j+delta,&deriv31);
-            ponto2.y = UbezierV(i+delta,yCoords,j+delta,&deriv32);
-            ponto2.z = UbezierV(i+delta,zCoords,j+delta,&deriv33);
+            
 
-            x3[0] = deriv31;
-            x3[1] = deriv32;
-            x3[2] = deriv33;
-            normalize(x3);
-            cross(x3,y03,z3);
-            normalize(z3);
-            cross(z3,x3,y13);
-            normalize(y13);
-           for( int i = 0; i<3;i++){
-                    y03[i] = y13[i];
-                }
+            ponto2.x = UbezierV(i+delta,xCoords,j+delta);
+            ponto2.y = UbezierV(i+delta,yCoords,j+delta);
+            ponto2.z = UbezierV(i+delta,zCoords,j+delta);
 
-            ponto3.x = UbezierV(i,xCoords,j+delta,&deriv41);
-            ponto3.y = UbezierV(i,yCoords,j+delta,&deriv42);
-            ponto3.z = UbezierV(i,zCoords,j+delta,&deriv43);
 
-            x4[0] = deriv41;
-            x4[1] = deriv42;
-            x4[2] = deriv43;
-            normalize(x4);
-            cross(x4,y04,z4);
-            normalize(z4);
-            cross(z4,x4,y14);
-            normalize(y14);
-            for( int i = 0; i<3;i++){
-                    y04[i] = y14[i];
-                }
+            ponto3.x = UbezierV(i,xCoords,j+delta);
+            ponto3.y = UbezierV(i,yCoords,j+delta);
+            ponto3.z = UbezierV(i,zCoords,j+delta);
 
+            
+
+            
             // passar para o ficheiro o "quadrado"
             // triangulo 1
-            MyFile << ponto.x << ", " << ponto.y << ", " << ponto.z << ", "<< y1[0] <<", "<< y1[1] <<", "<< y1[2] << "\n";
-            MyFile << ponto1.x << ", " << ponto1.y << ", " << ponto1.z <<", "<< y12[0] <<", "<< y12[1] << ", "<< y12[2] <<"\n";
-            MyFile << ponto3.x << ", " << ponto3.y << ", " << ponto3.z << ", "<< y14[0] <<", "<< y14[1] <<", "<< y14[2] <<"\n";
+
+            float aux1[3] = {ponto1.x-ponto.x,ponto1.y-ponto.y,ponto1.z-ponto.z};
+            float aux2[3] = {ponto3.x-ponto.x,ponto3.y-ponto.y,ponto3.z-ponto.z};
+            float res1[3];
+            cross(aux1,aux2,res1);
+            normalize(res1);
+            MyFile << ponto.x << ", " << ponto.y << ", " << ponto.z << ", "<< res1[0] <<", "<< res1[1] <<", "<< res1[2] << "\n";
+            MyFile << ponto1.x << ", " << ponto1.y << ", " << ponto1.z <<", "<< res1[0] <<", "<< res1[1] << ", "<< res1[2] <<"\n";
+            MyFile << ponto3.x << ", " << ponto3.y << ", " << ponto3.z << ", "<< res1[0] <<", "<< res1[1] <<", "<< res1[2] <<"\n";
+
+            float aux3[3] = {ponto2.x-ponto1.x,ponto2.y-ponto1.y,ponto2.z-ponto1.z};
+            float aux4[3] = {ponto3.x-ponto1.x,ponto3.y-ponto1.y,ponto3.z-ponto1.z};
+            float res2[3];
+            cross(aux3,aux4,res2);
+            normalize(res2);
 
             // triangulo 2
-            MyFile << ponto1.x << ", " << ponto1.y << ", " << ponto1.z <<", "<< y12[0] <<", "<< y12[1] << ", "<< y12[2]<< "\n";
-            MyFile << ponto2.x << ", " << ponto2.y << ", " << ponto2.z <<", "<< y13[0] <<", "<< y13[1] << ", "<< y13[2] <<"\n";
-            MyFile << ponto3.x << ", " << ponto3.y << ", " << ponto3.z <<", "<< y14[0] <<", "<< y14[1] << ", "<< y14[2] << "\n";
+            MyFile << ponto1.x << ", " << ponto1.y << ", " << ponto1.z <<", "<< res2[0] <<", "<< res2[1] << ", "<< res2[2]<< "\n";
+            MyFile << ponto2.x << ", " << ponto2.y << ", " << ponto2.z <<", "<< res2[0] <<", "<< res2[1] << ", "<< res2[2] <<"\n";
+            MyFile << ponto3.x << ", " << ponto3.y << ", " << ponto3.z <<", "<< res2[0] <<", "<< res2[1] << ", "<< res2[2] << "\n";
         }
         
     }
@@ -519,7 +472,7 @@ void readPatch(string patch, int tess, string file)
 
     n_patch = atoi(line.c_str());
 
-    cout << n_patch << " numero patches";
+    //cout << n_patch << " numero patches";
     
     // Guardar os indices
     for (int i = 0; i < n_patch; i++)
