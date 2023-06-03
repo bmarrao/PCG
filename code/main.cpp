@@ -93,7 +93,7 @@ struct modelos{
     float specular[4];
     float emissive[4];
     float shininess;
-    string textura;
+    GLuint textura;
     int tem_textura;
     int light_components ;
 };
@@ -131,6 +131,58 @@ float scax,scay,scaz;
 float tglobal = 0;
 std::vector<Light> Lights;
 int lightindex = 1;
+
+
+int loadTexture(std::string s) {
+
+	unsigned int t,tw,th;
+	unsigned char *texData;
+	unsigned int texID;
+
+	ILboolean success;
+
+	// Iniciar o DevIL
+	ilInit();
+
+	// Colocar a origem da textura no canto inferior esquerdo
+	ilEnable(IL_ORIGIN_SET);
+	ilOriginFunc(IL_ORIGIN_LOWER_LEFT);
+
+	// Carregar a textura para memóriadir
+	ilGenImages(1,&t);
+	ilBindImage(t);
+	success = ilLoadImage((ILstring)s.c_str());
+	if (success) {
+		printf((ILstring)s.c_str());
+	}
+	tw = ilGetInteger(IL_IMAGE_WIDTH);
+	th = ilGetInteger(IL_IMAGE_HEIGHT);
+
+	// Assegurar que a textura se encontra em RGBA (Red, Green, Blue, Alpha) com um byte (0 -
+	// 255) por componente
+	ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
+	texData = ilGetData();
+
+	// Gerar a textura para a placa gráfica
+	glGenTextures(1,&texID);
+	
+	glBindTexture(GL_TEXTURE_2D,texID);
+	glTexParameteri(GL_TEXTURE_2D,	GL_TEXTURE_WRAP_S,		GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D,	GL_TEXTURE_WRAP_T,		GL_REPEAT);
+
+	glTexParameteri(GL_TEXTURE_2D,	GL_TEXTURE_MAG_FILTER,   	GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D,	GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	
+	// Upload dos dados de imagem
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tw, th, 0, GL_RGBA, GL_UNSIGNED_BYTE, texData);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	return texID;
+
+}
+
 
 int Luz(int i){
     int luz;
@@ -466,7 +518,10 @@ struct Group readGroup(XMLElement *group){
             textura_name = model->FirstChildElement("texture");
             if (textura_name){
                 g.tem_textura = 1;
-                g.textura = textura_name->Attribute("file");
+                string x = textura_name->Attribute("file");
+                cout << "../texturas/" + x  << " \n";
+                g.textura = loadTexture("../texturas/" + x);
+                cout << g.textura << "\n";
                 color = textura_name->NextSiblingElement();
             }
             else 
@@ -796,7 +851,7 @@ void recFilhos(struct Group g){
         
         if (j.tem_textura = 1)
         {
-            //glBindTexture(GL_TEXTURE_2D,j.textura);
+            glBindTexture(GL_TEXTURE_2D,j.textura);
         }
 
         
@@ -815,14 +870,11 @@ void recFilhos(struct Group g){
 	    glBindBuffer(GL_ARRAY_BUFFER, j.buffers[1]);
 	    glNormalPointer(GL_FLOAT, 0, 0);
 
-	    //glBindBuffer(GL_ARRAY_BUFFER, j.buffers[2]);
-	    //glTexCoordPointer(2, GL_FLOAT, 0, 0);
-
-        //cout << "vertices " << j.verticeCount << "\n";
+	    glBindBuffer(GL_ARRAY_BUFFER, j.buffers[2]);
+	    glTexCoordPointer(2, GL_FLOAT, 0, 0);
 
         glDrawArrays(GL_TRIANGLES, 0, j.verticeCount);
         
-        //cout << "acabei de desenhar\n";
 
         if (j.tem_textura == 1)
         {
@@ -840,7 +892,6 @@ void recFilhos(struct Group g){
 void renderScene(void) {
 
     // clear buffers
-    glClearColor(0.0f,0.0f,0.0f,0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // set the camera
@@ -850,22 +901,7 @@ void renderScene(void) {
               lookAX, lookAY, lookAZ,
               camVX, camVY, camVZ);
 
-    glColor3f(1.0f,1.0f,1.0f);
 
-    glBegin(GL_LINES);
-	// X axis in red
-	glColor3f(1.0f, 0.0f, 0.0f);
-	glVertex3f(-100.0f, 0.0f, 0.0f);
-	glVertex3f( 100.0f, 0.0f, 0.0f);
-	// Y Axis in Green
-	glColor3f(0.0f, 1.0f, 0.0f);
-	glVertex3f(0.0f, -100.0f, 0.0f);
-	glVertex3f(0.0f, 100.0f, 0.0f);
-	// Z Axis in Blue
-	glColor3f(0.0f, 0.0f, 1.0f);
-	glVertex3f(0.0f, 0.0f, -100.0f);
-	glVertex3f(0.0f, 0.0f, 100.0f);
-	glEnd();
     glColor3f(1.0f,1.0f,1.0f);
 
     //SPOTLIGHT - DIRECTION 
@@ -897,8 +933,25 @@ void renderScene(void) {
     }
 
 
-    glutSwapBuffers();
+    glBegin(GL_LINES);
+	// X axis in red
+	glColor3f(1.0f, 0.0f, 0.0f);
+	glVertex3f(-100.0f, 0.0f, 0.0f);
+	glVertex3f( 100.0f, 0.0f, 0.0f);
+	// Y Axis in Green
+	glColor3f(0.0f, 1.0f, 0.0f);
+	glVertex3f(0.0f, -100.0f, 0.0f);
+	glVertex3f(0.0f, 100.0f, 0.0f);
+	// Z Axis in Blue
+	glColor3f(0.0f, 0.0f, 1.0f);
+	glVertex3f(0.0f, 0.0f, -100.0f);
+	glVertex3f(0.0f, 0.0f, 100.0f);
+	glEnd();
+
     tglobal = glutGet(GLUT_ELAPSED_TIME);
+
+    glutSwapBuffers();
+
   
 }
 
@@ -1094,58 +1147,8 @@ void printInfo() {
 
 }
  
-/*
-int loadTexture(std::string s) {
 
-	unsigned int t,tw,th;
-	unsigned char *texData;
-	unsigned int texID;
 
-	ILboolean success;
-
-	// Iniciar o DevIL
-	ilInit();
-
-	// Colocar a origem da textura no canto inferior esquerdo
-	ilEnable(IL_ORIGIN_SET);
-	ilOriginFunc(IL_ORIGIN_LOWER_LEFT);
-
-	// Carregar a textura para memóriadir
-	ilGenImages(1,&t);
-	ilBindImage(t);
-	success = ilLoadImage((ILstring)s.c_str());
-	if (success) {
-		printf((ILstring)s.c_str());
-	}
-	tw = ilGetInteger(IL_IMAGE_WIDTH);
-	th = ilGetInteger(IL_IMAGE_HEIGHT);
-
-	// Assegurar que a textura se encontra em RGBA (Red, Green, Blue, Alpha) com um byte (0 -
-	// 255) por componente
-	ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
-	texData = ilGetData();
-
-	// Gerar a textura para a placa gráfica
-	glGenTextures(1,&texID);
-	
-	glBindTexture(GL_TEXTURE_2D,texID);
-	glTexParameteri(GL_TEXTURE_2D,	GL_TEXTURE_WRAP_S,		GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D,	GL_TEXTURE_WRAP_T,		GL_REPEAT);
-
-	glTexParameteri(GL_TEXTURE_2D,	GL_TEXTURE_MAG_FILTER,   	GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D,	GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	
-	// Upload dos dados de imagem
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tw, th, 0, GL_RGBA, GL_UNSIGNED_BYTE, texData);
-	glGenerateMipmap(GL_TEXTURE_2D);
-
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	return texID;
-
-}
-
-*/
 int main(int argc, char **argv){
 
     if (argc > 1){
@@ -1181,9 +1184,9 @@ int main(int argc, char **argv){
     spherical2Cartesian();
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_NORMAL_ARRAY);
-    //glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
-    //glEnable(GL_TEXTURE_2D);
+    glEnable(GL_TEXTURE_2D);
 
     // LER AS CORES DO XML
     
@@ -1218,9 +1221,6 @@ int main(int argc, char **argv){
     }
     
     
-    // Ler o ficheiro do xml
-    //texIDCylinder = loadTexture("Oil_Drum001h.jpg");
-	//texIDFloor = loadTexture("Concrete.jpg");
 
 
     
