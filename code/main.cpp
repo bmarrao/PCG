@@ -586,18 +586,22 @@ struct Group readGroup(XMLElement *group){
     return grupo;
 }
 void readWD(std::string source){
+   
     source = "../../test_files/" + source;
+    
     XMLDocument xml;
     xml.LoadFile(source.data());
-
+    cout << "oi\n";
+    
     XMLElement *window = xml.FirstChildElement("world")->FirstChildElement("window");
-
+    
     camW = atoi(window->Attribute("width"));
     camL = atoi(window->Attribute("height"));
+    
 }
 
 void readXML(std::string source){
-    
+     
     source = "../../test_files/" + source;
     XMLDocument xml;
     xml.LoadFile(source.data());
@@ -685,10 +689,11 @@ void readXML(std::string source){
             light = light->NextSiblingElement("light");
         }
     }
+   
     XMLElement *GROUP = xml.FirstChildElement("world")->FirstChildElement("group");
     XMLElement *group = GROUP;
 
-
+    
     while (group){
         groups.push_back(readGroup(group));
         group = group->NextSiblingElement("group");
@@ -1130,10 +1135,11 @@ void printInfo() {
 
 
 int main(int argc, char **argv){
-
+    cout << "first parto done \n";
     if (argc > 1){
         readWD(argv[1]);
     }
+    cout << "first parto done \n";
 // init GLUT and the window
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DEPTH|GLUT_DOUBLE|GLUT_RGBA);
@@ -1173,7 +1179,9 @@ int main(int argc, char **argv){
     //ISSO AQUIÉ ISSO ?
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     
-    if (argc > 1){
+    if (argc > 1)
+    {
+        cout << "ler Xml\n";
         readXML(argv[1]);
     }
     

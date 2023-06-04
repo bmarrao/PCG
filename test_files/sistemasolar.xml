@@ -7,6 +7,11 @@
         <projection fov="60" near="1" far="100000" /> <!-- optional, use these values as default-->
     </camera>
 
+    <lights> 
+		<light type="point" posx="0" posy="0" posz="0" />
+		
+	</lights>
+
     <group>
         <transform> 
                 <scale x="20" y="20" z="20" />
@@ -14,7 +19,9 @@
         </transform>
        
             <models><!-- Sol -->
-                <model file="sphere_1_100_100.3d" />
+                <model file="sphere_1_100_100.3d" >
+                    <texture file = "sunmap.jpg" />
+                </model>
             </models>
         <group><!-- cometa -->
             <transform>
@@ -41,7 +48,9 @@
 				<scale x="0.1" y="0.1" z="0.1" />
 			</transform>
 			<models> 
-				<model file="bezier_10.3d" />
+				<model file="bezier_10.3d" >
+                    <texture file = "teapot.jpg" />
+                </model>
 			</models>
 
             
@@ -53,7 +62,9 @@
                 <scale x="0.033" y="0.033" z="0.033" />
             </transform>
             <models>
-                <model file="sphere_1_100_100.3d" />
+                <model file="sphere_1_100_100.3d">
+                    <texture file = "mercurymap.jpg" />
+                </model>
             </models>
 
             
@@ -65,7 +76,9 @@
                 <scale x="0.09" y="0.09" z="0.09" />
             </transform>
             <models>
-                <model file="sphere_1_100_100.3d" />
+                <model file="sphere_1_100_100.3d">
+                    <texture file = "venusmap.jpg" />
+                </model>
             </models>
 
             
@@ -79,7 +92,9 @@
                 
             </transform>
             <models>
-                <model file="sphere_1_100_100.3d" />
+                <model file="sphere_1_100_100.3d" >
+                    <texture file = "earthmap1k.jpg" />
+                </model>
             </models>
             <group><!-- Lua -->
                 <transform>
@@ -88,7 +103,9 @@
                     <scale x = "0.25" y = "0.25" z = "0.25" />
                 </transform>
                 <models>
-                    <model file="sphere_1_100_100.3d" />
+                    <model file="sphere_1_100_100.3d" >
+                        <texture file = "moonmap1k.jpg" />
+                    </model>
                 </models>
             </group>
 
@@ -102,7 +119,9 @@
                 <scale x="0.05" y="0.05" z="0.05" />
             </transform>
             <models>
-                <model file="sphere_1_100_100.3d" />
+                <model file="sphere_1_100_100.3d" >
+                    <texture file = "mars_1k_color.jpg" />
+                </model>
             </models>
 
             
@@ -115,7 +134,9 @@
                 <scale x="0.8" y="0.8" z="0.8" />
             </transform>
             <models>
-                <model file="sphere_1_100_100.3d" />
+                <model file="sphere_1_100_100.3d" >
+                    <texture file = "jupiter2_1k.jpg" />
+                </model>
             </models>
 
             
@@ -127,7 +148,9 @@
                 <scale x="0.7" y="0.7" z="0.7" />
             </transform>
             <models>
-                <model file="sphere_1_100_100.3d" />
+                <model file="sphere_1_100_100.3d" >
+                    <texture file = "saturnmap.jpg" />
+                </model>
             </models>
 
             
@@ -139,7 +162,9 @@
                 <scale x="0.4" y="0.4" z="0.4" />
             </transform>
             <models>
-                <model file="sphere_1_100_100.3d" />
+                <model file="sphere_1_100_100.3d" >
+                    <texture file = "uranusmap.jpg" />
+                </model>
             </models>
 
             
@@ -151,7 +176,9 @@
                 <scale x="0.4" y="0.4" z="0.4" />
             </transform>
             <models>
-                <model file="sphere_1_100_100.3d" />
+                <model file="sphere_1_100_100.3d" >
+                    <texture file = "neptunemap.jpg" />
+                </model>
             </models>
 
             
@@ -159,10 +186,4 @@
         
     </group>
 
-    
-        
-
-
-
-    
 </world>
