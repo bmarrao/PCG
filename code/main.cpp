@@ -86,7 +86,7 @@ struct Light{
 
 struct modelos{
     string modelo;
-    GLuint buffers[2];
+    GLuint buffers[3];
     int verticeCount;
     float diffuse[4];
     float ambient[4];
@@ -115,7 +115,6 @@ float camVX, camVY, camVZ;
 
 float lookAXaux, lookAYaux, lookAZaux;
 float fov,nears,fars,pers;
-//GLuint buffers[3];
 float dx,dz;
 float camX, camY,camZ;
 float camXaux, camYaux,camZaux;
@@ -153,7 +152,7 @@ int loadTexture(std::string s) {
 	ilBindImage(t);
 	success = ilLoadImage((ILstring)s.c_str());
 	if (success) {
-		printf((ILstring)s.c_str());
+        cout << "OIIII\n";
 	}
 	tw = ilGetInteger(IL_IMAGE_WIDTH);
 	th = ilGetInteger(IL_IMAGE_HEIGHT);
@@ -176,8 +175,6 @@ int loadTexture(std::string s) {
 	// Upload dos dados de imagem
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tw, th, 0, GL_RGBA, GL_UNSIGNED_BYTE, texData);
 	glGenerateMipmap(GL_TEXTURE_2D);
-
-	glBindTexture(GL_TEXTURE_2D, 0);
 
 	return texID;
 
@@ -397,10 +394,12 @@ void createVBO(string file ,modelos* g){
         sizeof(float) * points.size(), // tamanho do vector em bytes
         normals.data(), // os dados do array associado ao vector
         GL_STATIC_DRAW); // indicativo da utilização (estático e para desenho)*/
+    /*
     for (auto w : textures)
     {
         cout << w << " \n";
     }
+    */
     glBindBuffer(GL_ARRAY_BUFFER,g->buffers[2]);
     glBufferData(
         GL_ARRAY_BUFFER, // tipo do buffer, só é relevante na altura do desenho
@@ -522,8 +521,8 @@ struct Group readGroup(XMLElement *group){
             if (textura_name){
                 g.tem_textura = 1;
                 string x = textura_name->Attribute("file");
-                cout << "../texturas/" + x  << " \n";
-                g.textura = loadTexture("../texturas/" + x);
+                cout << "../../texturas/" + x  << " \n";
+                g.textura = loadTexture("../../texturas/" + x);
                 cout << g.textura << "\n";
                 color = textura_name->NextSiblingElement();
             }
@@ -829,11 +828,7 @@ void recFilhos(struct Group g){
     for (auto j: g.models)
     {
         
-        if (j.tem_textura = 1)
-        {
-            glBindTexture(GL_TEXTURE_2D,j.textura);
-        }
-
+        
         
         if (j.light_components == 1){
             
@@ -844,11 +839,16 @@ void recFilhos(struct Group g){
             glMaterialf(GL_FRONT, GL_SHININESS, j.shininess);   
         }
         
+
         glBindBuffer(GL_ARRAY_BUFFER, j.buffers[0]);
 	    glVertexPointer(3, GL_FLOAT, 0, 0);
 
 	    glBindBuffer(GL_ARRAY_BUFFER, j.buffers[1]);
 	    glNormalPointer(GL_FLOAT, 0, 0);
+
+        if (j.tem_textura = 1){
+            glBindTexture(GL_TEXTURE_2D,j.textura);
+        }
 
 	    glBindBuffer(GL_ARRAY_BUFFER, j.buffers[2]);
 	    glTexCoordPointer(2, GL_FLOAT, 0, 0);
@@ -1155,6 +1155,7 @@ int main(int argc, char **argv){
 
 
 //  OpenGL settings
+    glEnable(GL_TEXTURE_2D);
 	glEnable(GL_RESCALE_NORMAL);
     float amb[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, amb);
@@ -1166,9 +1167,8 @@ int main(int argc, char **argv){
     glEnableClientState(GL_NORMAL_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
-    glEnable(GL_TEXTURE_2D);
+    
 
-    // LER AS CORES DO XML
     
     //ISSO AQUIÉ ISSO ?
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
