@@ -152,11 +152,11 @@ int loadTexture(std::string s) {
 	ilBindImage(t);
 	success = ilLoadImage((ILstring)s.c_str());
 	if (success) {
-        cout << "OIIII\n";
+        printf((ILstring)s.c_str());
 	}
 	tw = ilGetInteger(IL_IMAGE_WIDTH);
 	th = ilGetInteger(IL_IMAGE_HEIGHT);
-    cout << tw << " " << th << "\n";
+
 	// Assegurar que a textura se encontra em RGBA (Red, Green, Blue, Alpha) com um byte (0 -
 	// 255) por componente
 	ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
@@ -380,6 +380,8 @@ void createVBO(string file ,modelos* g){
         j=0;
 
     }
+
+    
     glGenBuffers(3, g->buffers);
     glBindBuffer(GL_ARRAY_BUFFER,g->buffers[0]);
     glBufferData(
@@ -388,18 +390,14 @@ void createVBO(string file ,modelos* g){
         points.data(), // os dados do array associado ao vector
         GL_STATIC_DRAW); // indicativo da utilização (estático e para desenho)*/
     g->verticeCount = points.size()/3;
+
     glBindBuffer(GL_ARRAY_BUFFER,g->buffers[1]);
     glBufferData(
         GL_ARRAY_BUFFER, // tipo do buffer, só é relevante na altura do desenho
         sizeof(float) * points.size(), // tamanho do vector em bytes
         normals.data(), // os dados do array associado ao vector
         GL_STATIC_DRAW); // indicativo da utilização (estático e para desenho)*/
-    /*
-    for (auto w : textures)
-    {
-        cout << w << " \n";
-    }
-    */
+
     glBindBuffer(GL_ARRAY_BUFFER,g->buffers[2]);
     glBufferData(
         GL_ARRAY_BUFFER, // tipo do buffer, só é relevante na altura do desenho
@@ -521,9 +519,9 @@ struct Group readGroup(XMLElement *group){
             if (textura_name){
                 g.tem_textura = 1;
                 string x = textura_name->Attribute("file");
-                cout << "../../texturas/" + x  << " \n";
+
                 g.textura = loadTexture("../../texturas/" + x);
-                cout << g.textura << "\n";
+ 
                 color = textura_name->NextSiblingElement();
             }
             else 
@@ -591,7 +589,6 @@ void readWD(std::string source){
     
     XMLDocument xml;
     xml.LoadFile(source.data());
-    cout << "oi\n";
     
     XMLElement *window = xml.FirstChildElement("world")->FirstChildElement("window");
     
@@ -616,9 +613,6 @@ void readXML(std::string source){
     camY = atof(position->Attribute("y"));
     camZ = atof(position->Attribute("z"));
     
-    raio = sqrt(camX*camX + camY*camY + camZ*camZ);
-    betah = asin(camY / raio);
-    alpha = asin(camX / (raio * cos(betah)));
 
     //Possivel erro de alterarmos o camX ...  e o posX ...
     camXaux = camX;
@@ -632,6 +626,10 @@ void readXML(std::string source){
     lookAXaux = lookAX;
     lookAYaux = lookAY;
     lookAZaux = lookAZ;
+
+    raio = sqrt(camX*camX + camY*camY + camZ*camZ);
+    betah = asin(camY / raio);
+    alpha = asin(camX / (raio * cos(betah)));
 
     XMLElement *up = camera->FirstChildElement("up");
     camVX = atof(up->Attribute("x"));
@@ -830,11 +828,10 @@ void recFilhos(struct Group g){
 
     glPushMatrix();
     transacoes(g);
-    for (auto j: g.models)
-    {
+    for (auto j: g.models){
         
         
-        
+
         if (j.light_components == 1){
             
             glMaterialfv(GL_FRONT, GL_DIFFUSE,j.diffuse);
@@ -850,21 +847,20 @@ void recFilhos(struct Group g){
 
 	    glBindBuffer(GL_ARRAY_BUFFER, j.buffers[1]);
 	    glNormalPointer(GL_FLOAT, 0, 0);
-
+	    
         if (j.tem_textura = 1){
             glBindTexture(GL_TEXTURE_2D,j.textura);
+            glBindBuffer(GL_ARRAY_BUFFER, j.buffers[2]);
+            glTexCoordPointer(2, GL_FLOAT, 0, 0);
         }
-
-	    glBindBuffer(GL_ARRAY_BUFFER, j.buffers[2]);
-	    glTexCoordPointer(2, GL_FLOAT, 0, 0);
-
+       
         glDrawArrays(GL_TRIANGLES, 0, j.verticeCount);
         
+        float teste[4] = {0.0,0.0,0.0,0.0};
+        glMaterialfv(GL_FRONT,GL_EMISSION,teste);
 
-        if (j.tem_textura == 1)
-        {
-            glBindTexture(GL_TEXTURE_2D,0);
-        }
+
+        //glBindTexture(GL_TEXTURE_2D,0);
 
     }
 
@@ -903,25 +899,27 @@ void renderScene(void) {
 	glVertex3f(0.0f, 0.0f, 100.0f);
 	glEnd();
     glColor3f(1.0f,1.0f,1.0f);
-    glEnable(GL_LIGHTING);
+    //glEnable(GL_LIGHTING);
 
     //SPOTLIGHT - DIRECTION 
     for(auto l : Lights){
         if (l.type== "point"){
-            
+            glEnable(GL_LIGHTING);
             float pos[4] =  {l.posx,l.posy,l.posz,1.0f};
             glLightfv(l.i, GL_POSITION,pos);
         }
         else if (l.type == "spot"){
+            glEnable(GL_LIGHTING);
             float pos[4] =  {l.posx,l.posy,l.posz,1.0f};
             float posDirec[4] =  {l.dirx,l.diry,l.dirz,0.0f};
             float posCutoff  = l.cutoff;
-            //cout << pos << " " << posDirec << " " << posCutoff << "\n";
+
             glLightfv(l.i, GL_POSITION,pos);
             glLightfv(l.i, GL_SPOT_DIRECTION, posDirec);
             glLightfv(l.i, GL_SPOT_CUTOFF, &posCutoff);
         }
         else{
+            glEnable(GL_LIGHTING);
             float posDirec[4] =  {l.dirx,l.diry,l.dirz,0.0f};
             //out << l.dirx << " " << l.diry << " " << l.dirz << "\n";
             glLightfv(l.i, GL_POSITION, posDirec);	
@@ -1135,11 +1133,10 @@ void printInfo() {
 
 
 int main(int argc, char **argv){
-    cout << "first parto done \n";
     if (argc > 1){
         readWD(argv[1]);
     }
-    cout << "first parto done \n";
+
 // init GLUT and the window
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DEPTH|GLUT_DOUBLE|GLUT_RGBA);
@@ -1163,8 +1160,7 @@ int main(int argc, char **argv){
 //  OpenGL settings
     glEnable(GL_TEXTURE_2D);
 	glEnable(GL_RESCALE_NORMAL);
-    float amb[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
-	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, amb);
+    
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
 
@@ -1181,7 +1177,6 @@ int main(int argc, char **argv){
     
     if (argc > 1)
     {
-        cout << "ler Xml\n";
         readXML(argv[1]);
     }
     
@@ -1197,14 +1192,14 @@ int main(int argc, char **argv){
        
         // light colors
         for(Light l : Lights){
-            cout << "teste\n";
             glEnable(l.i);
             glLightfv(l.i, GL_AMBIENT, dark);
             glLightfv(l.i, GL_DIFFUSE, white);
             glLightfv(l.i, GL_SPECULAR, white);
             
         }
-
+        float amb[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, amb);
         // controls global ambient light
     }
     

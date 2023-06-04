@@ -266,40 +266,40 @@ void drawBox(float comp, int slices, string file)
             MyFile << ponto1.x << ", " << ponto2.y << ", " << ponto2.z << ", " << 0 << ", " << -1 << ", " << 0 <<", "<<ponto1.x/comp +0.5 << ", "<<ponto2.z/comp+0.5 << "\n";
 
             // Face de X constante negativo
-            MyFile << ponto2.y << ", " << ponto1.x << ", " << ponto1.z << ", " << -1 << ", " << 0 << ", " << 0 <<", "<<ponto1.x/comp +0.5 << ", "<<ponto1.z/comp+0.5 << "\n";
-            MyFile << ponto2.y << ", " << ponto2.x << ", " << ponto2.z << ", " << -1 << ", " << 0 << ", " << 0 << ", "<<ponto2.x/comp +0.5 << ", "<<ponto2.z/comp+0.5 <<"\n";
-            MyFile << ponto2.y << ", " << ponto2.x << ", " << ponto1.z << ", " << -1 << ", " << 0 << ", " << 0 << ", "<<ponto2.x/comp +0.5 << ", "<<ponto1.z/comp+0.5 <<"\n";
+            MyFile << ponto2.y << ", " << ponto1.x << ", " << ponto1.z << ", " << -1 << ", " << 0 << ", " << 0 << ", "<<ponto1.z/comp+0.5 <<", "<<ponto1.x/comp +0.5<<  "\n";
+            MyFile << ponto2.y << ", " << ponto2.x << ", " << ponto2.z << ", " << -1 << ", " << 0 << ", " << 0  << ", "<<ponto2.z/comp+0.5<< ", "<<ponto2.x/comp +0.5 <<"\n";
+            MyFile << ponto2.y << ", " << ponto2.x << ", " << ponto1.z << ", " << -1 << ", " << 0 << ", " << 0  << ", "<<ponto1.z/comp+0.5<< ", "<<ponto2.x/comp +0.5 <<"\n";
 
-            MyFile << ponto2.y << ", " << ponto1.x << ", " << ponto1.z << ", " << -1 << ", " << 0 << ", " << 0 << ", "<<ponto1.x/comp +0.5 << ", "<<ponto1.z/comp+0.5 <<"\n";
-            MyFile << ponto2.y << ", " << ponto1.x << ", " << ponto2.z << ", " << -1 << ", " << 0 << ", " << 0 <<", "<<ponto1.x/comp +0.5 << ", "<<ponto2.z/comp+0.5 << "\n";
-            MyFile << ponto2.y << ", " << ponto2.x << ", " << ponto2.z << ", " << -1 << ", " << 0 << ", " << 0 <<", "<<ponto2.x/comp +0.5 << ", "<<ponto2.z/comp+0.5 << "\n";
+            MyFile << ponto2.y << ", " << ponto1.x << ", " << ponto1.z << ", " << -1 << ", " << 0 << ", " << 0  << ", "<<ponto1.z/comp+0.5<< ", "<<ponto1.x/comp +0.5 <<"\n";
+            MyFile << ponto2.y << ", " << ponto1.x << ", " << ponto2.z << ", " << -1 << ", " << 0 << ", " << 0  << ", "<<ponto2.z/comp+0.5 <<", "<<ponto1.x/comp +0.5<< "\n";
+            MyFile << ponto2.y << ", " << ponto2.x << ", " << ponto2.z << ", " << -1 << ", " << 0 << ", " << 0  << ", "<<ponto2.z/comp+0.5 <<", "<<ponto2.x/comp +0.5<< "\n";
 
             // Face de X constante positivo
-            MyFile << ponto1.y << ", " << ponto1.x << ", " << ponto1.z << ", " << 1 << ", " << 0 << ", " << 0 <<", "<<ponto1.x/comp +0.5 << ", "<<ponto1.z/comp+0.5 << "\n";
-            MyFile << ponto1.y << ", " << ponto2.x << ", " << ponto1.z << ", " << 1 << ", " << 0 << ", " << 0 << ", "<<ponto2.x/comp +0.5 << ", "<<ponto1.z/comp+0.5 <<"\n";
-            MyFile << ponto1.y << ", " << ponto2.x << ", " << ponto2.z << ", " << 1 << ", " << 0 << ", " << 0 <<", "<<ponto2.x/comp +0.5 << ", "<<ponto2.z/comp+0.5 << "\n";
+            MyFile << ponto1.y << ", " << ponto1.x << ", " << ponto1.z << ", " << 1 << ", " << 0 << ", " << 0 <<", "<<ponto1.z/comp+0.5  << ", "<<ponto1.x/comp +0.5<< "\n";
+            MyFile << ponto1.y << ", " << ponto2.x << ", " << ponto1.z << ", " << 1 << ", " << 0 << ", " << 0 << ", "<<ponto1.z/comp+0.5<< ", " <<ponto2.x/comp +0.5 <<"\n";
+            MyFile << ponto1.y << ", " << ponto2.x << ", " << ponto2.z << ", " << 1 << ", " << 0 << ", " << 0 <<", "<<ponto2.z/comp+0.5  << ", "<<ponto2.x/comp +0.5<< "\n";
 
-            MyFile << ponto1.y << ", " << ponto1.x << ", " << ponto1.z << ", " << 1 << ", " << 0 << ", " << 0 << ", "<<ponto1.x/comp +0.5 << ", "<<ponto1.z/comp+0.5 <<"\n";
-            MyFile << ponto1.y << ", " << ponto2.x << ", " << ponto2.z << ", " << 1 << ", " << 0 << ", " << 0 <<", "<<ponto2.x/comp +0.5 << ", "<<ponto2.z/comp+0.5 << "\n";
-            MyFile << ponto1.y << ", " << ponto1.x << ", " << ponto2.z << ", " << 1 << ", " << 0 << ", " << 0 <<", "<<ponto1.x/comp +0.5 << ", "<<ponto2.z/comp+0.5 << "\n";
+            MyFile << ponto1.y << ", " << ponto1.x << ", " << ponto1.z << ", " << 1 << ", " << 0 << ", " << 0 <<   ", "<<ponto1.z/comp+0.5<<", "<<ponto1.x/comp +0.5 <<"\n";
+            MyFile << ponto1.y << ", " << ponto2.x << ", " << ponto2.z << ", " << 1 << ", " << 0 << ", " << 0 <<", "<<ponto2.z/comp+0.5 << ", "<<ponto2.x/comp +0.5 << "\n";
+            MyFile << ponto1.y << ", " << ponto1.x << ", " << ponto2.z << ", " << 1 << ", " << 0 << ", " << 0 << ", "<<ponto2.z/comp+0.5<< ", "<<ponto1.x/comp +0.5 << "\n";
 
             // Face de Z constante negativo
-            MyFile << ponto1.x << ", " << ponto1.z << ", " << ponto2.y << ", " << 0 << ", " << 0 << ", " << -1 << ", "<<ponto1.x/comp +0.5 << ", "<<ponto1.z/comp+0.5 <<"\n";
-            MyFile << ponto2.x << ", " << ponto2.z << ", " << ponto2.y << ", " << 0 << ", " << 0 << ", " << -1 << ", "<<ponto2.x/comp +0.5 << ", "<<ponto2.z/comp+0.5 <<"\n";
-            MyFile << ponto2.x << ", " << ponto1.z << ", " << ponto2.y << ", " << 0 << ", " << 0 << ", " << -1 << ", "<<ponto2.x/comp +0.5 << ", "<<ponto1.z/comp+0.5 <<"\n";
+            MyFile << ponto1.x << ", " << ponto1.z << ", " << ponto2.y << ", " << 0 << ", " << 0 << ", " << -1 << ", "<<ponto1.z/comp +0.5 << ", "<<ponto1.x/comp+0.5 <<"\n";
+            MyFile << ponto2.x << ", " << ponto2.z << ", " << ponto2.y << ", " << 0 << ", " << 0 << ", " << -1 << ", "<<ponto2.z/comp +0.5 << ", "<<ponto2.x/comp+0.5 <<"\n";
+            MyFile << ponto2.x << ", " << ponto1.z << ", " << ponto2.y << ", " << 0 << ", " << 0 << ", " << -1 << ", "<<ponto2.z/comp +0.5 << ", "<<ponto1.x/comp+0.5 <<"\n";
 
-            MyFile << ponto1.x << ", " << ponto1.z << ", " << ponto2.y << ", " << 0 << ", " << 0 << ", " << -1 <<", "<<ponto1.x/comp +0.5 << ", "<<ponto1.z/comp+0.5 << "\n";
-            MyFile << ponto1.x << ", " << ponto2.z << ", " << ponto2.y << ", " << 0 << ", " << 0 << ", " << -1 <<", "<<ponto1.x/comp +0.5 << ", "<<ponto2.z/comp+0.5 << "\n";
-            MyFile << ponto2.x << ", " << ponto2.z << ", " << ponto2.y << ", " << 0 << ", " << 0 << ", " << -1 <<", "<<ponto2.x/comp +0.5 << ", "<<ponto2.z/comp+0.5 << "\n";
+            MyFile << ponto1.x << ", " << ponto1.z << ", " << ponto2.y << ", " << 0 << ", " << 0 << ", " << -1 <<", "<<ponto1.z/comp +0.5 << ", "<<ponto1.x/comp+0.5 << "\n";
+            MyFile << ponto1.x << ", " << ponto2.z << ", " << ponto2.y << ", " << 0 << ", " << 0 << ", " << -1 <<", "<<ponto1.z/comp +0.5 << ", "<<ponto2.x/comp+0.5 << "\n";
+            MyFile << ponto2.x << ", " << ponto2.z << ", " << ponto2.y << ", " << 0 << ", " << 0 << ", " << -1 <<", "<<ponto2.z/comp +0.5 << ", "<<ponto2.x/comp+0.5 << "\n";
 
             // Face de Z constante positivo
-            MyFile << ponto1.x << ", " << ponto1.z << ", " << ponto1.y << ", " << 0 << ", " << 0 << ", " << 1 << ", "<<ponto1.x/comp +0.5 << ", "<<ponto1.z/comp+0.5 <<"\n";
-            MyFile << ponto2.x << ", " << ponto1.z << ", " << ponto1.y << ", " << 0 << ", " << 0 << ", " << 1 <<", "<<ponto2.x/comp +0.5 << ", "<<ponto1.z/comp+0.5 << "\n";
-            MyFile << ponto2.x << ", " << ponto2.z << ", " << ponto1.y << ", " << 0 << ", " << 0 << ", " << 1 << ", "<<ponto2.x/comp +0.5 << ", "<<ponto2.z/comp+0.5 <<"\n";
+            MyFile << ponto1.x << ", " << ponto1.z << ", " << ponto1.y << ", " << 0 << ", " << 0 << ", " << 1 << ", "<<ponto1.z/comp +0.5 << ", "<<ponto1.x/comp+0.5 <<"\n";
+            MyFile << ponto2.x << ", " << ponto1.z << ", " << ponto1.y << ", " << 0 << ", " << 0 << ", " << 1 <<", "<<ponto2.z/comp +0.5 << ", "<<ponto1.x/comp+0.5 << "\n";
+            MyFile << ponto2.x << ", " << ponto2.z << ", " << ponto1.y << ", " << 0 << ", " << 0 << ", " << 1 << ", "<<ponto2.z/comp +0.5 << ", "<<ponto2.x/comp+0.5 <<"\n";
 
-            MyFile << ponto1.x << ", " << ponto1.z << ", " << ponto1.y << ", " << 0 << ", " << 0 << ", " << 1 << ", "<<ponto1.x/comp +0.5 << ", "<<ponto1.z/comp+0.5 <<"\n";
-            MyFile << ponto2.x << ", " << ponto2.z << ", " << ponto1.y << ", " << 0 << ", " << 0 << ", " << 1 << ", "<<ponto2.x/comp +0.5 << ", "<<ponto2.z/comp+0.5 <<"\n";
-            MyFile << ponto1.x << ", " << ponto2.z << ", " << ponto1.y << ", " << 0 << ", " << 0 << ", " << 1 << ", "<<ponto1.x/comp +0.5 << ", "<<ponto2.z/comp+0.5 <<"\n";
+            MyFile << ponto1.x << ", " << ponto1.z << ", " << ponto1.y << ", " << 0 << ", " << 0 << ", " << 1 << ", "<<ponto1.z/comp +0.5 << ", "<<ponto1.x/comp+0.5 <<"\n";
+            MyFile << ponto2.x << ", " << ponto2.z << ", " << ponto1.y << ", " << 0 << ", " << 0 << ", " << 1 << ", "<<ponto2.z/comp +0.5 << ", "<<ponto2.x/comp+0.5 <<"\n";
+            MyFile << ponto1.x << ", " << ponto2.z << ", " << ponto1.y << ", " << 0 << ", " << 0 << ", " << 1 << ", "<<ponto1.z/comp +0.5 << ", "<<ponto2.x/comp+0.5 <<"\n";
         }
     }
 }
